@@ -1,0 +1,88 @@
+name: "flopit"
+services:
+  nginx:
+    image: nginx:1.25.3-alpine-slim
+    networks:
+      - backend
+    links:
+      - cloudbeaver
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    restart: unless-stopped
+    ports:
+      - 8080:80
+  mariadb:
+    image: mariadb:11.2.2
+    healthcheck:
+      test: [
+        "CMD",
+        "healthcheck.sh",
+        "--su-mysql",
+        "--connect",
+        "--innodb_initialized"
+      ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      MARIADB_AUTO_UPGRADE: 1
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DB}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:23.3.3
+    configs:
+      - source: cloudbeaver
+#        target: /opt/cloudbeaver/workspace/.data/.cloudbeaver.runtime.conf
+        target: /opt/cloudbeaver/conf/cloudbeaver.conf
+      - source: cloudbeaver-datasource
+        target: /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json
+    volumes:
+      - cloudbeaver:/opt/cloudbeaver/workspace
+    links:
+      - mariadb
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      CB_SERVER_NAME: Base de données Flopit
+      CB_SERVER_URL: http://localhost:8080/db
+      CB_ADMIN_NAME: ${CLOUDBEAVER_ADMIN_USER}
+      CB_ADMIN_PASSWORD: ${CLOUDBEAVER_ADMIN_PASSWORD}
+networks:
+  backend:
+volumes:
+  cloudbeaver:
+configs:
+  nginx:
+    file: compose/nginx.conf
+  cloudbeaver:
+    file: compose/cloudbeaver.json5
+  cloudbeaver-datasource:
+    content: |
+      {
+        "folders": {},
+        "connections": {
+          "mariaDB-186bda63fe5-123cfa131b0fb2c4": {
+            "provider": "mysql",
+            "driver": "mariaDB",
+            "name": "localhost",
+            "save-password": true,
+            "configuration": {
+              "host": "localhost",
+              "port": "3306",
+              "url": "jdbc:mariadb://${MARIADB_USER}:${MARIADB_PASSWORD}@mariadb:3306/${MARIADB_DB}",
+              "configurationType": "MANUAL",
+              "type": "dev",
+              "auth-model": "native"
+            }
+          },
+        }
+      }

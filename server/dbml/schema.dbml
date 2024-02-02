@@ -1,0 +1,189 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id BigInt [pk]
+  username String [unique, not null]
+  email String [unique, not null]
+  password Bytes [not null]
+  salt Bytes [not null]
+  avatar_oid String
+  theme Theme [not null, default: 'Dark']
+  notifications Boolean [not null]
+  ModeratedSubs Moderator [not null]
+  FollowedSubs Follow [not null]
+  BannedFrom Ban [not null]
+  Posts Post [not null]
+  Votes Vote [not null]
+  BlockedBy Block [not null]
+  Blocked Block [not null]
+  PushNotifications PushNotification [not null]
+}
+
+Table PushNotification {
+  id BigInt [pk]
+  User User [not null]
+  user_id BigInt [not null]
+  endpoint String [not null]
+  expiration_time DateTime
+  p256dh Bytes [not null]
+  auth Bytes [not null]
+}
+
+Table Block {
+  Blocked User [not null]
+  blocked_id BigInt [not null]
+  Blocker User [not null]
+  blocker_id BigInt [not null]
+
+  indexes {
+    (blocked_id, blocker_id) [pk]
+  }
+}
+
+Table Sub {
+  id BigInt [pk]
+  name String [unique, not null]
+  description String [not null, default: '']
+  icon_oid String
+  banner_oid String
+  Moderators Moderator [not null]
+  Followers Follow [not null]
+  Bans Ban [not null]
+  Posts Post [not null]
+}
+
+Table Moderator {
+  User User [not null]
+  user_id BigInt [not null]
+  Sub Sub [not null]
+  sub_id BigInt [not null]
+
+  indexes {
+    (user_id, sub_id) [pk]
+  }
+}
+
+Table Ban {
+  User User [not null]
+  user_id BigInt [not null]
+  Sub Sub [not null]
+  sub_id BigInt [not null]
+  reason String [not null]
+  expiry DateTime [not null]
+
+  indexes {
+    (user_id, sub_id, expiry) [pk]
+  }
+}
+
+Table Follow {
+  User User [not null]
+  user_id BigInt [not null]
+  Sub Sub [not null]
+  sub_id BigInt [not null]
+
+  indexes {
+    (user_id, sub_id) [pk]
+  }
+}
+
+Table TopPost {
+  id BigInt [pk]
+  title String [not null]
+  Attachments Attachment [not null]
+  Post Post [not null]
+}
+
+Table Post {
+  id BigInt [pk]
+  Sub Sub [not null]
+  sub_id BigInt [not null]
+  Author User
+  author_id BigInt
+  created_at DateTime [default: `now()`, not null]
+  text_content String [not null]
+  delta_content Json [not null]
+  TopPost TopPost [not null]
+  top_post_id BigInt [not null]
+  Parent Post
+  parent_id BigInt
+  Children Post [not null]
+  Votes Vote [not null]
+  cached_votes BigInt [not null]
+}
+
+Table Attachment {
+  TopPost TopPost [not null]
+  top_post_id BigInt [not null]
+  order Int [not null]
+  type AttachmentType [not null]
+  content String [not null]
+
+  indexes {
+    (top_post_id, order) [pk]
+  }
+}
+
+Table Vote {
+  id BigInt [pk]
+  User User
+  user_id BigInt
+  Post Post
+  post_id BigInt
+  value Int [not null]
+
+  indexes {
+    (user_id, post_id) [unique]
+  }
+}
+
+Enum Theme {
+  Light
+  Dark
+}
+
+Enum TextContentType {
+  Link
+  Text
+  None
+}
+
+Enum AttachmentType {
+  Image
+  Video
+  Link
+}
+
+Ref: PushNotification.user_id > User.id [delete: Cascade]
+
+Ref: Block.blocked_id > User.id [delete: Cascade]
+
+Ref: Block.blocker_id > User.id [delete: Cascade]
+
+Ref: Moderator.user_id > User.id [delete: Cascade]
+
+Ref: Moderator.sub_id > Sub.id [delete: Cascade]
+
+Ref: Ban.user_id > User.id [delete: Cascade]
+
+Ref: Ban.sub_id > Sub.id [delete: Cascade]
+
+Ref: Follow.user_id > User.id [delete: Cascade]
+
+Ref: Follow.sub_id > Sub.id [delete: Cascade]
+
+Ref: Post.sub_id > Sub.id [delete: Cascade]
+
+Ref: Post.author_id > User.id [delete: Set Null]
+
+Ref: Post.top_post_id > TopPost.id [delete: Cascade]
+
+Ref: Post.parent_id - Post.id [delete: Cascade]
+
+Ref: Attachment.top_post_id > TopPost.id [delete: Cascade]
+
+Ref: Vote.user_id > User.id [delete: Set Null]
+
+Ref: Vote.post_id > Post.id [delete: Cascade]

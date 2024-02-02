@@ -1,0 +1,15 @@
+{
+  "name": "flopit-server",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.1",
+    "prisma": "^5.8.1",
+    "prisma-dbml-generator": "^0.10.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.8.1"
+  }
+}
