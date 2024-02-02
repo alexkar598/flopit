@@ -15,6 +15,17 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Session` (
+    `id` BIGINT UNSIGNED NOT NULL DEFAULT uuid_short(),
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `creation_time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `expiration_time` DATETIME(3) NOT NULL,
+    `revoked` BIT(1) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `PushNotification` (
     `id` BIGINT UNSIGNED NOT NULL DEFAULT uuid_short(),
     `user_id` BIGINT UNSIGNED NOT NULL,
@@ -43,6 +54,7 @@ CREATE TABLE `Sub` (
     `banner_oid` CHAR(40) NULL,
 
     UNIQUE INDEX `Sub_name_key`(`name`),
+    FULLTEXT INDEX `Sub_description_idx`(`description`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -122,6 +134,9 @@ CREATE TABLE `Vote` (
     UNIQUE INDEX `Vote_user_id_post_id_key`(`user_id`, `post_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Session` ADD CONSTRAINT `Session_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `PushNotification` ADD CONSTRAINT `PushNotification_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;

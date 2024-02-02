@@ -28,6 +28,7 @@ model User {
   theme         Theme   @default(Dark)
   notifications Boolean @mariadb.Bit(1)
 
+  Sessions          Session[]
   ModeratedSubs     Moderator[]
   FollowedSubs      Follow[]
   BannedFrom        Ban[]
@@ -36,6 +37,18 @@ model User {
   BlockedBy         Block[]            @relation(name: "Blockee")
   Blocked           Block[]            @relation(name: "Blocker")
   PushNotifications PushNotification[]
+}
+
+model Session {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  creation_time   DateTime @default(now())
+  expiration_time DateTime
+
+  revoked Boolean @mariadb.Bit(1)
 }
 
 model PushNotification {
@@ -73,6 +86,8 @@ model Sub {
   Followers  Follow[]
   Bans       Ban[]
   Posts      Post[]
+
+  @@fulltext([description])
 }
 
 model Moderator {
