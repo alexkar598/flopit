@@ -19,9 +19,9 @@ CREATE TABLE `Session` (
     `id` BIGINT UNSIGNED NOT NULL DEFAULT uuid_short(),
     `user_id` BIGINT UNSIGNED NOT NULL,
     `creation_time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `expiration_time` DATETIME(3) NOT NULL,
-    `revoked` BIT(1) NOT NULL,
+    `revocation_time` DATETIME(3) NULL,
 
+    INDEX `Session_user_id_revocation_time_creation_time_idx`(`user_id`, `revocation_time`, `creation_time`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

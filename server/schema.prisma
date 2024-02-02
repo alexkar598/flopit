@@ -45,10 +45,10 @@ model Session {
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id BigInt @mariadb.UnsignedBigInt
 
-  creation_time   DateTime @default(now())
-  expiration_time DateTime
+  creation_time   DateTime  @default(now())
+  revocation_time DateTime?
 
-  revoked Boolean @mariadb.Bit(1)
+  @@index([user_id, revocation_time, creation_time])
 }
 
 model PushNotification {
