@@ -6,10 +6,6 @@ generator client {
   previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
-
 datasource mariadb {
   provider = "mysql"
   url      = env("PRISMA_MARIADB_URL")

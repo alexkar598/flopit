@@ -6,8 +6,7 @@
   },
   "devDependencies": {
     "dotenv": "^16.4.1",
-    "prisma": "^5.8.1",
-    "prisma-dbml-generator": "^0.10.0"
+    "prisma": "^5.8.1"
   },
   "dependencies": {
     "@prisma/client": "^5.8.1"
