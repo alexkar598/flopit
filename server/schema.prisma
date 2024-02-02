@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
+}
+
+datasource mariadb {
+  provider = "mysql"
+  url      = env("PRISMA_MARIADB_URL")
+}
+
+enum Theme {
+  Light
+  Dark
+}
+
+model User {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  username String @unique @mariadb.VarChar(64)
+  email    String @unique @mariadb.VarChar(320)
+  password Bytes  @mariadb.Binary(255)
+  salt     Bytes  @mariadb.Binary(32)
+
+  avatar_oid    String? @mariadb.Char(40)
+  theme         Theme   @default(Dark)
+  notifications Boolean @mariadb.Bit(1)
+
+  Sessions          Session[]
+  ModeratedSubs     Moderator[]
+  FollowedSubs      Follow[]
+  BannedFrom        Ban[]
+  Posts             Post[]
+  Votes             Vote[]
+  BlockedBy         Block[]            @relation(name: "Blockee")
+  Blocked           Block[]            @relation(name: "Blocker")
+  PushNotifications PushNotification[]
+}
+
+model Session {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  creation_time   DateTime  @default(now())
+  revocation_time DateTime?
+
+  @@index([user_id, revocation_time, creation_time])
+}
+
+model PushNotification {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  endpoint        String    @mariadb.VarChar(512)
+  expiration_time DateTime?
+  p256dh          Bytes     @mariadb.Binary(65)
+  auth            Bytes     @mariadb.Binary(16)
+}
+
+model Block {
+  Blocked    User   @relation(fields: [blocked_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Blockee")
+  blocked_id BigInt @mariadb.UnsignedBigInt
+
+  Blocker    User   @relation(fields: [blocker_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Blocker")
+  blocker_id BigInt @mariadb.UnsignedBigInt
+
+  @@id([blocked_id, blocker_id])
+}
+
+model Sub {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  name        String @unique @mariadb.VarChar(64)
+  description String @default("") @mariadb.VarChar(512)
+
+  icon_oid   String? @mariadb.Char(40)
+  banner_oid String? @mariadb.Char(40)
+
+  Moderators Moderator[]
+  Followers  Follow[]
+  Bans       Ban[]
+  Posts      Post[]
+
+  @@fulltext([description])
+}
+
+model Moderator {
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sub_id BigInt @mariadb.UnsignedBigInt
+
+  @@id([user_id, sub_id])
+}
+
+model Ban {
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sub_id BigInt @mariadb.UnsignedBigInt
+
+  reason String   @mariadb.VarChar(512)
+  expiry DateTime
+
+  @@id([user_id, sub_id, expiry])
+}
+
+model Follow {
+  User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user_id BigInt @mariadb.UnsignedBigInt
+
+  Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sub_id BigInt @mariadb.UnsignedBigInt
+
+  @@id([user_id, sub_id])
+}
+
+enum TextContentType {
+  Link
+  Text
+  None
+}
+
+model TopPost {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  title String @mariadb.VarChar(256)
+
+  Attachments Attachment[]
+  Post        Post[]
+
+  @@fulltext([title])
+}
+
+model Post {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sub_id BigInt @mariadb.UnsignedBigInt
+
+  Author    User?   @relation(fields: [author_id], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  author_id BigInt? @mariadb.UnsignedBigInt
+
+  created_at DateTime @default(now())
+
+  text_content  String @mariadb.Text
+  delta_content Json
+
+  TopPost     TopPost @relation(fields: [top_post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  top_post_id BigInt  @mariadb.UnsignedBigInt
+
+  Parent    Post?   @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "chains")
+  parent_id BigInt? @mariadb.UnsignedBigInt
+  Children  Post[]  @relation(name: "chains")
+
+  Votes        Vote[]
+  cached_votes BigInt
+
+  @@index([sub_id, parent_id, created_at])
+  @@index([sub_id, parent_id, cached_votes])
+  @@index([parent_id, created_at])
+  @@index([parent_id, cached_votes])
+  @@fulltext([text_content])
+}
+
+enum AttachmentType {
+  Image
+  Video
+  Link
+}
+
+model Attachment {
+  TopPost     TopPost        @relation(fields: [top_post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  top_post_id BigInt         @mariadb.UnsignedBigInt
+  order       Int            @mariadb.UnsignedTinyInt
+  type        AttachmentType
+
+  content String @mariadb.VarChar(2048)
+
+  @@id([top_post_id, order])
+}
+
+model Vote {
+  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+
+  User    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  user_id BigInt? @mariadb.UnsignedBigInt
+
+  Post    Post?   @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  post_id BigInt? @mariadb.UnsignedBigInt
+
+  value Int @mariadb.TinyInt
+
+  @@unique([user_id, post_id])
+  @@index([user_id, post_id, value])
+}

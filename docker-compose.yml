@@ -1,0 +1,41 @@
+name: "flopit"
+services:
+  nginx:
+    image: nginx:1.25.3-alpine-slim
+    networks:
+      - backend
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    restart: unless-stopped
+    ports:
+      - 8080:80
+  mariadb:
+    image: mariadb:11.2.2
+    healthcheck:
+      test: [
+        "CMD",
+        "healthcheck.sh",
+        "--su-mysql",
+        "--connect",
+        "--innodb_initialized"
+      ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      MARIADB_AUTO_UPGRADE: 1
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DB}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+networks:
+  backend:
+configs:
+  nginx:
+    file: compose/nginx.conf
