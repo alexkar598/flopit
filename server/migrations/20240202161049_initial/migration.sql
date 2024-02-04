@@ -127,7 +127,7 @@ CREATE TABLE `Attachment` (
 CREATE TABLE `Vote` (
     `id` BIGINT UNSIGNED NOT NULL DEFAULT uuid_short(),
     `user_id` BIGINT UNSIGNED NULL,
-    `post_id` BIGINT UNSIGNED NULL,
+    `post_id` BIGINT UNSIGNED NOT NULL,
     `value` TINYINT NOT NULL,
 
     INDEX `Vote_user_id_post_id_value_idx`(`user_id`, `post_id`, `value`),
