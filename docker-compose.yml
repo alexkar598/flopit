@@ -1,9 +1,23 @@
 name: "flopit"
+include:
+  - path: compose/cloudbeaver-config.yaml
 services:
+  db-deploy:
+    build:
+      dockerfile: server/db-deploy.Dockerfile
+    networks:
+      - backend
+    environment:
+      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+    restart: on-failure
+    links:
+      - mariadb
   nginx:
     image: nginx:1.25.3-alpine-slim
     networks:
       - backend
+    links:
+      - cloudbeaver
     configs:
       - source: nginx
         target: /etc/nginx/nginx.conf
@@ -34,8 +48,33 @@ services:
       MARIADB_DATABASE: ${MARIADB_DB}
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - mariadb:/var/lib/mysql
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:23.3.3
+    configs:
+      - source: cloudbeaver
+#        target: /opt/cloudbeaver/workspace/.data/.cloudbeaver.runtime.conf
+        target: /opt/cloudbeaver/conf/cloudbeaver.conf
+      - source: cloudbeaver-datasource
+        target: /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json
+    volumes:
+      - cloudbeaver:/opt/cloudbeaver/workspace
+    links:
+      - mariadb
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      CB_SERVER_NAME: Base de données Flopit
+      CB_SERVER_URL: ${PUBLIC_URL}/_db
+      CB_ADMIN_NAME: _
+      CB_ADMIN_PASSWORD: _
 networks:
   backend:
+volumes:
+  cloudbeaver:
+  mariadb:
 configs:
   nginx:
     file: compose/nginx.conf
