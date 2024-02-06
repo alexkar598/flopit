@@ -66,6 +66,8 @@ services:
       /usr/bin/mc mb minio/attachment-images;
       exit 0;"
   imgproxy:
+    links:
+      - minio
     image: darthsim/imgproxy:v3.21.0
     healthcheck:
       test: [ "CMD", "imgproxy", "health" ]
