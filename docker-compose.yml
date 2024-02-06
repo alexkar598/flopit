@@ -2,16 +2,6 @@ name: "flopit"
 include:
   - path: compose/cloudbeaver-config.yaml
 services:
-  db-deploy:
-    build:
-      dockerfile: server/db-deploy.Dockerfile
-    networks:
-      - backend
-    environment:
-      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
-    restart: on-failure
-    links:
-      - mariadb
   nginx:
     image: nginx:1.25.3-alpine-slim
     networks:
@@ -54,7 +44,6 @@ services:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
       - source: cloudbeaver
-#        target: /opt/cloudbeaver/workspace/.data/.cloudbeaver.runtime.conf
         target: /opt/cloudbeaver/conf/cloudbeaver.conf
       - source: cloudbeaver-datasource
         target: /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json
@@ -70,6 +59,16 @@ services:
       CB_SERVER_URL: ${PUBLIC_URL}/_db
       CB_ADMIN_NAME: _
       CB_ADMIN_PASSWORD: _
+  db-deploy:
+    build:
+      dockerfile: server/db-deploy.Dockerfile
+    networks:
+      - backend
+    environment:
+      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+    restart: on-failure
+    links:
+      - mariadb
 networks:
   backend:
 volumes:
