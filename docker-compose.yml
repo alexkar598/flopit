@@ -34,6 +34,16 @@ services:
       MARIADB_DATABASE: ${MARIADB_DB}
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+  db-deploy:
+    build:
+      dockerfile: server/db-deploy.Dockerfile
+    networks:
+      - backend
+    environment:
+      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+    restart: on-failure
+    links:
+      - mariadb
 networks:
   backend:
 configs:
