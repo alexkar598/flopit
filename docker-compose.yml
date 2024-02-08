@@ -10,7 +10,7 @@ services:
     volumes:
       - ./server/src:/app/src
     environment:
-      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+      PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
     restart: on-failure
     links:
       - mariadb
