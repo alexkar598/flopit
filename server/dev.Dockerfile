@@ -14,6 +14,7 @@ RUN apk add nodejs
 WORKDIR /app
 
 COPY server/tsconfig.json .
+COPY server/nodemon.json .
 COPY server/package.json .
 
 COPY --from=build node_modules node_modules
@@ -22,4 +23,4 @@ VOLUME ["/app/src"]
 
 EXPOSE 3000
 
-CMD ["./node_modules/.bin/tsx", "watch", "src/index.ts"]
+CMD ["./node_modules/.bin/nodemon", "-L", "src/index.ts"]
