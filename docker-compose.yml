@@ -15,6 +15,17 @@ services:
     links:
       - mariadb
       - minio
+      - imgproxy
+  client:
+    build:
+      dockerfile: client/dev.Dockerfile
+    networks:
+      - backend
+    volumes:
+      - ./client/src:/app/src
+    restart: on-failure
+    links:
+      - apiserver
   nginx:
     image: nginx:1.25.3-alpine-slim
     networks:
@@ -24,6 +35,7 @@ services:
       - apiserver
       - minio
       - imgproxy
+      - client
     configs:
       - source: nginx
         target: /etc/nginx/nginx.conf
