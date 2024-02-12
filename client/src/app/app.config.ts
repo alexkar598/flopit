@@ -1,4 +1,5 @@
 import {ApplicationConfig, importProvidersFrom} from "@angular/core";
+import { NbLayoutFooterComponent } from '@nebular/theme';
 import {provideRouter} from "@angular/router";
 import {NbThemeModule} from "@nebular/theme";
 
@@ -11,7 +12,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideClientHydration(),
-    importProvidersFrom(NbThemeModule.forRoot()),
+    importProvidersFrom(NbThemeModule.forRoot(), NbLayoutFooterComponent),
     provideHttpClient(withFetch()),
     graphqlProvider,
   ],
