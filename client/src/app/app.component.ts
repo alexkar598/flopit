@@ -2,11 +2,12 @@ import {Component} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {RouterOutlet} from "@angular/router";
 import {NbButtonModule, NbLayoutModule} from "@nebular/theme";
+import { FooterComponent } from "./components/footer/footer.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NbLayoutModule, NbButtonModule],
+  imports: [CommonModule, RouterOutlet, NbLayoutModule, NbButtonModule, FooterComponent],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
