@@ -15,7 +15,6 @@ services:
     links:
       - mariadb
       - minio
-      - imgproxy
   client:
     build:
       dockerfile: client/dev.Dockerfile
@@ -23,7 +22,7 @@ services:
       - backend
     volumes:
       - ./client/src:/app/src
-    restart: on-failure
+    restart: unless-stopped
     links:
       - apiserver
   nginx:
