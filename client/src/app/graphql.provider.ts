@@ -1,18 +1,18 @@
-import {Apollo, APOLLO_OPTIONS} from 'apollo-angular';
-import {HttpLink} from 'apollo-angular/http';
+import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
+import {HttpLink} from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
   InjectionToken,
   makeStateKey,
   TransferState,
-} from '@angular/core';
-import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+} from "@angular/core";
+import {ApolloClientOptions, InMemoryCache} from "@apollo/client/core";
 
-const uri = '/graphql';
+const uri = "/graphql";
 
-const APOLLO_CACHE = new InjectionToken<InMemoryCache>('apollo-cache');
-const STATE_KEY = makeStateKey<any>('apollo.state');
+const APOLLO_CACHE = new InjectionToken<InMemoryCache>("apollo-cache");
+const STATE_KEY = makeStateKey<any>("apollo.state");
 
 export function apolloOptionsFactory(
   httpLink: HttpLink,
@@ -38,7 +38,7 @@ export function apolloOptionsFactory(
   };
 }
 
-export const graphqlProvider: ApplicationConfig['providers'] = [
+export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
