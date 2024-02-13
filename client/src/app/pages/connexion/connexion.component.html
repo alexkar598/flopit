@@ -1,13 +1,26 @@
 <nb-card>
     <nb-card-header>
-        <h1>Connexion</h1>
+        <h1>Se connecter</h1>
     </nb-card-header>
     <nb-card-body>
-        <p>Nom d'utilisateur <span style="color: red;">*</span></p>
-        <input nbInput id="input_username"/>
-        <p>Mot de passe <span style="color: red;">*</span></p>
-        <input nbInput id="input_password"/><br>
-        <a href="" id="link_noaccount">Pas de compte?</a><br>
-        <button nbButton status="primary" id="button_login">Connexion</button>
+        <div class="div-input">
+            <p>Nom d'utilisateur <span style="color:red;">*</span></p>
+            <input nbInput fullWidth/>
+        </div>
+        
+        <div class="div-input">
+            <p>Mot de passe <span style="color:red;">*</span></p>
+            <nb-form-field>
+                <input [type]="getInputType()" nbInput fullWidth>
+                <button nbSuffix nbButton ghost (click)="toggleShowPassword()">O</button>
+                <!--Temporairement un "O" mais on pourra probablement changer ça pour une icone ou quelque chose d'autre-->
+            </nb-form-field>
+        </div>
+        
+        <div style="margin:25px;">
+            <a href="">Pas de compte?</a>
+        </div>
+
+        <button nbButton status="primary">Connexion</button>
     </nb-card-body>
-  </nb-card>
+</nb-card>
