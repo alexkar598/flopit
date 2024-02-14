@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
   NbButtonGroupModule,
   NbButtonModule,
@@ -6,6 +6,7 @@ import {
   NbIconModule,
   NbUserModule
 } from "@nebular/theme";
+import {RelativeDatePipe} from "../../pipes/relative-date.pipe";
 
 @Component({
   selector: 'app-post-single',
@@ -15,10 +16,14 @@ import {
     NbIconModule,
     NbButtonGroupModule,
     NbButtonModule,
-    NbUserModule
+    NbUserModule,
+    RelativeDatePipe
   ],
   templateUrl: './post-single.component.html',
   styleUrl: './post-single.component.scss'
 })
 export class PostSingleComponent {
+
+  @Input() post: unknown;
+
 }
