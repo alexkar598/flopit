@@ -15,10 +15,7 @@
 			"**/prisma"
 		]
 	},
-	"dependencies": {
-		"@fastify/autoload": "^5.8.0",
-		"@fastify/cors": "^8.5.0",
-		"@fastify/sensible": "^5.5.0",
-		"fastify": "^4.25.2"
+	"devDependencies": {
+		"prettier": "^3.2.5"
 	}
 }
