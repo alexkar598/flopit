@@ -4,7 +4,7 @@ services:
     build:
       dockerfile: server/dev.Dockerfile
     healthcheck:
-      test: [ "CMD", "curl", "localhost:3000/health", "--fail-with-body" ]
+      test: [ "CMD", "wget", "localhost:3000/health", "-O", "-" ]
       timeout: "10s"
       interval: "1m30s"
       retries: 3

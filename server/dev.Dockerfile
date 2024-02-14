@@ -9,7 +9,7 @@ RUN npx prisma generate
 
 FROM alpine:3.19.1
 
-RUN apk add nodejs curl
+RUN apk add nodejs
 
 WORKDIR /app
 
