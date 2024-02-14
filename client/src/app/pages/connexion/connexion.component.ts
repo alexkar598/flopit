@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {NbButtonModule, NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule} from "@nebular/theme";
 
 @Component({
   standalone: true,
-  imports: [NbButtonModule, NbCardModule, NbInputModule, NbFormFieldModule, NbIconModule],
+  imports: [NbButtonModule, NbCardModule, NbInputModule, NbFormFieldModule, NbIconModule, NbEvaIconsModule],
   templateUrl: './connexion.component.html',
   styleUrl: './connexion.component.scss'
 })

@@ -3,24 +3,27 @@
         <h1>Se connecter</h1>
     </nb-card-header>
     <nb-card-body>
-        <div class="div-input">
-            <p>Nom d'utilisateur <span style="color:red;">*</span></p>
-            <input nbInput fullWidth/>
-        </div>
-        
-        <div class="div-input">
-            <p>Mot de passe <span style="color:red;">*</span></p>
-            <nb-form-field>
-                <input [type]="getInputType()" nbInput fullWidth>
-                <button nbSuffix nbButton ghost (click)="toggleShowPassword()">O</button>
-                <!--Temporairement un "O" mais on pourra probablement changer ça pour une icone ou quelque chose d'autre-->
-            </nb-form-field>
-        </div>
-        
-        <div style="margin:25px;">
-            <a href="">Pas de compte?</a>
-        </div>
-
-        <button nbButton status="primary">Connexion</button>
+        <form novalidate>
+            <div class="input">
+                <label for="nom">Nom d'utilisateur / Courriel</label>
+                <input nbInput required fullWidth id="nom"/>
+            </div>
+            
+            <div class="input">
+                <label for="mot-passe">Mot de passe</label>
+                <nb-form-field>
+                    <input [type]="getInputType()" nbInput required fullWidth id="mot-passe">
+                    <button type="button" nbSuffix nbButton ghost (click)="toggleShowPassword()">
+                        <nb-icon [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'" pack="eva"/>
+                    </button>
+                </nb-form-field>
+            </div>
+            
+            <div class="pas-compte">
+                <a href="">Pas de compte?</a>
+            </div>
+    
+            <button nbButton status="primary">Connexion</button>
+        </form>
     </nb-card-body>
 </nb-card>
