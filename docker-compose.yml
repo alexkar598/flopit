@@ -3,6 +3,13 @@ services:
   apiserver:
     build:
       dockerfile: server/dev.Dockerfile
+    healthcheck:
+      test: [ "CMD", "wget", "localhost:3000/health", "-O", "-" ]
+      timeout: "10s"
+      interval: "1m30s"
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
     networks:
       - backend
     volumes:
@@ -10,6 +17,9 @@ services:
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
     restart: on-failure
+    depends_on:
+      db-deploy:
+        condition: service_completed_successfully
     links:
       - mariadb
       - minio
@@ -27,6 +37,9 @@ services:
     image: nginx:1.25.3-alpine-slim
     networks:
       - backend
+    depends_on:
+      createbuckets:
+        condition: service_completed_successfully
     links:
       - cloudbeaver
       - apiserver
