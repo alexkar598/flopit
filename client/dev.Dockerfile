@@ -7,7 +7,7 @@ RUN npm install
 
 FROM alpine:3.19.1
 
-RUN apk add nodejs
+RUN apk add nodejs curl
 
 WORKDIR /app
 
