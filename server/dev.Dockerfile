@@ -1,10 +1,14 @@
 FROM node:21.6.1-alpine3.19 as build
 
+WORKDIR /app
+
 COPY package-lock.json .
 COPY server/package.json .
 COPY server/schema.prisma .
 
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.cache \
+    npm install --verbose
 RUN npx prisma generate
 
 FROM alpine:3.19.1
@@ -17,7 +21,7 @@ COPY server/tsconfig.json .
 COPY server/nodemon.json .
 COPY server/package.json .
 
-COPY --from=build node_modules node_modules
+COPY --from=build /app/node_modules node_modules
 
 VOLUME ["/app/src"]
 
