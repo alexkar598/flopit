@@ -8,7 +8,7 @@ COPY server/schema.prisma .
 
 RUN --mount=type=cache,target=/root/.npm \
     --mount=type=cache,target=/root/.cache \
-    npm install --verbose
+    npm install
 RUN npx prisma generate
 
 FROM alpine:3.19.1
