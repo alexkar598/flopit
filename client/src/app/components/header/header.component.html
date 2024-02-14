@@ -1,4 +1,14 @@
-<div>
+<div class="gauche">
     <button nbButton status="primary">S'inscrire</button>
     <button nbButton outline status="primary">Connexion</button>
+</div>
+
+<div class="droite">
+    <ng-form>
+    <button nbPrefix nbButton ghost click="">
+        <!--Rien dans le click en attendant la fonction de recherche-->
+        <nb-icon icon="search-outline"pack="eva"/>
+    </button>
+    <input type="text" nbInput placeholder="Rechercher...">
+    </ng-form>
 </div>
