@@ -1,9 +1,13 @@
 FROM node:21.6.1-alpine3.19 as build
 
+WORKDIR /app
+
 COPY package-lock.json .
 COPY client/package.json .
 
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.cache \
+    npm install
 
 FROM alpine:3.19.1
 
@@ -18,7 +22,7 @@ COPY client/package.json .
 COPY client/server.ts .
 COPY client/angular.json .
 
-COPY --from=build node_modules node_modules
+COPY --from=build /app/node_modules node_modules
 
 VOLUME ["/app/src"]
 
