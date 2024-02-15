@@ -60,7 +60,9 @@ services:
     ports:
       - 8080:80
   mariadb:
-    image: mariadb:11.2.2
+    build:
+      dockerfile: mariadb.Dockerfile
+      context: compose
     healthcheck:
       test: [
         "CMD",
