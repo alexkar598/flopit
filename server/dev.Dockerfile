@@ -11,8 +11,6 @@ RUN --mount=type=cache,target=/root/.npm \
     npm install
 RUN npx prisma generate
 
-COPY patches patches
-RUN npx patch-package
 FROM alpine:3.19.1
 
 RUN apk add nodejs
