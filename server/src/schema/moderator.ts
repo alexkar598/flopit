@@ -3,7 +3,7 @@ import { builder, frozenWithTotalCount } from "./_builder.ts";
 import { subRef } from "./sub.ts";
 import { userRef } from "./user.ts";
 
-const helper1 = prismaConnectionHelpers(builder, "Moderator", {
+const moderatorsHelper = prismaConnectionHelpers(builder, "Moderator", {
   cursor: "user_id_sub_id",
   select: (nestedSelection) => ({
     ["User"]: nestedSelection({
@@ -20,11 +20,11 @@ builder.prismaObjectField("Sub", "moderators", (t) =>
     {
       type: userRef,
       select: (args, ctx, nestedSelection) => ({
-        ["Moderators"]: helper1.getQuery(args, ctx, nestedSelection),
+        ["Moderators"]: moderatorsHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper1.resolve(parent["Moderators"], args, context),
+          moderatorsHelper.resolve(parent["Moderators"], args, context),
           parent["Moderators"].length,
         ),
     },
@@ -33,7 +33,7 @@ builder.prismaObjectField("Sub", "moderators", (t) =>
   ),
 );
 
-const helper = prismaConnectionHelpers(builder, "Moderator", {
+const moderatorOfHelper = prismaConnectionHelpers(builder, "Moderator", {
   cursor: "user_id_sub_id",
   select: (nestedSelection) => ({
     ["Sub"]: nestedSelection({
@@ -50,11 +50,15 @@ builder.prismaObjectField("User", "moderatorOf", (t) =>
     {
       type: subRef,
       select: (args, ctx, nestedSelection) => ({
-        ["ModeratedSubs"]: helper.getQuery(args, ctx, nestedSelection),
+        ["ModeratedSubs"]: moderatorOfHelper.getQuery(
+          args,
+          ctx,
+          nestedSelection,
+        ),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper.resolve(parent["ModeratedSubs"], args, context),
+          moderatorOfHelper.resolve(parent["ModeratedSubs"], args, context),
           parent["ModeratedSubs"].length,
         ),
     },

@@ -2,7 +2,7 @@ import { prismaConnectionHelpers } from "@pothos/plugin-prisma";
 import { builder, frozenWithTotalCount } from "./_builder.js";
 import { userRef } from "./user.js";
 
-const helper1 = prismaConnectionHelpers(builder, "Block", {
+const blockedHelper = prismaConnectionHelpers(builder, "Block", {
   cursor: "blocked_id_blocker_id",
   select: (nestedSelection) => ({
     ["Blocked"]: nestedSelection({
@@ -19,11 +19,11 @@ builder.prismaObjectField("User", "blocked", (t) =>
     {
       type: userRef,
       select: (args, ctx, nestedSelection) => ({
-        ["Blocked"]: helper1.getQuery(args, ctx, nestedSelection),
+        ["Blocked"]: blockedHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper1.resolve(parent["Blocked"], args, context),
+          blockedHelper.resolve(parent["Blocked"], args, context),
           parent["Blocked"].length,
         ),
     },
@@ -31,7 +31,7 @@ builder.prismaObjectField("User", "blocked", (t) =>
     {},
   ),
 );
-const helper = prismaConnectionHelpers(builder, "Block", {
+const blockedByHelper = prismaConnectionHelpers(builder, "Block", {
   cursor: "blocked_id_blocker_id",
   select: (nestedSelection) => ({
     ["Blocker"]: nestedSelection({
@@ -48,11 +48,11 @@ builder.prismaObjectField("User", "blockedBy", (t) =>
     {
       type: userRef,
       select: (args, ctx, nestedSelection) => ({
-        ["BlockedBy"]: helper.getQuery(args, ctx, nestedSelection),
+        ["BlockedBy"]: blockedByHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper.resolve(parent["BlockedBy"], args, context),
+          blockedByHelper.resolve(parent["BlockedBy"], args, context),
           parent["BlockedBy"].length,
         ),
     },

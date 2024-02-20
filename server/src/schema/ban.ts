@@ -3,7 +3,7 @@ import { builder, frozenWithTotalCount } from "./_builder.ts";
 import { subRef } from "./sub.ts";
 import { userRef } from "./user.ts";
 
-const helper1 = prismaConnectionHelpers(builder, "Ban", {
+const bannedFromHelper = prismaConnectionHelpers(builder, "Ban", {
   cursor: "user_id_sub_id_expiry",
   select: (nestedSelection) => ({
     expiry: true,
@@ -22,11 +22,11 @@ builder.prismaObjectField("User", "bannedFrom", (t) =>
     {
       type: subRef,
       select: (args, ctx, nestedSelection) => ({
-        ["BannedFrom"]: helper1.getQuery(args, ctx, nestedSelection),
+        ["BannedFrom"]: bannedFromHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper1.resolve(parent["BannedFrom"], args, context),
+          bannedFromHelper.resolve(parent["BannedFrom"], args, context),
           parent["BannedFrom"].length,
         ),
     },
@@ -42,7 +42,7 @@ builder.prismaObjectField("User", "bannedFrom", (t) =>
   ),
 );
 
-const helper = prismaConnectionHelpers(builder, "Ban", {
+const bannedHelper = prismaConnectionHelpers(builder, "Ban", {
   cursor: "user_id_sub_id_expiry",
   select: (nestedSelection) => ({
     expiry: true,
@@ -61,11 +61,11 @@ builder.prismaObjectField("Sub", "banned", (t) =>
     {
       type: userRef,
       select: (args, ctx, nestedSelection) => ({
-        ["Bans"]: helper.getQuery(args, ctx, nestedSelection),
+        ["Bans"]: bannedHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper.resolve(parent["Bans"], args, context),
+          bannedHelper.resolve(parent["Bans"], args, context),
           parent["Bans"].length,
         ),
     },

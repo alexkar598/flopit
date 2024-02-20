@@ -3,7 +3,7 @@ import { builder, frozenWithTotalCount } from "./_builder.js";
 import { subRef } from "./sub.ts";
 import { userRef } from "./user.js";
 
-const helper1 = prismaConnectionHelpers(builder, "Follow", {
+const followingHelper = prismaConnectionHelpers(builder, "Follow", {
   cursor: "user_id_sub_id",
   select: (nestedSelection) => ({
     ["Sub"]: nestedSelection({
@@ -20,11 +20,11 @@ builder.prismaObjectField("User", "following", (t) =>
     {
       type: subRef,
       select: (args, ctx, nestedSelection) => ({
-        ["FollowedSubs"]: helper1.getQuery(args, ctx, nestedSelection),
+        ["FollowedSubs"]: followingHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper1.resolve(parent["FollowedSubs"], args, context),
+          followingHelper.resolve(parent["FollowedSubs"], args, context),
           parent["FollowedSubs"].length,
         ),
     },
@@ -32,7 +32,7 @@ builder.prismaObjectField("User", "following", (t) =>
     {},
   ),
 );
-const helper = prismaConnectionHelpers(builder, "Follow", {
+const followersHelper = prismaConnectionHelpers(builder, "Follow", {
   cursor: "user_id_sub_id",
   select: (nestedSelection) => ({
     ["User"]: nestedSelection({
@@ -49,11 +49,11 @@ builder.prismaObjectField("Sub", "followers", (t) =>
     {
       type: userRef,
       select: (args, ctx, nestedSelection) => ({
-        ["Followers"]: helper.getQuery(args, ctx, nestedSelection),
+        ["Followers"]: followersHelper.getQuery(args, ctx, nestedSelection),
       }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
-          helper.resolve(parent["Followers"], args, context),
+          followersHelper.resolve(parent["Followers"], args, context),
           parent["Followers"].length,
         ),
     },
