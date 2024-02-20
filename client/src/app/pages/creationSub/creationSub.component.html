@@ -1,0 +1,36 @@
+<nb-card>
+    <nb-card-header>
+        <h1>Créer un f/</h1>
+    </nb-card-header>
+    <nb-card-body>
+        <ng-form novalidate>
+            <div class="informations">
+                <div>
+                    <div class="input">
+                        <label for="nom">Nom</label>
+                        <input nbInput required fullWidth id="nom"/>
+                    </div>
+                    
+                    <div class="input">
+                        <label for="description">Description</label>
+                        <textarea nbInput required id="description"></textarea>
+                    </div>
+                </div>
+
+                <div class="input-images">
+                    <div class="input">
+                        <label for="image-icone">Icône</label>
+                        <input nbInput required fullWidth type="file" id="image-icone"/>
+                    </div>
+
+                    <div class="input">
+                        <label for="image-banniere">Bannière</label>
+                        <input nbInput required fullWidth type="file" id="image-banniere"/>
+                    </div>
+                </div>
+            </div>
+    
+            <button nbButton status="primary">Créer</button>
+        </ng-form>
+    </nb-card-body>
+</nb-card>
