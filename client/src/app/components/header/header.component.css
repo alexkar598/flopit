@@ -1,6 +1,5 @@
 button {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin: 1.5rem;
 }
 
 .barre {
@@ -8,6 +7,14 @@ button {
   flex-wrap: wrap;
 }
 
+.connexion {
+  
+}
+
 .logo {
-  height: 1rem;
+  
+}
+
+.recherche {
+  
 }
