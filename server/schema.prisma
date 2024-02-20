@@ -6,6 +6,10 @@ generator client {
   previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
 datasource mariadb {
   provider = "mysql"
   url      = env("PRISMA_MARIADB_URL")

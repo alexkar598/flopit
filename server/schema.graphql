@@ -1,0 +1,218 @@
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+interface Node {
+  id: ID!
+}
+
+scalar OID
+
+type PageInfo {
+  endCursor: ID
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: ID
+}
+
+type PushNotification implements Node {
+  id: ID!
+  user: User!
+}
+
+type Query {
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  subName(name: String!): Sub
+  subNames(names: [String!]!): [Sub]!
+  subs(after: ID, before: ID, first: Int, last: Int): QuerySubsConnection!
+  userUsername(username: String!): User
+  userUsernames(usernames: [String!]!): [User]!
+  users(after: ID, before: ID, first: Int, last: Int): QueryUsersConnection!
+}
+
+type QuerySubsConnection {
+  edges: [QuerySubsConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type QuerySubsConnectionEdge {
+  cursor: ID!
+  node: Sub!
+}
+
+type QueryUsersConnection {
+  edges: [QueryUsersConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type QueryUsersConnectionEdge {
+  cursor: ID!
+  node: User!
+}
+
+type Session implements Node {
+  createdAt: DateTime!
+  id: ID!
+  revokedAt: DateTime
+  user: User!
+}
+
+type Sub implements Node {
+  bananerOid: OID
+  banned(after: ID, before: ID, first: Int, last: Int): SubBannedConnection!
+  description: String!
+  followers(after: ID, before: ID, first: Int, last: Int): SubFollowersConnection!
+  iconOid: OID
+  id: ID!
+  moderators(after: ID, before: ID, first: Int, last: Int): SubModeratorsConnection!
+  name: String!
+}
+
+type SubBannedConnection {
+  edges: [SubBannedConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type SubBannedConnectionEdge {
+  cursor: ID!
+  expiry: DateTime!
+  node: User!
+  reason: String!
+}
+
+type SubFollowersConnection {
+  edges: [SubFollowersConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type SubFollowersConnectionEdge {
+  cursor: ID!
+  node: User!
+}
+
+type SubModeratorsConnection {
+  edges: [SubModeratorsConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type SubModeratorsConnectionEdge {
+  cursor: ID!
+  node: User!
+}
+
+enum Theme {
+  Dark
+  Light
+}
+
+type User implements Node {
+  avatarOid: OID
+  bannedFrom(after: ID, before: ID, first: Int, last: Int): UserBannedFromConnection!
+  blocked(after: ID, before: ID, first: Int, last: Int): UserBlockedConnection!
+  blockedBy(after: ID, before: ID, first: Int, last: Int): UserBlockedByConnection!
+  email: String!
+  following(after: ID, before: ID, first: Int, last: Int): UserFollowingConnection!
+  id: ID!
+  moderatorOf(after: ID, before: ID, first: Int, last: Int): UserModeratorOfConnection!
+  notifications: Boolean!
+  pushNotifications(after: ID, before: ID, first: Int, last: Int): UserPushNotificationsConnection!
+  sessions(after: ID, before: ID, first: Int, last: Int): UserSessionsConnection!
+  theme: Theme!
+  username: String!
+}
+
+type UserBannedFromConnection {
+  edges: [UserBannedFromConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type UserBannedFromConnectionEdge {
+  cursor: ID!
+  expiry: DateTime!
+  node: Sub!
+  reason: String!
+}
+
+type UserBlockedByConnection {
+  edges: [UserBlockedByConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type UserBlockedByConnectionEdge {
+  cursor: ID!
+  node: User!
+}
+
+type UserBlockedConnection {
+  edges: [UserBlockedConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type UserBlockedConnectionEdge {
+  cursor: ID!
+  node: User!
+}
+
+type UserFollowingConnection {
+  edges: [UserFollowingConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type UserFollowingConnectionEdge {
+  cursor: ID!
+  node: Sub!
+}
+
+type UserModeratorOfConnection {
+  edges: [UserModeratorOfConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+type UserModeratorOfConnectionEdge {
+  cursor: ID!
+  node: Sub!
+}
+
+type UserPushNotificationsConnection {
+  edges: [UserPushNotificationsConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserPushNotificationsConnectionEdge {
+  cursor: ID!
+  node: PushNotification!
+}
+
+type UserSessionsConnection {
+  edges: [UserSessionsConnectionEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserSessionsConnectionEdge {
+  cursor: ID!
+  node: Session!
+}
