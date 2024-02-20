@@ -52,7 +52,7 @@ builder.scalarType("OID", {
   serialize: (x) => x,
   parseValue: (x) => {
     if (typeof x !== "string") {
-      throw new Error("Les OIDs doivent être un nombre");
+      throw new Error("Les OIDs doivent être un string");
     }
     if (x.length !== 40) {
       throw new Error("Les OIDs doivent avoir 40 caractères");
@@ -107,7 +107,7 @@ export function setupPluralIdentifyingRootFields<
           where: { [modelFieldName]: args[fieldName] },
         }),
     }),
-    [`${modelName.toLowerCase()}${capitalizeFirst(fieldName)}s`]: t.prismaField(
+    [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}s`]: t.prismaField(
       {
         args: {
           [fieldName + "s"]: t.arg.stringList({
