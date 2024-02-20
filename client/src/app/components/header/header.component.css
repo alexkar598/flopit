@@ -3,9 +3,11 @@ button {
   margin-right: 1rem;
 }
 
-.gauche {
-  float: left;
+.barre {
+  display: flex;
+  flex-wrap: wrap;
 }
-.droite {
-  float: right;
+
+.logo {
+  height: 1rem;
 }

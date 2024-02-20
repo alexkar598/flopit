@@ -1,14 +1,20 @@
-<div class="gauche">
-    <button nbButton status="primary">S'inscrire</button>
-    <button nbButton outline status="primary">Connexion</button>
-</div>
+<div class="barre">
+    <div>
+        <button nbButton status="primary">S'inscrire</button>
+        <button nbButton outline status="primary">Connexion</button>
+    </div>
+    
+    <div class="logo">
+        <!--Temporairement juste du texte parce que je n'ai pas le logo-->
+        <h1>FlopIt</h1>
+    </div>
 
-<div class="droite">
-    <ng-form>
-    <button nbPrefix nbButton ghost click="">
-        <!--Rien dans le click en attendant la fonction de recherche-->
-        <nb-icon icon="search-outline"pack="eva"/>
-    </button>
-    <input type="text" nbInput placeholder="Rechercher...">
-    </ng-form>
+    <div>
+        <ng-form>
+            <button nbPrefix nbButton ghost>
+                <nb-icon icon="search-outline"pack="eva"/>
+            </button>
+            <input type="text" nbInput placeholder="Rechercher...">
+        </ng-form>
+    </div>
 </div>
