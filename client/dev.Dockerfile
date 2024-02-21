@@ -45,8 +45,6 @@ COPY --from=graphqlbuild /app/schema.graphql /server/schema.graphql
 
 COPY --from=build /app/node_modules node_modules
 
-RUN ["./node_modules/.bin/graphql-codegen"]
-
 VOLUME ["/app/src"]
 
 EXPOSE 4200
