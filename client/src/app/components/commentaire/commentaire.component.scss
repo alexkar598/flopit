@@ -1,0 +1,28 @@
+nb-card {
+    max-width: 40rem;
+    border-radius: 15px;
+}
+
+nb-icon {
+    margin-top: 1rem;
+    margin-right: 1rem;
+}
+
+.utilisateur {
+    display: flex;
+    height: 2rem
+}
+
+.votes {
+    display: flex;
+}
+
+.icone-vote {
+    margin: auto;
+}
+
+.compteur-votes {
+    display: flex;
+    margin-right: 1rem;
+}
+
