@@ -2,14 +2,14 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   schema: "../server/schema.graphql",
-  documents: ["src/**/*.ts"],
+  documents: ["src/**/*.graphql"],
   generates: {
-    "./src/gql/": {
-      preset: "client",
-      plugins: [],
-      presetConfig: {
-        gqlTagName: "gql",
-      },
+    "./src/graphql.ts": {
+      plugins: [
+        "typescript",
+        "typescript-operations",
+        "typescript-apollo-angular",
+      ],
     },
   },
   ignoreNoDocuments: true,
