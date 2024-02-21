@@ -4,7 +4,7 @@ import { subRef } from "./sub.ts";
 import { userRef } from "./user.ts";
 
 const bannedFromHelper = prismaConnectionHelpers(builder, "Ban", {
-  cursor: "user_id_sub_id_expiry",
+  cursor: "id",
   select: (nestedSelection) => ({
     expiry: true,
     reason: true,
@@ -43,7 +43,7 @@ builder.prismaObjectField("User", "bannedFrom", (t) =>
 );
 
 const bannedHelper = prismaConnectionHelpers(builder, "Ban", {
-  cursor: "user_id_sub_id_expiry",
+  cursor: "id",
   select: (nestedSelection) => ({
     expiry: true,
     reason: true,
