@@ -1,0 +1,29 @@
+<nb-card>
+    <nb-card-header>
+        <h1>Se connecter</h1>
+    </nb-card-header>
+    <nb-card-body>
+        <ng-form novalidate>
+            <div class="input">
+                <label for="nom">Nom d'utilisateur / Courriel</label>
+                <input nbInput required fullWidth id="nom"/>
+            </div>
+            
+            <div class="input">
+                <label for="mot-passe">Mot de passe</label>
+                <nb-form-field>
+                    <input [type]="getInputType()" nbInput required fullWidth id="mot-passe">
+                    <button type="button" nbSuffix nbButton ghost (click)="toggleShowPassword()">
+                        <nb-icon [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'" pack="eva"/>
+                    </button>
+                </nb-form-field>
+            </div>
+            
+            <div class="pas-compte">
+                <a href="">Pas de compte?</a>
+            </div>
+    
+            <button nbButton status="primary">Connexion</button>
+        </ng-form>
+    </nb-card-body>
+</nb-card>
