@@ -14,9 +14,14 @@ button {
 
 .logo {
   text-align: center;
+  margin-top: 1.5rem;
 }
 
 .recherche {
   text-align: right;
   margin-right: 1.5rem;
+}
+
+.image-logo {
+  width: 15rem;
 }
