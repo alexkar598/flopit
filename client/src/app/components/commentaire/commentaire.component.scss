@@ -1,6 +1,12 @@
 nb-card {
-    max-width: 40rem;
+    max-width: 60rem;
     border-radius: 15px;
+}
+
+nb-card-footer {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    height: fit-content;
 }
 
 nb-icon {
@@ -10,19 +16,18 @@ nb-icon {
 
 .utilisateur {
     display: flex;
-    height: 2rem
-}
-
-.votes {
-    display: flex;
-}
-
-.icone-vote {
-    margin: auto;
-}
-
-.compteur-votes {
-    display: flex;
+    height: 2rem;
     margin-right: 1rem;
 }
 
+.actions {
+    display: flex;
+}
+
+.icone-action {
+    margin: auto;
+}
+
+.date {
+    text-align: right;
+}
