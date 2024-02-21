@@ -7,7 +7,7 @@ import { CommentaireComponent } from "./components/commentaire/commentaire.compo
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NbLayoutModule, NbButtonModule, CommentaireComponent],
+  imports: [CommonModule, RouterOutlet, NbLayoutModule],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })

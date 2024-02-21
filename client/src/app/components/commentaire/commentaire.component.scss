@@ -1,12 +1,15 @@
 nb-card {
-    max-width: 60rem;
+    max-width: 50rem;
     border-radius: 15px;
+}
+
+nb-card-body {
+    height: fit-content;
 }
 
 nb-card-footer {
     display: grid;
-    grid-template-columns: auto auto auto;
-    height: fit-content;
+    grid-template-columns: auto auto;
 }
 
 nb-icon {
@@ -16,12 +19,12 @@ nb-icon {
 
 .utilisateur {
     display: flex;
-    height: 2rem;
     margin-right: 1rem;
 }
 
 .actions {
     display: flex;
+    text-align: left;
 }
 
 .icone-action {
@@ -30,4 +33,5 @@ nb-icon {
 
 .date {
     text-align: right;
+    width: 5rem;
 }

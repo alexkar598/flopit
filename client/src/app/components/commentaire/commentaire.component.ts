@@ -10,6 +10,6 @@ import { NbButtonModule, NbCardModule, NbIconModule } from '@nebular/theme';
   templateUrl: './commentaire.component.html',
   styleUrl: './commentaire.component.scss'
 })
-export class CommentaireComponent {
 
+export class CommentaireComponent {
 }
