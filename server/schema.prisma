@@ -105,6 +105,8 @@ model Moderator {
 }
 
 model Ban {
+  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id String @mariadb.Char(36)
 
@@ -113,8 +115,6 @@ model Ban {
 
   reason String   @mariadb.VarChar(512)
   expiry DateTime
-
-  @@id([user_id, sub_id, expiry])
 }
 
 model Follow {
