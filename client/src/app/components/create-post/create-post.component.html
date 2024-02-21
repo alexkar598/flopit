@@ -1,0 +1,27 @@
+<form #f="ngForm" novalidate (ngSubmit)="submit(f)">
+  <label>
+    <input
+      nbInput
+      fullWidth
+      placeholder="Titre de la publication"
+      type="text"
+      fieldSize="giant"
+      name="title"
+      ngModel
+    />
+  </label>
+
+  <label>
+    <nb-select fullWidth placeholder="Sub" name="sub" ngModel>
+      <nb-option *ngFor="let sub of subs" [value]="sub?.id">
+        {{ sub?.name }}
+      </nb-option>
+    </nb-select>
+  </label>
+
+  <quill-editor class="quill" ngModel format="object" name="content" />
+
+  <div class="submit-wrapper">
+    <button nbButton status="primary" class="submit">Publier</button>
+  </div>
+</form>

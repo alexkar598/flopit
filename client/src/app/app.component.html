@@ -2,7 +2,17 @@
   <nb-layout-header fixed>Company Name</nb-layout-header>
 
   <nb-layout-column>
-    <router-outlet/>
+    <router-outlet />
+
+    <button
+      (click)="ecrirePost()"
+      class="createpost__button"
+      nbButton
+      size="giant"
+      shape="round"
+      status="primary"
+    >
+      <nb-icon icon="plus-circle-outline" />
+    </button>
   </nb-layout-column>
 </nb-layout>
-
