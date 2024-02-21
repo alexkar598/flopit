@@ -3,18 +3,20 @@ button {
 }
 
 .barre {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  width: auto;
 }
 
 .connexion {
-  
+  text-align: left;
 }
 
 .logo {
-  
+  text-align: center;
 }
 
 .recherche {
-  
+  text-align: right;
+  margin-right: 1.5rem;
 }

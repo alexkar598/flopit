@@ -12,4 +12,7 @@ import { NbButtonModule, NbFormFieldModule, NbIconModule, NbInputModule } from '
     styleUrl: './header.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent { }
+
+export class HeaderComponent {
+
+}
