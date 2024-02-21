@@ -1,3 +1,20 @@
+FROM node:21.6.1-alpine3.19 as graphqlbuild
+
+WORKDIR /app
+
+COPY package-lock.json .
+COPY server/tsconfig.json .
+COPY server/package.json .
+COPY server/schema.prisma .
+COPY server/src src
+COPY server/cli/schemagen.ts cli/schemagen.ts
+
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.cache \
+    npm install
+RUN npx prisma generate
+RUN npx tsx cli/schemagen.ts
+
 FROM node:21.6.1-alpine3.19 as build
 
 WORKDIR /app
@@ -21,11 +38,17 @@ COPY client/tsconfig.spec.json .
 COPY client/package.json .
 COPY client/server.ts .
 COPY client/angular.json .
+COPY client/dev.sh .
+COPY client/poll-gql.sh .
+COPY client/codegen.ts .
+COPY --from=graphqlbuild /app/schema.graphql /server/schema.graphql
 
 COPY --from=build /app/node_modules node_modules
+
+RUN ["./node_modules/.bin/graphql-codegen"]
 
 VOLUME ["/app/src"]
 
 EXPOSE 4200
 
-CMD ["./node_modules/.bin/ng", "serve", "--host", "0.0.0.0", "--poll", "1000", "--hmr"]
+CMD ["sh", "dev.sh"]
