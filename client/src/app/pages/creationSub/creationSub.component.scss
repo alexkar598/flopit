@@ -8,6 +8,8 @@ nb-card {
 
 textarea {
    min-height: 5rem; 
+   
+   width: 100%;
 }
 
 .informations {
@@ -23,7 +25,6 @@ textarea {
 }
 
 .input {
-    max-width: 20rem;
     text-align: left;
     margin: 1rem;
 }
