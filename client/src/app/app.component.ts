@@ -6,7 +6,7 @@ import {NbButtonModule, NbLayoutModule} from "@nebular/theme";
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NbLayoutModule, NbButtonModule],
+  imports: [CommonModule, RouterOutlet, NbLayoutModule],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
