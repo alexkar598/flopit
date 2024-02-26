@@ -4,5 +4,5 @@ import { CreationSubComponent } from "./pages/creationSub/creationSub.component"
 
 export const routes: Routes = [
     {path: 'connexion', component: ConnexionComponent},
-    {path: 'creation-sub', component: CreationSubComponent}
+    {path: 'f', component: CreationSubComponent}
 ];
