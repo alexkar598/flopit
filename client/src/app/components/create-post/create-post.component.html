@@ -1,23 +1,39 @@
 <form #f="ngForm" novalidate (ngSubmit)="submit(f)">
-  <label>
+  <input
+    nbInput
+    fullWidth
+    placeholder="Titre de la publication"
+    type="text"
+    fieldSize="giant"
+    name="title"
+    ngModel
+  />
+
+  <div class="sub-field">
     <input
+      type="text"
       nbInput
       fullWidth
-      placeholder="Titre de la publication"
-      type="text"
-      fieldSize="giant"
-      name="title"
-      ngModel
+      #subFilter
+      (input)="rechercheSub(subFilter)"
+      placeholder="Recherche subs"
+      [nbAutocomplete]="autoSub"
     />
-  </label>
-
-  <label>
-    <nb-select fullWidth placeholder="Sub" name="sub" ngModel>
-      <nb-option *ngFor="let sub of subs" [value]="sub?.id">
-        {{ sub?.name }}
-      </nb-option>
-    </nb-select>
-  </label>
+    <nb-autocomplete #autoSub (selectedChange)="onSubSelection($event)">
+      @for (sub of subs$ | async; track sub.id) {
+        <nb-option [value]="sub.name">
+          <nb-user
+            [picture]="
+              sub.iconOid != null
+                ? getImgUrl(sub.iconOid, { width: 64, height: 64 })
+                : ''
+            "
+            [name]="'f/' + sub.name"
+          />
+        </nb-option>
+      }
+    </nb-autocomplete>
+  </div>
 
   <quill-editor class="quill" ngModel format="object" name="content" />
 

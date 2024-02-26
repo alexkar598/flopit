@@ -10,7 +10,6 @@ import { NbEvaIconsModule } from "@nebular/eva-icons";
 import { QuillConfig, QuillModule } from "ngx-quill";
 
 const quillConfig: QuillConfig = {
-  theme: "bubble",
   modules: {
     toolbar: [
       ["bold", "italic", "underline", "strike"],

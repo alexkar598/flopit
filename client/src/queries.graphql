@@ -1,9 +1,14 @@
-query AllSubs {
+query FindSubs($search: String!) {
   subs {
     edges {
       node {
         id
+        name
+        iconOid
       }
     }
+  }
+  userByUsername(username: $search) {
+    __typename
   }
 }
