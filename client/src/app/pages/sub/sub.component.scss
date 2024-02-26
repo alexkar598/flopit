@@ -1,0 +1,13 @@
+@use "../../../themes" as *;
+
+.page {
+  display: grid;
+  grid-template-columns: 5fr 2fr;
+  width: 100%;
+}
+
+.barre {
+  background-color: nb-theme(background-basic-color-1);
+  width: auto;
+  height: auto;
+}
