@@ -12,16 +12,6 @@ const config: CodegenConfig = {
       ],
     },
   },
-  config: {
-    addExplicitOverride: true,
-    strictScalars: true,
-    scalars: {
-      OID: "string",
-      BigInt: "string",
-      DateTime: "string",
-      JSON: "unknown",
-    },
-  },
   ignoreNoDocuments: true,
 };
 
