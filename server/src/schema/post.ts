@@ -3,8 +3,8 @@ import { builder } from "./_builder.ts";
 
 export enum VoteValue {
   Down = -1,
-  Neutral,
-  Up,
+  Neutral = 0,
+  Up = 1,
 }
 export const voteValueRef = builder.enumType(VoteValue, {
   name: "VoteValue",
