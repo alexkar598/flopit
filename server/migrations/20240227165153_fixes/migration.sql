@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE `Ban` ADD CONSTRAINT `Ban_user_id_fkey_1` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
