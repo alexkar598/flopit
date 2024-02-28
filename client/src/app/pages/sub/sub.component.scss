@@ -1,13 +1,41 @@
 @use "../../../themes" as *;
 
+nb-card-header {
+  /* Juste logo for testing purposes mais ça devrait être la bannière du sub */
+  background-image: url("../../../assets/FlopIt.svg");
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
 .page {
   display: grid;
   grid-template-columns: 5fr 2fr;
   width: 100%;
+  height: 100%;
 }
 
-.barre {
-  background-color: nb-theme(background-basic-color-1);
+.barre-infos {
+  border-radius: 20px;
   width: auto;
-  height: auto;
+  height: 100%;
+  margin: -5%;
+}
+
+.nom-sub {
+  background: nb-theme(background-basic-color-1);
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 10px ;
+}
+
+.stats {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1rem;
+}
+
+.info-stats {
+  font-size: xxx-large;
+  font-weight: bolder;
 }
