@@ -1,11 +1,15 @@
 import { decodeGlobalID, encodeGlobalID } from "@pothos/plugin-relay";
 import cookie from "cookie";
-import { GraphQLError } from "graphql/error";
 import crypto from "crypto";
 import { jwtVerify, SignJWT } from "jose";
 import { IncomingMessage, ServerResponse } from "node:http";
+import {
+  AuthenticationStatusHeader,
+  HEADER_NAME_AUTHENTICATION_STATUS,
+} from "~shared/headers.ts";
 import { prisma } from "../db.ts";
-import { builder } from "./_builder.ts";
+import { getAPIError } from "../util.ts";
+import { builder } from "../schema/_builder.ts";
 
 const SIGNING_KEY = crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex");
 const ALG = "HS256";
@@ -56,7 +60,7 @@ builder.mutationField("StartSession", (t) =>
         user.password === undefined ||
         !crypto.timingSafeEqual(hash, user.password)
       )
-        throw new GraphQLError("User or password invalid");
+        throw getAPIError("BAD_CREDENTIALS");
 
       const user_gid = encodeGlobalID("User", user.id);
 
@@ -113,7 +117,13 @@ export async function resolveAuthentication(
   res: ServerResponse,
 ) {
   const jwt = cookie.parse(req.headers.cookie ?? "").token;
-  if (jwt == null) return null;
+  if (jwt == null) {
+    res.setHeader(
+      HEADER_NAME_AUTHENTICATION_STATUS,
+      AuthenticationStatusHeader.UNAUTHENTICATED,
+    );
+    return null;
+  }
 
   const result = await jwtVerify(jwt, SIGNING_KEY, {
     typ: "auth",
@@ -135,15 +145,23 @@ export async function resolveAuthentication(
   )
     return clearCookie(res);
 
-  res.appendHeader("token", await get_token(user_gid, session_id));
+  res.appendHeader("Set-Cookie", await get_token(user_gid, session_id));
+  res.setHeader(
+    HEADER_NAME_AUTHENTICATION_STATUS,
+    AuthenticationStatusHeader.AUTHENTICATED,
+  );
   return [decodeGlobalID(user_gid).id, session_id];
 }
 
 function clearCookie(res: ServerResponse) {
   res.appendHeader("Set-Cookie", cookie.serialize("token", "_", { maxAge: 1 }));
+  res.setHeader(
+    HEADER_NAME_AUTHENTICATION_STATUS,
+    AuthenticationStatusHeader.DEAUTHENTICATED,
+  );
 }
 
-builder.queryField("session", (t) =>
+builder.queryField("currentSession", (t) =>
   t.prismaField({
     type: "Session",
     nullable: true,
@@ -156,5 +174,26 @@ builder.queryField("session", (t) =>
         },
       });
     },
+  }),
+);
+builder.queryField("currentUser", (t) =>
+  t.prismaField({
+    type: "User",
+    nullable: true,
+    resolve: (query, root, args, { authenticated_user_id }) => {
+      if (authenticated_user_id == null) return null;
+      return prisma.user.findUnique({
+        ...query,
+        where: {
+          id: authenticated_user_id,
+        },
+      });
+    },
+  }),
+);
+builder.queryField("isLoggedIn", (t) =>
+  t.boolean({
+    resolve: (_args, _root, { authenticated_session_id }) =>
+      authenticated_session_id != null,
   }),
 );
