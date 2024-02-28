@@ -93,22 +93,23 @@ export function setupPluralIdentifyingRootFields<
   U extends keyof PrismaTypes[T]["Shape"],
 >(fieldName: string, modelName: T, modelFieldName: U) {
   builder.queryFields((t) => ({
-    [`${modelName.toLowerCase()}${capitalizeFirst(fieldName)}`]: t.prismaField({
-      args: {
-        [fieldName]: t.arg.string({
-          required: true,
-        }),
-      },
-      nullable: true,
-      type: modelName,
-      resolve: (query, _, args) =>
-        (prisma as any)[modelName].findUnique({
-          ...query,
-          where: { [modelFieldName]: args[fieldName] },
-        }),
-    }),
-    [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}s`]: t.prismaField(
-      {
+    [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}`]:
+      t.prismaField({
+        args: {
+          [fieldName]: t.arg.string({
+            required: true,
+          }),
+        },
+        nullable: true,
+        type: modelName,
+        resolve: (query, _, args) =>
+          (prisma as any)[modelName].findUnique({
+            ...query,
+            where: { [modelFieldName]: args[fieldName] },
+          }),
+      }),
+    [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}s`]:
+      t.prismaField({
         args: {
           [fieldName + "s"]: t.arg.stringList({
             required: true,
@@ -133,7 +134,6 @@ export function setupPluralIdentifyingRootFields<
           );
           return args[fieldName + "s"].map((x) => map[x]);
         },
-      },
-    ),
+      }),
   }));
 }
