@@ -31,6 +31,8 @@ services:
       - cloudbeaver
       - minio
       - imgproxy
+      - devserver:apiserver
+      - devserver:client
     configs:
       - source: nginx
         target: /etc/nginx/nginx.conf

@@ -6,7 +6,7 @@ cd server || exit
 
 # Démarrer le serveur angular
 cd ../client || exit
-../node_modules/.bin/ng serve --disable-host-check --poll 1000 --hmr &
+../node_modules/.bin/ng serve --host 0.0.0.0 --disable-host-check --poll 1000 --hmr &
 
 # Construire le client graphql continuellement
 sh poll-gql.sh &
