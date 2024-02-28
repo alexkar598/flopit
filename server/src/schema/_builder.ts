@@ -6,7 +6,9 @@ import {
   BigIntResolver,
   DateTimeResolver,
   JSONObjectResolver,
+  VoidResolver,
 } from "graphql-scalars";
+import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "../db.ts";
 import { capitalizeFirst, getAPIError } from "../util.ts";
 
@@ -32,6 +34,16 @@ export const builder = new SchemaBuilder<{
       Input: String;
       Output: BigInt;
     };
+    Void: {
+      Input: void;
+      Output: void;
+    };
+  };
+  Context: {
+    req: IncomingMessage;
+    res: ServerResponse;
+    authenticated_user_id: string;
+    authenticated_session_id: string;
   };
 }>({
   plugins: [PrismaPlugin, RelayPlugin],
@@ -48,6 +60,7 @@ export const builder = new SchemaBuilder<{
 builder.addScalarType("DateTime", DateTimeResolver);
 builder.addScalarType("JSON", JSONObjectResolver);
 builder.addScalarType("BigInt", BigIntResolver);
+builder.addScalarType("Void", VoidResolver);
 builder.scalarType("OID", {
   serialize: (x) => x,
   parseValue: (x) => {
@@ -79,6 +92,7 @@ builder.globalConnectionField("totalCount", (t) =>
 );
 
 builder.queryType();
+builder.mutationType();
 
 export function frozenWithTotalCount<T extends object>(
   obj: T,

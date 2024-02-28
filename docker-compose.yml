@@ -11,6 +11,7 @@ services:
       - ./shared:/app/shared
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
     restart: unless-stopped
     depends_on:
       db-deploy:

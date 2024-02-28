@@ -1,10 +1,19 @@
 import { createYoga, maskError } from "graphql-yoga";
-import { createServer } from "node:http";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { schema, writeSchemaToFile } from "./schema.ts";
+import { resolveAuthentication } from "./mutations/auth.ts";
 
-const yoga = createYoga({
+const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
   schema: schema,
   landingPage: false,
+  context: async ({ req, res }) => {
+    const [authenticated_user_id, authenticated_session_id] =
+      (await resolveAuthentication(req, res)) ?? [];
+    return {
+      authenticated_user_id,
+      authenticated_session_id,
+    };
+  },
   maskedErrors: {
     maskError(error, message, isDev) {
       if (error instanceof Error && error.name === "GraphQLError") {
