@@ -35,12 +35,8 @@ builder.mutationField("StartSession", (t) =>
     type: "Session",
     nullable: true,
     args: {
-      email: t.arg.string({
-        required: true,
-      }),
-      password: t.arg.string({
-        required: true,
-      }),
+      email: t.arg.string({}),
+      password: t.arg.string({}),
     },
     resolve: async (query, _root, { email, password }, { res }) => {
       const user = await prisma.user.findUnique({
