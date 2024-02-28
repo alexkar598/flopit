@@ -33,6 +33,7 @@ export const builder = new SchemaBuilder<{
       Output: BigInt;
     };
   };
+  DefaultInputFieldRequiredness: true;
 }>({
   plugins: [PrismaPlugin, RelayPlugin],
   prisma: {
@@ -44,6 +45,7 @@ export const builder = new SchemaBuilder<{
   relayOptions: {
     cursorType: "ID",
   },
+  defaultInputFieldRequiredness: true,
 });
 builder.addScalarType("DateTime", DateTimeResolver);
 builder.addScalarType("JSON", JSONObjectResolver);
@@ -99,9 +101,7 @@ export function setupPluralIdentifyingRootFields<
     [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}`]:
       t.prismaField({
         args: {
-          [fieldName]: t.arg.string({
-            required: true,
-          }),
+          [fieldName]: t.arg.string(),
         },
         nullable: true,
         type: modelName,
@@ -114,9 +114,7 @@ export function setupPluralIdentifyingRootFields<
     [`${modelName.toLowerCase()}By${capitalizeFirst(fieldName)}s`]:
       t.prismaField({
         args: {
-          [fieldName + "s"]: t.arg.stringList({
-            required: true,
-          }),
+          [fieldName + "s"]: t.arg.stringList(),
         },
         nullable: {
           items: true,
