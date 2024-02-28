@@ -8,9 +8,6 @@ services:
     volumes:
       - ./server/src:/app/server/src
       - ./client/src:/app/client/src
-    ports:
-      - 4200:4200
-      - 3000:3000
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
     restart: unless-stopped
