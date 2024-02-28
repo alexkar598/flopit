@@ -21,7 +21,7 @@ ENV SQLITE_MAX_VARIABLE_NUMBER=250000
 ENV SQLITE_MAX_EXPR_DEPTH=10000
 ENV LIBZ_SYS_STATIC=1
 
-RUN find -type f -name "*.rs" -path "*/src/*" -exec sed -i -e 's|"uuid()"|"cast(create_uuid7() as char(36) charset utf8mb4)"|g' {} \;
+RUN sed -i -e 's|"uuid()"|"cast(create_uuid7() as char(36) charset utf8mb4)"|g' ./prisma-engines/quaint/src/visitor.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cd prisma-engines && cargo build --release -p query-engine-node-api --manifest-path query-engine/query-engine-node-api/Cargo.toml
 
