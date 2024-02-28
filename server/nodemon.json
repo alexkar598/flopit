@@ -2,6 +2,6 @@
   "watch": ["src"],
   "ext": "ts",
   "execMap": {
-    "ts": "node_modules/.bin/tsx"
+    "ts": "npx tsx"
   }
 }
