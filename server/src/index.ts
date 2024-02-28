@@ -1,6 +1,7 @@
-import { createYoga } from "graphql-yoga";
+import { createYoga, maskError } from "graphql-yoga";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { schema, writeSchemaToFile } from "./schema.ts";
+import {resolveAuthentication} from "./schema/auth.ts";
 
 const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
   schema: schema,
@@ -12,6 +13,15 @@ const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
       authenticated_user_id,
       authenticated_session_id,
     };
+  },
+  maskedErrors: {
+    maskError(error, message, isDev) {
+      if (error instanceof Error && error.name === "GraphQLError") {
+        return error;
+      }
+
+      return maskError(error, message, isDev);
+    },
   },
 });
 
