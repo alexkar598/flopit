@@ -20,6 +20,7 @@ const config: CodegenConfig = {
       BigInt: "string",
       DateTime: "string",
       JSON: "unknown",
+      Void: "void",
     },
   },
   ignoreNoDocuments: true,
