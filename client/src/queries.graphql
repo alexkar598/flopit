@@ -7,3 +7,14 @@ query AllSubs {
     }
   }
 }
+
+
+query SubInformation {
+  subByName(name: $SubName) {
+    name
+    description
+    followers {
+      totalCount
+    }
+  }
+}
