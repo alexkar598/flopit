@@ -1,25 +1,25 @@
-import { createYoga } from 'graphql-yoga';
-import { createServer } from 'node:http';
-import SchemaBuilder from '@pothos/core';
+import * as fs from "fs";
+import { createYoga } from "graphql-yoga";
+import { printSchema } from "graphql/utilities";
+import { createServer } from "node:http";
+import path from "node:path";
+import { builder } from "./schema/_builder.js";
 
-const builder = new SchemaBuilder({});
+for (const module of fs
+  .readdirSync(path.join(import.meta.dirname, "schema"))
+  .filter((x) => x !== "" && !x.startsWith("_") && x.endsWith(".ts"))) {
+  await import("./schema/" + module);
+}
 
-builder.queryType({
-  fields: (t) => ({
-    hello: t.string({
-      args: {
-        name: t.arg.string(),
-      },
-      resolve: (parent, { name }) => `hello, ${name || 'World'}`,
-    }),
-  }),
-});
+const schema = builder.toSchema();
 
 const yoga = createYoga({
-  schema: builder.toSchema(),
-  landingPage: false
+  schema: schema,
+  landingPage: false,
 });
 
 const server = createServer(yoga);
 
 server.listen(3000, () => console.log("GraphQL server started at :3000"));
+
+fs.writeFileSync("schema.graphql", printSchema(schema));

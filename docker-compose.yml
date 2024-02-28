@@ -3,6 +3,13 @@ services:
   apiserver:
     build:
       dockerfile: server/dev.Dockerfile
+    healthcheck:
+      test: [ "CMD", "wget", "localhost:3000/health", "-O", "-" ]
+      timeout: "10s"
+      interval: "1m30s"
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
     networks:
       - backend
     volumes:
@@ -10,10 +17,20 @@ services:
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
     restart: on-failure
+    depends_on:
+      db-deploy:
+        condition: service_completed_successfully
     links:
       - mariadb
       - minio
   client:
+    healthcheck:
+      test: [ "CMD", "wget", "localhost:4200", "-O", "-" ]
+      timeout: "10s"
+      interval: "1m30s"
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
     build:
       dockerfile: client/dev.Dockerfile
     networks:
@@ -27,6 +44,9 @@ services:
     image: nginx:1.25.3-alpine-slim
     networks:
       - backend
+    depends_on:
+      createbuckets:
+        condition: service_completed_successfully
     links:
       - cloudbeaver
       - apiserver
@@ -40,7 +60,9 @@ services:
     ports:
       - 8080:80
   mariadb:
-    image: mariadb:11.2.2
+    build:
+      dockerfile: mariadb.Dockerfile
+      context: compose
     healthcheck:
       test: [
         "CMD",
