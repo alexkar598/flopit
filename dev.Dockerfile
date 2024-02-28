@@ -39,7 +39,7 @@ COPY /dev.sh .
 
 RUN chmod +x client/poll-gql.sh
 
-VOLUME ["/app/client/src", "/app/server/src"]
+VOLUME ["/app/client/src", "/app/server/src", "/app/shared"]
 
 EXPOSE 4200 3000
 

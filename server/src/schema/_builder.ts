@@ -8,7 +8,7 @@ import {
   JSONObjectResolver,
 } from "graphql-scalars";
 import { prisma } from "../db.ts";
-import { capitalizeFirst } from "../util.ts";
+import { capitalizeFirst, getAPIError } from "../util.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -52,13 +52,16 @@ builder.scalarType("OID", {
   serialize: (x) => x,
   parseValue: (x) => {
     if (typeof x !== "string") {
-      throw new Error("Les OIDs doivent être un string");
+      throw getAPIError("INVALID_OID", "L'OID n'est pas un string");
     }
     if (x.length !== 40) {
-      throw new Error("Les OIDs doivent avoir 40 caractères");
+      throw getAPIError("INVALID_OID", "L'OID n'a pas 40 caractères");
     }
     if (/[^A-Fa-f0-9]/.test(x)) {
-      throw new Error("Les OIDs doivent être des valeurs hexadécimals");
+      throw getAPIError(
+        "INVALID_OID",
+        "L'OID n'est pas une valeur hexadécimal",
+      );
     }
 
     return x;

@@ -8,6 +8,7 @@ services:
     volumes:
       - ./server/src:/app/server/src
       - ./client/src:/app/client/src
+      - ./shared:/app/shared
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
     restart: unless-stopped
