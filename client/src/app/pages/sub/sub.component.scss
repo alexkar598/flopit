@@ -4,7 +4,10 @@ nb-card-header {
   /* Juste logo for testing purposes mais ça devrait être la bannière du sub */
   background-image: url("../../../assets/FlopIt.svg");
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  grid-template-columns: 8fr 2fr;
 }
 
 .page {
@@ -16,26 +19,24 @@ nb-card-header {
 
 .barre-infos {
   border-radius: 20px;
-  width: auto;
-  height: 100%;
-  margin: -5%;
+  width: 25rem;
+  min-height: 40rem;
+  height: 82.5%;
+  right: 2rem;
+  position: fixed;
 }
 
 .nom-sub {
   background: nb-theme(background-basic-color-1);
   width: fit-content;
   padding: 0.5rem;
-  border-radius: 10px ;
+  border-radius: 15px ;
 }
 
-.stats {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 1rem;
-}
-
-.info-stats {
-  font-size: xxx-large;
-  font-weight: bolder;
+.icone {
+  background: nb-theme(background-basic-color-1);
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 50% ;
+  --icon-font-size: 75px;
 }
