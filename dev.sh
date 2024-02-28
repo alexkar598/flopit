@@ -2,11 +2,11 @@
 
 # Démarrer le serveur graphql
 cd server || exit
-../node_modules/.bin/nodemon -L src/index.ts &
+npx nodemon -L src/index.ts &
 
 # Démarrer le serveur angular
 cd ../client || exit
-../node_modules/.bin/ng serve --host 0.0.0.0 --disable-host-check --poll 1000 --hmr &
+npx ng serve --host 0.0.0.0 --disable-host-check --poll 1000 --hmr &
 
 # Construire le client graphql continuellement
 sh poll-gql.sh &
