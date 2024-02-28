@@ -16,23 +16,28 @@ FROM node:20.11.1-alpine3.18
 
 WORKDIR /app
 
-COPY /client/ client/
-COPY /server/ server/
+RUN mkdir client server
+COPY /client/package.json client/
+COPY /server/package.json server/
 COPY /package-lock.json .
 COPY /package.json .
-COPY /dev.sh .
+
 COPY --from=prisma_build /root/prisma-engines/target/release/libquery_engine.so libquery_engine.so.node
-
 ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/libquery_engine.so.node
-
-RUN rm -rf client/src/
-RUN rm -rf server/src/
 
 RUN --mount=type=cache,target=/root/.npm \
     --mount=type=cache,target=/root/.cache \
     npm install
 
+COPY /server/schema.prisma server/
+
 RUN npx prisma generate --schema=server/schema.prisma
+
+COPY /client/ client/
+COPY /server/ server/
+COPY /dev.sh .
+
+RUN chmod +x client/poll-gql.sh
 
 VOLUME ["/app/client/src", "/app/server/src"]
 
