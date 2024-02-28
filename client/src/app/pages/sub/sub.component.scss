@@ -7,12 +7,19 @@ nb-card-header {
   background-size: cover;
   background-position: center;
   display: grid;
-  grid-template-columns: 8fr 2fr;
+  grid-template-columns: 1fr 4rem;
+  height: 10rem;
+  max-width: 100%;
+}
+
+nb-card-body {
+  overflow: visible;
 }
 
 .page {
   display: grid;
   grid-template-columns: 5fr 2fr;
+  text-align: right;
   width: 100%;
   height: 100%;
 }
@@ -29,14 +36,49 @@ nb-card-header {
 .nom-sub {
   background: nb-theme(background-basic-color-1);
   width: fit-content;
-  padding: 0.5rem;
-  border-radius: 15px ;
+  height: auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  word-break: break-all;
+  line-height: 1.2;
+  text-align: left;
 }
 
 .icone {
   background: nb-theme(background-basic-color-1);
-  width: fit-content;
   padding: 0.5rem;
-  border-radius: 50% ;
-  --icon-font-size: 75px;
+  border-radius: 50%;
+  --icon-font-size: 3rem;
+  margin: auto;
+}
+
+.bouton-rejoindre {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+nb-list {
+  width: 100%;
+  --list-item-divider-width: 0;
+}
+
+nb-list-item {
+  width: 100%;
+}
+
+.stats-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.stats {
+  text-align: center;
+}
+
+.stats-data {
+  font-size: 1.5rem;
+  font-weight: bolder;
 }
