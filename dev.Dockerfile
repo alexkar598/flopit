@@ -1,16 +1,3 @@
-FROM node:21.6.1-alpine3.19 as build
-
-WORKDIR /app
-
-COPY package-lock.json .
-COPY server/package.json .
-COPY server/schema.prisma .
-
-RUN --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/root/.cache \
-    npm install
-RUN npx prisma generate
-
 FROM prismagraphql/build:alpine-libssl3.0.x as prisma_build
 
 WORKDIR /root
@@ -25,25 +12,30 @@ RUN sed -i -e 's|"uuid()"|"cast(create_uuid7() as char(36) charset utf8mb4)"|g' 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cd prisma-engines && cargo build --release -p query-engine-node-api --manifest-path query-engine/query-engine-node-api/Cargo.toml
 
-
-
-FROM alpine:3.19.1
-
-RUN apk add nodejs
+FROM node:20.11.1-alpine3.18
 
 WORKDIR /app
 
-COPY server/tsconfig.json .
-COPY server/nodemon.json .
-COPY server/package.json .
-
-COPY --from=build /app/node_modules node_modules
+COPY /client/ client/
+COPY /server/ server/
+COPY /package-lock.json .
+COPY /package.json .
+COPY /dev.sh .
 COPY --from=prisma_build /root/prisma-engines/target/release/libquery_engine.so libquery_engine.so.node
 
 ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/libquery_engine.so.node
 
-VOLUME ["/app/src"]
+RUN rm -rf client/src/
+RUN rm -rf server/src/
 
-EXPOSE 3000
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.cache \
+    npm install
 
-CMD ["./node_modules/.bin/nodemon", "-L", "src/index.ts"]
+RUN npx prisma generate --schema=server/schema.prisma
+
+VOLUME ["/app/client/src", "/app/server/src"]
+
+EXPOSE 4200 3000
+
+CMD ["sh", "dev.sh"]
