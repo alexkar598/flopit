@@ -167,6 +167,10 @@ model Post {
   Votes        Vote[]
   cached_votes BigInt
 
+  // Colonnes virtuelles
+
+  hotness Float @default(dbgenerated()) @mariadb.Double
+
   @@index([sub_id, parent_id, created_at])
   @@index([sub_id, parent_id, cached_votes])
   @@index([parent_id, created_at])
