@@ -1,26 +1,38 @@
 import { fakerEN, fakerFR_CA as faker } from "@faker-js/faker";
-import { $Enums, Prisma, PrismaClient } from "@prisma/client";
+import { $Enums, PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import { UniqueEnforcer } from "enforce-unique";
+import fs from "fs/promises";
+import { finished } from "node:stream/promises";
 import { compute_hash } from "./modules/auth/auth.ts";
+import { pauseWrite } from "./util.ts";
 
 export const prisma = new PrismaClient({
   log: ["info", "warn", "error"],
 });
 
+export const prismaRoot = new PrismaClient({
+  log: ["info", "warn", "error"],
+  datasourceUrl: process.env.PRISMA_ROOT_MARIADB_URL,
+});
+
 export async function resetDatabase() {
-  await prisma.follow.deleteMany();
-  await prisma.moderator.deleteMany();
-  await prisma.ban.deleteMany();
-  await prisma.attachment.deleteMany();
-  await prisma.vote.deleteMany();
-  await prisma.pushNotification.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.block.deleteMany();
-  await prisma.post.deleteMany();
-  await prisma.topPost.deleteMany();
-  await prisma.sub.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.$transaction([
+    prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`,
+    prisma.$executeRaw`TRUNCATE Follow;`,
+    prisma.$executeRaw`TRUNCATE Moderator;`,
+    prisma.$executeRaw`TRUNCATE Ban;`,
+    prisma.$executeRaw`TRUNCATE Attachment;`,
+    prisma.$executeRaw`TRUNCATE Vote;`,
+    prisma.$executeRaw`TRUNCATE PushNotification;`,
+    prisma.$executeRaw`TRUNCATE Session;`,
+    prisma.$executeRaw`TRUNCATE Block;`,
+    prisma.$executeRaw`TRUNCATE Post;`,
+    prisma.$executeRaw`TRUNCATE TopPost;`,
+    prisma.$executeRaw`TRUNCATE Sub;`,
+    prisma.$executeRaw`TRUNCATE User;`,
+    prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`,
+  ]);
 
   faker.seed(1337);
   fakerEN.seed(1337);
@@ -34,8 +46,6 @@ export async function resetDatabase() {
   const CREATE_TOPPOSTS = 10_000;
   const CREATE_COMMENTS_LAYER_COUNT = 13;
   const CREATE_COMMENTS_LAYER_SIZE = (x: number) => 58_500 / (x + 2) - 2_700;
-  const CREATE_VOTES_DOWNVOTES_MAX = 40;
-  const CREATE_VOTES_UPVOTES_MAX = 50;
 
   const USER_SALT = crypto.randomBytes(32);
   //On ne va pas commencer à hasher les mots de passe unique de tout le monde, ca va prendre 10 ans
@@ -49,6 +59,12 @@ export async function resetDatabase() {
     } while (text.length < length);
 
     return text.substring(0, length - 1).trim();
+  }
+
+  function generate_score(level: number) {
+    let score = 760 / (level + 0.1) - 30;
+    if (faker.datatype.boolean(0.15)) score *= -1;
+    return score;
   }
 
   //Users
@@ -166,7 +182,6 @@ export async function resetDatabase() {
     )?.id ?? "00000000-0000-0000-0000-000000000000";
 
   console.log("Création des posts (post)");
-  await prisma.$executeRaw`ALTER TABLE \`Post\` DISABLE KEYS;`;
   await prisma.post.createMany({
     data: topPosts.map((topPost) => ({
       sub_id: faker.helpers.arrayElement(subs),
@@ -175,10 +190,10 @@ export async function resetDatabase() {
       }),
       created_at: faker.date.past({ years: 10 }),
       text_content: generate_text(20, 4000),
-      delta_content: "{}",
+      delta_content: {},
       top_post_id: topPost,
       parent_id: null,
-      cached_votes: 0,
+      cached_votes: generate_score(0),
     })),
   });
   console.log("Posts (post) créés!");
@@ -198,62 +213,49 @@ export async function resetDatabase() {
         },
       },
     });
-
-    const votes: Prisma.VoteCreateManyInput[] = posts.flatMap(
-      ({ id: post_id }) =>
-        new Array(faker.number.int({ min: 0, max: CREATE_VOTES_UPVOTES_MAX }))
-          .fill(null)
-          .map(() => ({
-            user_id: faker.helpers.arrayElement(users),
-            post_id,
-            value: 1,
-          }))
-          .concat(
-            new Array(
-              faker.number.int({ min: 0, max: CREATE_VOTES_DOWNVOTES_MAX }),
-            )
-              .fill(null)
-              .map(() => ({
-                user_id: faker.helpers.arrayElement(users),
-                post_id,
-                value: -1,
-              })),
-          ),
-    );
-    await prisma.vote.createMany({ data: votes, skipDuplicates: true });
-
     if (layer >= CREATE_COMMENTS_LAYER_COUNT) break;
 
     console.log(
-      `Création des posts (commentaires): ${layer}/${CREATE_COMMENTS_LAYER_COUNT}`,
+      `Création des posts (commentaires): ${layer + 1}/${CREATE_COMMENTS_LAYER_COUNT}`,
     );
-    console.log(lastLayerFirstPost);
 
-    const newPosts: Prisma.PostCreateManyInput[] = [];
+    const postStream = (
+      await fs.open("/db-import/posts.tsv", "w")
+    ).createWriteStream();
 
     for (let i = 0; i < CREATE_COMMENTS_LAYER_SIZE(layer); i++) {
       const parent = faker.helpers.arrayElement(posts);
-      newPosts.push({
-        sub_id: parent.sub_id,
-        author_id: faker.helpers.maybe(
-          () => faker.helpers.arrayElement(users),
-          {
-            probability: 90,
-          },
-        ),
-        created_at: faker.date.between({
+      const sub_id = parent.sub_id;
+      const author_id = faker.helpers.maybe(
+        () => faker.helpers.arrayElement(users),
+        {
+          probability: 90,
+        },
+      );
+      const created_at = faker.date
+        .between({
           from: parent.created_at,
           to: faker.defaultRefDate(),
-        }),
-        text_content: generate_text(20, 4000),
-        delta_content: "{}",
-        top_post_id: parent.top_post_id,
-        parent_id: parent.id,
-        cached_votes: 0,
-      });
+        })
+        .toISOString()
+        .replace("T", " ")
+        .slice(0, -1);
+      const text_content = generate_text(20, 4000);
+      const delta_content = "{}";
+      const top_post_id = parent.top_post_id;
+      const parent_id = parent.id;
+      const cached_votes = generate_score(layer + 1);
+
+      await pauseWrite(
+        postStream,
+        `${sub_id}\t${author_id}\t${created_at}\t${text_content}\t${delta_content}\t${top_post_id}\t${parent_id}\t${cached_votes}\n`,
+      );
     }
 
-    await prisma.post.createMany({ data: newPosts });
+    postStream.close();
+    if (!postStream.writableFinished) await finished(postStream);
+    await prismaRoot.$executeRaw`LOAD DATA INFILE '/import/posts.tsv' IGNORE INTO TABLE Post (sub_id, author_id, created_at, text_content, delta_content, top_post_id, parent_id, cached_votes)`;
+    await fs.rm("/db-import/posts.tsv");
 
     lastLayerFirstPost = (
       await prisma.post.findFirstOrThrow({
@@ -262,21 +264,7 @@ export async function resetDatabase() {
       })
     ).id;
   }
-  await prisma.$executeRaw`ALTER TABLE \`Post\` ENABLE KEYS;`;
   console.log("Posts (commentaires) créés!");
-
-  console.log("Recalcul des votes");
-  await prisma.$executeRaw`
-      UPDATE \`Post\` p
-          INNER JOIN (
-          SELECT SUM(value) as sum, v.post_id
-          FROM \`Vote\` v
-          GROUP BY v.post_id
-          ) j
-      ON j.post_id = p.id
-          SET cached_votes = j.sum;
-  `;
-  console.log("Votes recalculés!");
 
   await prisma.$disconnect();
 }

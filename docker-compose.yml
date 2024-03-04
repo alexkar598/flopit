@@ -9,8 +9,10 @@ services:
       - ./server/src:/app/server/src
       - ./client/src:/app/client/src
       - ./shared:/app/shared
+      - mariadb-import:/db-import
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
+      PRISMA_ROOT_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
       JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
     restart: unless-stopped
     depends_on:
@@ -72,6 +74,7 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - mariadb:/var/lib/mysql
+      - mariadb-import:/import
   cloudbeaver:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
@@ -170,7 +173,7 @@ services:
     networks:
       - backend
     environment:
-      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+      PRISMA_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
     restart: on-failure
     depends_on:
       mariadb:
@@ -194,6 +197,7 @@ networks:
 volumes:
   cloudbeaver:
   mariadb:
+  mariadb-import:
   minio:
 configs:
   nginx:
