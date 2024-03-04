@@ -28,3 +28,7 @@ export async function pauseWrite(stream: Writable, chunk: any) {
   if (should_wait)
     return new Promise((resolve) => stream.once("drain", resolve));
 }
+
+export function throwException(exception: any): never {
+  throw exception;
+}
