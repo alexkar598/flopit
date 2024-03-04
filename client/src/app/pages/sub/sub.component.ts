@@ -9,8 +9,8 @@ import {
 import { Apollo, gql } from "apollo-angular";
 
 const SubInformation = gql(`
-    query SubInformation {
-      subByName(name: "aaa") {
+    query SubInformation($SubName: String!) {
+      subByName(name: $SubName) {
         name
         description
         followers {
@@ -34,6 +34,9 @@ export class SubComponent implements OnInit, OnDestroy {
     this.querySubscription = this.apollo
       .watchQuery<any>({
         query: SubInformation,
+        variables: {
+          SubName: "",
+        },
       })
       .valueChanges.subscribe(({ data }) => {
         console.log(data);
