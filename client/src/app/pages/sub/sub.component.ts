@@ -1,5 +1,24 @@
-import { Component } from '@angular/core';
-import {NbButtonModule, NbCardModule, NbIconModule, NbListModule} from '@nebular/theme';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
+import {
+  NbButtonModule,
+  NbCardModule,
+  NbIconModule,
+  NbListModule,
+} from "@nebular/theme";
+import { Apollo, gql } from "apollo-angular";
+
+const SubInformation = gql(`
+    query SubInformation {
+      subByName(name: "aaa") {
+        name
+        description
+        followers {
+          totalCount
+        }
+      }
+    }
+  `);
 
 @Component({
   standalone: true,
@@ -7,4 +26,21 @@ import {NbButtonModule, NbCardModule, NbIconModule, NbListModule} from '@nebular
   templateUrl: "./sub.component.html",
   styleUrl: "./sub.component.scss",
 })
-export class SubComponent {}
+export class SubComponent implements OnInit, OnDestroy {
+  private querySubscription!: Subscription;
+
+  constructor(private apollo: Apollo) {}
+  ngOnInit() {
+    this.querySubscription = this.apollo
+      .watchQuery<any>({
+        query: SubInformation,
+      })
+      .valueChanges.subscribe(({ data }) => {
+        console.log(data);
+      });
+  }
+
+  ngOnDestroy() {
+    this.querySubscription.unsubscribe();
+  }
+}
