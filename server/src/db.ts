@@ -214,6 +214,7 @@ export async function resetDatabase() {
         },
       },
     });
+    lastLayerFirstPost = posts.at(-1)!.id;
     if (layer >= CREATE_COMMENTS_LAYER_COUNT) break;
 
     console.log(
@@ -257,13 +258,6 @@ export async function resetDatabase() {
     if (!postStream.writableFinished) await finished(postStream);
     await prismaRoot.$executeRaw`LOAD DATA INFILE '/import/posts.tsv' IGNORE INTO TABLE Post (sub_id, author_id, created_at, text_content, delta_content, top_post_id, parent_id, cached_votes)`;
     await fs.rm("/db-import/posts.tsv");
-
-    lastLayerFirstPost = (
-      await prisma.post.findFirstOrThrow({
-        orderBy: { id: "desc" },
-        select: { id: true },
-      })
-    ).id;
   }
   console.log("Posts (commentaires) créés!");
 
