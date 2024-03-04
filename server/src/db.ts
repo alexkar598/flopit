@@ -63,6 +63,7 @@ export async function resetDatabase() {
 
   function generate_score(level: number) {
     let score = 760 / (level + 0.1) - 30;
+    score = faker.number.int({ max: score });
     if (faker.datatype.boolean(0.15)) score *= -1;
     return score;
   }
