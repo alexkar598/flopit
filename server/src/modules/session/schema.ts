@@ -1,4 +1,4 @@
-import { builder } from "./_builder.ts";
+import { builder } from "../../builder.ts";
 
 export const sessionRef = builder.prismaNode("Session", {
   id: { field: "id" },
@@ -14,9 +14,3 @@ export const sessionRef = builder.prismaNode("Session", {
     }),
   }),
 });
-builder.prismaObjectField("User", "sessions", (t) =>
-  t.relatedConnection("Sessions", {
-    cursor: "id",
-    totalCount: true,
-  }),
-);
