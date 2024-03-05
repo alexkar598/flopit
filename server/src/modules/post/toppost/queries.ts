@@ -14,7 +14,23 @@ builder.queryField("homefeed", (t) =>
     args: {
       sortOptions: t.arg({ type: postSortOptionsRef, required: false }),
     },
-    resolve: (query, _, { sortOptions }) => {
+    resolve: async (query, _, { sortOptions }, { authenticated_user_id }) => {
+      const followedSubs: string[] = [];
+      if (authenticated_user_id != null) {
+        followedSubs.push(
+          ...(
+            await prisma.follow.findMany({
+              select: {
+                sub_id: true,
+              },
+              where: {
+                user_id: authenticated_user_id,
+              },
+            })
+          ).map(({ sub_id }) => sub_id),
+        );
+      }
+
       const querySortOptions = extractQueryOptions(
         sortOptions,
         PostSortType.Hot,
@@ -24,6 +40,7 @@ builder.queryField("homefeed", (t) =>
         ...querySortOptions,
         where: {
           ...querySortOptions.where,
+          ...(followedSubs.length > 0 && { sub_id: { in: followedSubs } }),
           parent_id: null,
         },
       });
