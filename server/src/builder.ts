@@ -9,8 +9,8 @@ import {
   VoidResolver,
 } from "graphql-scalars";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { prisma } from "../db.ts";
-import { capitalizeFirst, getAPIError } from "../util.ts";
+import { prisma } from "./db.ts";
+import { capitalizeFirst, getAPIError } from "./util.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;

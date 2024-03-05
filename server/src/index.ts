@@ -1,7 +1,7 @@
 import { createYoga, maskError } from "graphql-yoga";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { resolveAuthentication } from "./modules/auth/auth.ts";
 import { schema, writeSchemaToFile } from "./schema.ts";
-import { resolveAuthentication } from "./mutations/auth.ts";
 
 const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
   schema: schema,

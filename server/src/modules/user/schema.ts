@@ -1,8 +1,7 @@
 import { $Enums } from "@prisma/client";
-import { prisma } from "../db.js";
-import { builder, setupPluralIdentifyingRootFields } from "./_builder.js";
+import { builder } from "../../builder.js";
 
-const ThemeRef = builder.enumType($Enums.Theme, {
+export const ThemeRef = builder.enumType($Enums.Theme, {
   name: "Theme",
 });
 export const userRef = builder.prismaNode("User", {
@@ -21,13 +20,3 @@ export const userRef = builder.prismaNode("User", {
     notifications: t.exposeBoolean("notifications"),
   }),
 });
-
-builder.queryFields((t) => ({
-  users: t.prismaConnection({
-    totalCount: () => prisma.user.count(),
-    type: "User",
-    cursor: "id",
-    resolve: (query) => prisma.user.findMany({ ...query }),
-  }),
-}));
-setupPluralIdentifyingRootFields("username", "User", "username");
