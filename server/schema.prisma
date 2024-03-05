@@ -28,9 +28,8 @@ model User {
   password Bytes  @mariadb.Binary(255)
   salt     Bytes  @mariadb.Binary(32)
 
-  avatar_oid    String? @mariadb.Char(40)
-  theme         Theme   @default(Dark)
-  notifications Boolean @mariadb.Bit(1)
+  avatar_oid String? @mariadb.Char(40)
+  theme      Theme   @default(Dark)
 
   Sessions          Session[]
   ModeratedSubs     Moderator[]
@@ -49,7 +48,7 @@ model Session {
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id String @mariadb.Char(36)
 
-  creation_time   DateTime  @default(dbgenerated("CURRENT_TIMESTAMP(3)")) @mariadb.DateTime()
+  creation_time   DateTime  @default(dbgenerated("current_timestamp(3)"))
   revocation_time DateTime?
 
   @@index([user_id, revocation_time, creation_time])

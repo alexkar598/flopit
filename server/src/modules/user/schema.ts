@@ -17,6 +17,5 @@ export const userRef = builder.prismaNode("User", {
     theme: t.expose("theme", {
       type: ThemeRef,
     }),
-    notifications: t.exposeBoolean("notifications"),
   }),
 });
