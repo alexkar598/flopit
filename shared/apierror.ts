@@ -5,5 +5,5 @@ export const APIError = Object.freeze({
   BAD_CREDENTIALS: "Courriel ou mot de passe invalide",
   DUPLICATE_USERNAME: "Ce nom d'utilisateur est déja utilisé",
   DUPLICATE_EMAIL: "Ce courriel est déja utilisé",
-  TRIVIAL_PASSWORD: "Le mot de passe doit avoir 6 caractères",
+  TRIVIAL_PASSWORD: "Le mot de passe doit avoir au moins 6 caractères",
 });
