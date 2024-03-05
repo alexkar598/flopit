@@ -6,4 +6,5 @@ export const APIError = Object.freeze({
   DUPLICATE_USERNAME: "Ce nom d'utilisateur est déja utilisé",
   DUPLICATE_EMAIL: "Ce courriel est déja utilisé",
   TRIVIAL_PASSWORD: "Le mot de passe doit avoir au moins 6 caractères",
+  DUPLICATE_SUB_NAME: "Un sub avec ce nom existe déjà",
 });
