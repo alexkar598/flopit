@@ -29,6 +29,7 @@ builder.mutationField("createSub", (t) =>
           if (e.meta?.target === "Sub_name_key")
             throw getAPIError("DUPLICATE_SUB_NAME");
         }
+        throw e;
       }
     },
   }),

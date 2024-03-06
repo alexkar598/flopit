@@ -45,6 +45,7 @@ builder.mutationField("createUser", (t) =>
           if (e.meta?.target === "User_email_key")
             throw getAPIError("DUPLICATE_EMAIL");
         }
+        throw e;
       }
     },
   }),
