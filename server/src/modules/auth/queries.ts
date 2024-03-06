@@ -1,12 +1,14 @@
 import { builder } from "../../builder.ts";
 import { prisma } from "../../db.ts";
+import { getAPIError } from "../../util.ts";
 
 builder.queryField("currentSession", (t) =>
   t.prismaField({
     type: "Session",
     nullable: true,
     resolve: (query, root, args, { authenticated_session_id }) => {
-      if (authenticated_session_id == null) return null;
+      if (authenticated_session_id == null)
+        throw getAPIError("AUTHENTICATED_FIELD");
       return prisma.session.findUnique({
         ...query,
         where: {
@@ -21,7 +23,8 @@ builder.queryField("currentUser", (t) =>
     type: "User",
     nullable: true,
     resolve: (query, root, args, { authenticated_user_id }) => {
-      if (authenticated_user_id == null) return null;
+      if (authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATED_FIELD");
       return prisma.user.findUnique({
         ...query,
         where: {
