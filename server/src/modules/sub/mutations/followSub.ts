@@ -30,35 +30,37 @@ builder.mutationField("followSub", (t) =>
       if (authenticated_user_id == null)
         throw getAPIError("AUTHENTICATED_MUTATION");
 
-      try {
-        await prisma.follow.create({
-          data: {
-            user_id: authenticated_user_id,
-            sub_id,
-          },
-        });
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-          //"Unique constraint failed on the {constraint}"
-          if (e.code === "P2002" && e.meta?.target === "PRIMARY")
-            return selectSub();
-          //"Foreign key constraint failed on the field: {field_name}"
-          if (e.code === "P2003" && e.meta?.field_name === "sub_id")
-            throw getAPIError("SUB_NOT_FOUND");
+      return prisma.$transaction(async (tx) => {
+        try {
+          await tx.follow.create({
+            data: {
+              user_id: authenticated_user_id,
+              sub_id,
+            },
+          });
+        } catch (e) {
+          if (e instanceof PrismaClientKnownRequestError) {
+            //"Unique constraint failed on the {constraint}"
+            if (e.code === "P2002" && e.meta?.target === "PRIMARY")
+              return selectSub();
+            //"Foreign key constraint failed on the field: {field_name}"
+            if (e.code === "P2003" && e.meta?.field_name === "sub_id")
+              throw getAPIError("SUB_NOT_FOUND");
+          }
+          throw e;
         }
-        throw e;
-      }
 
-      return selectSub();
+        return selectSub();
 
-      function selectSub() {
-        return prisma.sub.findUniqueOrThrow({
-          ...query,
-          where: {
-            id: sub_id,
-          },
-        });
-      }
+        function selectSub() {
+          return tx.sub.findUniqueOrThrow({
+            ...query,
+            where: {
+              id: sub_id,
+            },
+          });
+        }
+      });
     },
   }),
 );

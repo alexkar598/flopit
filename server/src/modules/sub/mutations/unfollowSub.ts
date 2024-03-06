@@ -30,35 +30,37 @@ builder.mutationField("unfollowSub", (t) =>
       if (authenticated_user_id == null)
         throw getAPIError("AUTHENTICATED_MUTATION");
 
-      try {
-        await prisma.follow.delete({
-          where: {
-            user_id_sub_id: {
-              user_id: authenticated_user_id,
-              sub_id,
-            },
-          },
-        });
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-          //"An operation failed because it depends on one or more records that were required but not found. {cause}"
-          if (e.code === "P2025") return selectSub();
-        }
-        throw e;
-      }
-
-      return selectSub();
-
-      async function selectSub() {
-        return (
-          (await prisma.sub.findUnique({
-            ...query,
+      return prisma.$transaction(async (tx) => {
+        try {
+          await tx.follow.delete({
             where: {
-              id: sub_id,
+              user_id_sub_id: {
+                user_id: authenticated_user_id,
+                sub_id,
+              },
             },
-          })) ?? throwException(getAPIError("SUB_NOT_FOUND"))
-        );
-      }
+          });
+        } catch (e) {
+          if (e instanceof PrismaClientKnownRequestError) {
+            //"An operation failed because it depends on one or more records that were required but not found. {cause}"
+            if (e.code === "P2025") return selectSub();
+          }
+          throw e;
+        }
+
+        return selectSub();
+
+        async function selectSub() {
+          return (
+            (await tx.sub.findUnique({
+              ...query,
+              where: {
+                id: sub_id,
+              },
+            })) ?? throwException(getAPIError("SUB_NOT_FOUND"))
+          );
+        }
+      });
     },
   }),
 );
