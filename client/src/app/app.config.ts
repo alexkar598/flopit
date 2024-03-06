@@ -6,7 +6,6 @@ import {routes} from "./app.routes";
 import {provideClientHydration} from "@angular/platform-browser";
 import {provideHttpClient, withFetch} from "@angular/common/http";
 import {graphqlProvider} from "./graphql.provider";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     importProvidersFrom(NbThemeModule.forRoot()),
     provideHttpClient(withFetch()),
-    graphqlProvider, provideAnimationsAsync(),
+    graphqlProvider,
   ],
 };
