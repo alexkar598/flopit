@@ -1,4 +1,5 @@
 import { builder } from "../../../builder.ts";
+import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
 
 export enum VoteValue {
@@ -31,9 +32,30 @@ export const basePostRef = builder.prismaInterface("Post", {
       type: "BigInt",
     }),
     currentVote: t.field({
+      select: {
+        id: true,
+      },
+      nullable: true,
       type: voteValueRef,
-      resolve: () => {
-        throw getAPIError("NOT_IMPLEMENTED");
+      resolve: async ({ id: post_id }, _args, { authenticated_user_id }) => {
+        if (authenticated_user_id == null)
+          throw getAPIError("AUTHENTICATED_FIELD");
+
+        return (
+          (
+            await prisma.vote.findUnique({
+              where: {
+                user_id_post_id: {
+                  user_id: authenticated_user_id,
+                  post_id,
+                },
+              },
+              select: {
+                value: true,
+              },
+            })
+          )?.value ?? VoteValue.Neutral
+        );
       },
     }),
   }),
