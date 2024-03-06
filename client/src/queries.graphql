@@ -1,0 +1,9 @@
+query AllSubs {
+  subs {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
