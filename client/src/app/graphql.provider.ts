@@ -1,13 +1,14 @@
-import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
-import {HttpLink} from "apollo-angular/http";
+import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
+import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
-  inject,
   InjectionToken,
   makeStateKey,
   TransferState,
 } from "@angular/core";
-import {ApolloClientOptions, InMemoryCache} from "@apollo/client/core";
+import { ApolloClientOptions, InMemoryCache } from "@apollo/client/core";
+import { onError } from "@apollo/client/link/error";
+import { NbToastrService } from "@nebular/theme";
 
 const uri = "/graphql";
 
@@ -18,6 +19,7 @@ export function apolloOptionsFactory(
   httpLink: HttpLink,
   cache: InMemoryCache,
   transferState: TransferState,
+  toastrService: NbToastrService,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
 
@@ -29,11 +31,23 @@ export function apolloOptionsFactory(
       return cache.extract();
     });
     // Reset cache after extraction to avoid sharing between requests
-    cache.reset();
+    cache.reset().then();
   }
 
+  const errorLink = onError(({ graphQLErrors }) => {
+    if (graphQLErrors == null) return;
+    graphQLErrors.forEach((err) =>
+      toastrService.danger(err.message, "Erreur", {
+        destroyByClick: true,
+        duration: 1500,
+      }),
+    );
+  });
+
+  const link = errorLink.concat(httpLink.create({ uri }));
+
   return {
-    link: httpLink.create({uri}),
+    link,
     cache,
   };
 }
@@ -47,6 +61,6 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpLink, APOLLO_CACHE, TransferState],
+    deps: [HttpLink, APOLLO_CACHE, TransferState, NbToastrService],
   },
 ];
