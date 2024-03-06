@@ -9,4 +9,5 @@ export const APIError = Object.freeze({
   DUPLICATE_SUB_NAME: "Un sub avec ce nom existe déjà",
   AUTHENTICATED_FIELD: "Cette information nécessite une session active",
   AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
+  SUB_NOT_FOUND: "Ce f/ n'a pas pu être trouvé",
 });

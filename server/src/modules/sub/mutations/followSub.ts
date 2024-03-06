@@ -38,21 +38,27 @@ builder.mutationField("followSub", (t) =>
           },
         });
       } catch (e) {
-        if (
-          !(e instanceof PrismaClientKnownRequestError) ||
-          e.code !== "P2002" ||
-          e.meta?.target !== "PRIMARY"
-        ) {
-          throw e;
+        if (e instanceof PrismaClientKnownRequestError) {
+          //"Unique constraint failed on the {constraint}"
+          if (e.code === "P2002" && e.meta?.target === "PRIMARY")
+            return selectSub();
+          //"Foreign key constraint failed on the field: {field_name}"
+          if (e.code === "P2003" && e.meta?.field_name === "sub_id")
+            throw getAPIError("SUB_NOT_FOUND");
         }
+        throw e;
       }
 
-      return prisma.sub.findUniqueOrThrow({
-        ...query,
-        where: {
-          id: sub_id,
-        },
-      });
+      return selectSub();
+
+      function selectSub() {
+        return prisma.sub.findUniqueOrThrow({
+          ...query,
+          where: {
+            id: sub_id,
+          },
+        });
+      }
     },
   }),
 );

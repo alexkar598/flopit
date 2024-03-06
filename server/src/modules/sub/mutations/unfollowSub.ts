@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
-import { getAPIError } from "../../../util.ts";
+import { getAPIError, throwException } from "../../../util.ts";
 import { subRef } from "../schema.ts";
 
 const input = builder.inputType("UnfollowSubInput", {
@@ -40,16 +40,25 @@ builder.mutationField("unfollowSub", (t) =>
           },
         });
       } catch (e) {
-        if (!(e instanceof PrismaClientKnownRequestError) || e.code !== "P2025")
-          throw e;
+        if (e instanceof PrismaClientKnownRequestError) {
+          //"An operation failed because it depends on one or more records that were required but not found. {cause}"
+          if (e.code === "P2025") return selectSub();
+        }
+        throw e;
       }
 
-      return prisma.sub.findUniqueOrThrow({
-        ...query,
-        where: {
-          id: sub_id,
-        },
-      });
+      return selectSub();
+
+      async function selectSub() {
+        return (
+          (await prisma.sub.findUnique({
+            ...query,
+            where: {
+              id: sub_id,
+            },
+          })) ?? throwException(getAPIError("SUB_NOT_FOUND"))
+        );
+      }
     },
   }),
 );
