@@ -3,20 +3,20 @@
         <h1>Créer un compte</h1>
     </nb-card-header>
     <nb-card-body>
-        <ng-form novalidate>
+        <ng-form>
             <div class="input">
                 <label for="courriel">Courriel</label>
                 <input nbInput required fullWidth id="courriel"/>
             </div>
-            
+
             <div class="input">
                 <label for="nom-utilisateur">Nom d'utilisateur</label>
                 <nb-form-field>
-                    <input [type]="getInputType()" nbInput required fullWidth id="nom-utilisateur">
+                    <input type=text nbInput required fullWidth id="nom-utilisateur">
                 </nb-form-field>
             </div>
-            
-            
+
+
             <div class="input">
                 <label for="mot-passe">Mot de passe</label>
                 <nb-form-field>
@@ -26,7 +26,7 @@
                     </button>
                 </nb-form-field>
             </div>
-            
+
             <div class="input">
                 <label for="mot-passe">Comfirmer le mot de passe</label>
                 <nb-form-field>
@@ -40,7 +40,7 @@
             <div class="deja-un-compte">
                 <a href="">Déjà un compte?</a>
             </div>
-    
+
             <button nbButton status="primary">Créer le compte</button>
         </ng-form>
     </nb-card-body>
