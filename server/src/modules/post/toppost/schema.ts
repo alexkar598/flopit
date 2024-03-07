@@ -4,6 +4,9 @@ import { basePostRef } from "../basepost/schema.ts";
 
 export const topPostMetaRef = builder.prismaObject("TopPost", {
   name: "TopPostUnused",
+  fields: (t) => ({
+    unused: t.field({ type: "Void", nullable: true, resolve: () => null }),
+  }),
 });
 
 export const topPostRef = builder.prismaNode("Post", {
