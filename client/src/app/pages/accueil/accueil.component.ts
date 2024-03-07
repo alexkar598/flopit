@@ -1,27 +1,24 @@
-import { Component } from "@angular/core";
-import { time } from "console";
+import { Component, Input, OnInit } from "@angular/core";
+
+import {
+  NbButtonGroupModule,
+  NbButtonModule,
+  NbCardModule,
+  NbIconModule,
+  NbUserModule,
+} from "@nebular/theme";
 
 @Component({
   selector: "app-accueil",
   standalone: true,
-  imports: [],
+  imports: [
+    NbCardModule,
+    NbIconModule,
+    NbButtonGroupModule,
+    NbButtonModule,
+    NbUserModule,
+  ],
   templateUrl: "./accueil.component.html",
   styleUrl: "./accueil.component.scss",
 })
-export class AccueilComponent {
-  title: string;
-  text: string;
-  picture: string;
-  commmunity: string;
-  timeSince: number;
-  news: String;
-
-  constructor() {
-    this.title = "get the title from server";
-    this.text = "get the text from server";
-    this.picture = "get the picture from server";
-    this.commmunity = "get the commmunity from server";
-    this.timeSince = 0;
-    this.news = "get the news from server";
-  }
-}
+export class AccueilComponent {}
