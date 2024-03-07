@@ -4,7 +4,7 @@
     listenWindowScroll
     [threshold]="800"
     [throttleTime]="100"
-    (bottomThreshold)="loadNext.emit()"
+    (bottomThreshold)="loadMore()"
   >
     @for (post of posts$ | async; track post.id) {
       <nb-list-item>
