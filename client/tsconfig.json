@@ -18,16 +18,10 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom",
-      "esnext.asynciterable"
-    ],
+    "lib": ["ES2022", "dom", "esnext.asynciterable"],
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
+      "~/*": ["./src/*"],
       "~shared/*": ["../shared/*"]
     }
   },
