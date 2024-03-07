@@ -2,6 +2,10 @@ import { builder } from "../../../builder.ts";
 import { attachmentRef } from "../../attachment/schema.ts";
 import { basePostRef } from "../basepost/schema.ts";
 
+export const topPostMetaRef = builder.prismaObject("TopPost", {
+  name: "TopPostUnused",
+});
+
 export const topPostRef = builder.prismaNode("Post", {
   variant: "TopPost",
   id: { field: "id" },
