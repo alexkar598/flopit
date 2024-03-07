@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
@@ -19,6 +20,7 @@ import {
     NbIconModule,
     NbEvaIconsModule,
     FormsModule,
+    RouterLink,
   ],
   templateUrl: "./connexion.component.html",
   styleUrl: "./connexion.component.scss",
