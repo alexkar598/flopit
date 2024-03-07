@@ -3,9 +3,9 @@ import {
   ApplicationConfig,
   importProvidersFrom,
 } from "@angular/core";
-import {provideServerRendering} from "@angular/platform-server";
-import {NbThemeModule} from "@nebular/theme";
-import {appConfig} from "./app.config";
+import { provideServerRendering } from "@angular/platform-server";
+import { NbThemeModule } from "@nebular/theme";
+import { appConfig } from "./app.config";
 
 const serverConfig: ApplicationConfig = {
   providers: [
