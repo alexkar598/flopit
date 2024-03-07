@@ -1,14 +1,6 @@
 import { builder } from "../../../builder.ts";
+import { attachmentRef } from "../../attachment/schema.ts";
 import { basePostRef } from "../basepost/schema.ts";
-
-export const topPostMetaRef = builder.prismaObject("TopPost", {
-  name: "TopPostMeta",
-  select: {},
-  fields: (t) => ({
-    title: t.exposeString("title"),
-    attachments: t.relation("Attachments"),
-  }),
-});
 
 export const topPostRef = builder.prismaNode("Post", {
   variant: "TopPost",
@@ -18,6 +10,26 @@ export const topPostRef = builder.prismaNode("Post", {
     parent_id: true,
   },
   fields: (t) => ({
-    meta: t.relation("TopPost"),
+    title: t.string({
+      select: {
+        TopPost: {
+          select: {
+            title: true,
+          },
+        },
+      },
+      resolve: (parent) => parent.TopPost.title,
+    }),
+    attachments: t.field({
+      select: (args, ctx, nestedSelection) => ({
+        TopPost: {
+          select: {
+            Attachments: nestedSelection({}, []),
+          },
+        },
+      }),
+      type: [attachmentRef],
+      resolve: (topPost) => topPost.TopPost.Attachments,
+    }),
   }),
 });
