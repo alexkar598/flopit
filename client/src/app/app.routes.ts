@@ -4,5 +4,5 @@ import { AccueilComponent } from "./pages/accueil/accueil.component";
 
 export const routes: Routes = [
   { path: "connexion", component: ConnexionComponent },
-  { path: "accueil", component: AccueilComponent },
+  { path: "", component: AccueilComponent },
 ];
