@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { time } from 'console';
+import { Component } from "@angular/core";
+import { time } from "console";
 
 @Component({
-  selector: 'app-accueil',
+  selector: "app-accueil",
   standalone: true,
   imports: [],
-  templateUrl: './accueil.component.html',
-  styleUrl: './accueil.component.scss'
+  templateUrl: "./accueil.component.html",
+  styleUrl: "./accueil.component.scss",
 })
 export class AccueilComponent {
   title: string;
@@ -17,11 +17,11 @@ export class AccueilComponent {
   news: String;
 
   constructor() {
-    this.title = 'get the title from server';
-    this.text = 'get the text from server';
-    this.picture = 'get the picture from server';
-    this.commmunity = 'get the commmunity from server';
+    this.title = "get the title from server";
+    this.text = "get the text from server";
+    this.picture = "get the picture from server";
+    this.commmunity = "get the commmunity from server";
     this.timeSince = 0;
-    this.news = 'get the news from server';
+    this.news = "get the news from server";
   }
 }
