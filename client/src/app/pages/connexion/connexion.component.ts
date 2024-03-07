@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
@@ -10,6 +10,7 @@ import {
   NbSpinnerModule,
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
+import { Router } from "@angular/router";
 
 @Component({
   standalone: true,
@@ -26,11 +27,20 @@ import { UserService } from "~/app/services/user.service";
   templateUrl: "./connexion.component.html",
   styleUrl: "./connexion.component.scss",
 })
-export class ConnexionComponent {
+export class ConnexionComponent implements OnInit {
   showPassword = false;
   loading = false;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {
+    this.userService.currentUser$.subscribe((user) => {
+      if (user) this.router.navigate(["/"]).then();
+    });
+  }
 
   getInputType() {
     if (this.showPassword) {

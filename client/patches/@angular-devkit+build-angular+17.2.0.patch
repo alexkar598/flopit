@@ -1,0 +1,54 @@
+diff --git a/node_modules/@angular-devkit/build-angular/src/tools/vite/angular-memory-plugin.js b/node_modules/@angular-devkit/build-angular/src/tools/vite/angular-memory-plugin.js
+index c97d397..a5ac37f 100755
+--- a/node_modules/@angular-devkit/build-angular/src/tools/vite/angular-memory-plugin.js
++++ b/node_modules/@angular-devkit/build-angular/src/tools/vite/angular-memory-plugin.js
+@@ -167,6 +167,7 @@ function createAngularMemoryPlugin(options) {
+                             outputFiles: {},
+                             // TODO: add support for critical css inlining.
+                             inlineCriticalCss: false,
++                            request: req,
+                         });
+                         return indexHtmlTransformer && content ? await indexHtmlTransformer(content) : content;
+                     });
+diff --git a/node_modules/@angular-devkit/build-angular/src/utils/server-rendering/render-page.js b/node_modules/@angular-devkit/build-angular/src/utils/server-rendering/render-page.js
+index f36f38b..d3131a7 100755
+--- a/node_modules/@angular-devkit/build-angular/src/utils/server-rendering/render-page.js
++++ b/node_modules/@angular-devkit/build-angular/src/utils/server-rendering/render-page.js
+@@ -37,21 +37,36 @@ exports.renderPage = void 0;
+ const node_assert_1 = __importDefault(require("node:assert"));
+ const node_path_1 = require("node:path");
+ const load_esm_1 = require("../load-esm");
++
++const parseCookie = str =>
++  str
++    .split(';')
++    .map(v => v.split('='))
++    .reduce((acc, v) => {
++      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
++      return acc;
++    }, {});
++
+ /**
+  * Renders each route in routes and writes them to <outputPath>/<route>/index.html.
+  */
+-async function renderPage({ route, serverContext, document, inlineCriticalCss, outputFiles, loadBundle = load_esm_1.loadEsmModule, }) {
++async function renderPage({ route, serverContext, document, inlineCriticalCss, outputFiles, loadBundle = load_esm_1.loadEsmModule, request}) {
+     const { default: bootstrapAppFnOrModule } = await loadBundle('./main.server.mjs');
+     const { ɵSERVER_CONTEXT, renderModule, renderApplication, ɵresetCompiledComponents, ɵConsole } = await loadBundle('./render-utils.server.mjs');
+     // Need to clean up GENERATED_COMP_IDS map in `@angular/core`.
+     // Otherwise an incorrect component ID generation collision detected warning will be displayed in development.
+     // See: https://github.com/angular/angular-cli/issues/25924
+     ɵresetCompiledComponents?.();
++    const cookies = request.headers?.['cookie'] || '';
+     const platformProviders = [
+         {
+             provide: ɵSERVER_CONTEXT,
+             useValue: serverContext,
+         },
++        {
++          provide: 'COOKIES',
++          useValue: cookies,
++        },
+         {
+             provide: ɵConsole,
+             /** An Angular Console Provider that does not print a set of predefined logs. */

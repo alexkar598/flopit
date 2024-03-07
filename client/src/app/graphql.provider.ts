@@ -2,13 +2,21 @@ import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
+  inject,
   InjectionToken,
+  Injector,
   makeStateKey,
+  runInInjectionContext,
   TransferState,
 } from "@angular/core";
-import { ApolloClientOptions, InMemoryCache } from "@apollo/client/core";
+import {
+  ApolloClientOptions,
+  ApolloLink,
+  InMemoryCache,
+} from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
+import { HttpHeaders } from "@angular/common/http";
 
 const uri = "/graphql";
 
@@ -22,6 +30,7 @@ export function apolloOptionsFactory(
   toastrService: NbToastrService,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
+  const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
     const state = transferState.get<any>(STATE_KEY, null);
@@ -34,6 +43,15 @@ export function apolloOptionsFactory(
     cache.reset().then();
   }
 
+  const proxyCookiesLink = new ApolloLink((operation, forward) => {
+    if (cookies)
+      operation.setContext({
+        headers: new HttpHeaders().set("Cookie", cookies),
+      });
+
+    return forward(operation);
+  });
+
   const errorLink = onError(({ graphQLErrors }) => {
     if (graphQLErrors == null) return;
     graphQLErrors.forEach((err) =>
@@ -44,7 +62,9 @@ export function apolloOptionsFactory(
     );
   });
 
-  const link = errorLink.concat(httpLink.create({ uri }));
+  const link = proxyCookiesLink.concat(
+    errorLink.concat(httpLink.create({ uri })),
+  );
 
   return {
     link,
