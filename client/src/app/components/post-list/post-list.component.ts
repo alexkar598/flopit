@@ -3,13 +3,13 @@ import { Component } from "@angular/core";
 import { NbCardModule, NbListModule } from "@nebular/theme";
 
 @Component({
-  selector: "app-liste-de-publications",
+  selector: "app-post-list",
   standalone: true,
   imports: [NbListModule, NbCardModule, CommonModule],
-  templateUrl: "./liste-de-publications.component.html",
-  styleUrl: "./liste-de-publications.component.scss",
+  templateUrl: "./post-list.component.html",
+  styleUrl: "./post-list.component.scss",
 })
-export class ListeDePublicationsComponent {
+export class PostListComponent {
   articles: any[] = [];
 
   loadNext() {
@@ -28,7 +28,7 @@ export class ListeDePublicationsComponent {
       { user: 'wdfwf',title: 'Article 2', content: 'This is the content of Article 2.' },
       { user: 'wdfwf',title: 'Article 3', content: 'This is the content of Article 3.' }
       // Add more articles as needed
-  
+
   ];
   */
 }
