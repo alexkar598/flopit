@@ -1,0 +1,8 @@
+fragment TopPostCard on TopPost {
+  id
+  title
+  sub {
+    name
+  }
+  textContent
+}
