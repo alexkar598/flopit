@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterOutlet } from "@angular/router";
 import { NbButtonModule, NbLayoutModule } from "@nebular/theme";
-import { ListeDePublicationsComponent } from "./composants/liste-de-publications/liste-de-publications.component";
+import { HeaderComponent } from "./components/header/header.component";
 
 @Component({
   selector: "app-root",
@@ -12,7 +12,7 @@ import { ListeDePublicationsComponent } from "./composants/liste-de-publications
     RouterOutlet,
     NbLayoutModule,
     NbButtonModule,
-    ListeDePublicationsComponent,
+    HeaderComponent,
   ],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",

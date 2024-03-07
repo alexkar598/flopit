@@ -6,7 +6,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <string.h>
-#include <openssl/rand.h>
+#include <limits.h>
 #include <mysql/mysql.h>
 
 _Atomic uint8_t counter;
@@ -25,7 +25,7 @@ char* create_uuid7(UDF_INIT *initid, UDF_ARGS *args,
     (ts.tv_nsec % 1000000 >> 8)
   );
 
-  RAND_bytes(&u[8], 8);
+  getrandom(&u[8], 8, 0);
   ((uint32_t*)u)[2] = htobe32(0x80000000 | (counter++ << 22) | ((uint32_t*)u)[2] >> 10);
 
   u[6] = 0x70 | (u[6] & 0x0F);

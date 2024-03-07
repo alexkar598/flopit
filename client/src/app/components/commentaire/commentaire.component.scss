@@ -1,0 +1,49 @@
+nb-card {
+  max-width: 50rem;
+  border-radius: 15px;
+  --card-padding: 0 1rem;
+}
+
+nb-card-footer {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+nb-icon {
+  margin-top: 1rem;
+  margin-right: 1rem;
+}
+
+.commentaire {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.utilisateur {
+  display: flex;
+  margin-right: 1rem;
+  text-decoration: none;
+}
+
+.lien-utilisateur {
+  color: var(--text-basic-color);
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.actions {
+  display: flex;
+  text-align: left;
+}
+
+.icone-action {
+  margin: auto;
+}
+
+.date {
+  text-align: right;
+  margin-top: auto;
+  margin-bottom: auto;
+}
