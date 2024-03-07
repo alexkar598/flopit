@@ -20,7 +20,7 @@
         <label for="mot-passe">Mot de passe</label>
         <nb-form-field>
           <input
-            [type]="getInputType()"
+            [type]="showPassword ? 'text' : 'password'"
             nbInput
             required
             fullWidth
@@ -31,7 +31,7 @@
             nbSuffix
             nbButton
             ghost
-            (click)="toggleShowPassword()"
+            (click)="showPassword = !showPassword"
           >
             <nb-icon
               [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"
@@ -45,29 +45,29 @@
         <label for="mot-passe">Confirmer le mot de passe</label>
         <nb-form-field>
           <input
-            [type]="getInputType()"
+            [type]="showConfirmPassword ? 'text' : 'password'"
             nbInput
             required
             fullWidth
-            id="mot-passe"
+            id="mot-passe-confirmation"
           />
           <button
             type="button"
             nbSuffix
             nbButton
             ghost
-            (click)="toggleShowPassword()"
+            (click)="showConfirmPassword = !showConfirmPassword"
           >
             <nb-icon
-              [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              [icon]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
               pack="eva"
             />
           </button>
         </nb-form-field>
       </div>
 
-      <div>
-        <a href="../connexion/connexion.component.html">Déjà un compte?</a>
+      <div class="deja-compte">
+        <a routerLink="/connexion">Déjà un compte?</a>
       </div>
 
       <button nbButton status="primary">Créer le compte</button>
