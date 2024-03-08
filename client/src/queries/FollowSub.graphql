@@ -1,0 +1,9 @@
+mutation FollowSub($input: FollowSubInput!) {
+  followSub(input: $input) {
+    id
+    is_following
+    followers {
+      totalCount
+    }
+  }
+}

@@ -1,43 +1,65 @@
 <div class="page">
-  <div>
-    <!-- Publications ici -->
+  <app-post-list [subName]="(route.params | async)?.['subName']" />
+
+  <div class="sidebar">
+    @if (sub) {
+      <nb-card class="barre-infos">
+        <nb-card-header
+          style="background-image: url('{{
+            sub.bannerOid ? (sub.bannerOid | getImg) : ''
+          }}');"
+        >
+          <div>
+            <h1 class="nom-sub">f/{{ sub.name }}</h1>
+          </div>
+
+          <div>
+            @if (sub.iconOid) {
+              <nb-user
+                onlyPicture
+                [picture]="sub.iconOid | getImg"
+                color="#fff"
+                size="large"
+              />
+            } @else {
+              <nb-icon class="icone" icon="globe-2-outline" />
+            }
+          </div>
+        </nb-card-header>
+
+        <nb-card-body>
+          <button
+            nbButton
+            [status]="sub.is_following ? 'basic' : 'primary'"
+            class="bouton-rejoindre"
+            (click)="toggleFollow()"
+          >
+            {{ sub.is_following ? "Quitter" : "Rejoindre" }}
+          </button>
+
+          <p>{{ sub.description }}</p>
+
+          <div class="stats-item">
+            <div class="stats">
+              <span class="stats-data">{{ sub.followers.totalCount }}</span>
+              <p>Membre{{ sub.followers.totalCount !== 1 ? "s" : "" }}</p>
+            </div>
+
+            <div class="stats">
+              <span class="stats-data">{{ sub.posts.totalCount }}</span>
+              <p>Publication{{ sub.posts.totalCount !== 1 ? "s" : "" }}</p>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    } @else {
+      <nb-card
+        class="barre-infos-loading"
+        [nbSpinner]="true"
+        nbSpinnerStatus="primary"
+      >
+        <nb-card-body />
+      </nb-card>
+    }
   </div>
-  <nb-card class="barre-infos">
-    <nb-card-header>
-      <div>
-        <h1 class="nom-sub">
-          f/flopitflopitflopitflopitflopitflopitflopitflopitflopitflopit
-        </h1>
-      </div>
-
-      <div>
-        <nb-icon class="icone" icon="globe-2-outline" />
-      </div>
-    </nb-card-header>
-
-    <nb-card-body>
-      <button nbButton status="primary" class="bouton-rejoindre">
-        Rejoindre
-      </button>
-      <nb-list>
-        <nb-list-item>
-          <p>Description</p>
-        </nb-list-item>
-
-        <nb-list-item class="stats-item">
-          <div class="stats">
-            <span class="stats-data">123</span>
-            <p>Membres</p>
-          </div>
-
-          <div class="stats">
-            <span class="stats-data">123</span>
-            <p>Publications</p>
-          </div>
-        </nb-list-item>
-
-        <nb-list-item> </nb-list-item>
-      </nb-list>
-    </nb-card-body>
-  </nb-card>
 </div>

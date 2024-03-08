@@ -1,8 +1,7 @@
 @use "../../../themes" as *;
 
 nb-card-header {
-  /* Juste logo for testing purposes mais ça devrait être la bannière du sub */
-  background-image: url("../../../assets/FlopIt.svg");
+  background-color: #eee;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -19,18 +18,19 @@ nb-card-body {
 .page {
   display: grid;
   grid-template-columns: 5fr 2fr;
-  text-align: right;
   width: 100%;
   height: 100%;
 }
 
+.sidebar {
+  position: relative;
+}
+
 .barre-infos {
-  border-radius: 20px;
-  width: 30rem;
-  min-height: 40rem;
-  height: 82.5%;
-  right: 2rem;
-  position: fixed;
+  height: fit-content;
+  position: sticky;
+  top: 8rem;
+  --card-border-radius: 0.5rem;
 }
 
 .nom-sub {
@@ -42,7 +42,6 @@ nb-card-body {
   font-size: 1.25rem;
   word-break: break-all;
   line-height: 1.2;
-  text-align: left;
 }
 
 .icone {
@@ -60,25 +59,17 @@ nb-card-body {
   transform: translate(-50%, -50%);
 }
 
-nb-list {
-  width: 100%;
-  --list-item-divider-width: 0;
-}
-
-nb-list-item {
-  width: 100%;
-}
-
 .stats-item {
   display: grid;
   grid-template-columns: 1fr 1fr;
-}
-
-.stats {
   text-align: center;
 }
 
 .stats-data {
   font-size: 1.5rem;
   font-weight: bolder;
+}
+
+.barre-infos-loading {
+  height: 20rem;
 }
