@@ -6,5 +6,4 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 export const routes: Routes = [
   { path: "connexion", component: ConnexionComponent },
   { path: "inscription", component: CreationCompteComponent },
-  { path: "f", component: TopPostListComponent },
 ];
