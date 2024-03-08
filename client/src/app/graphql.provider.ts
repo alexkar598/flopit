@@ -72,6 +72,9 @@ export function apolloOptionsFactory(
     link,
     cache,
     defaultOptions: {
+      watchQuery: {
+        errorPolicy: "ignore",
+      },
       query: {
         errorPolicy: "ignore",
       },
