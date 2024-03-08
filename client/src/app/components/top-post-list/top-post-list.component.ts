@@ -36,7 +36,7 @@ export class TopPostListComponent implements OnInit {
       const sub$ = feedQuery.valueChanges;
       sub$
         .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
-        .subscribe(endCursor.next);
+        .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(
           (x) =>
@@ -55,7 +55,7 @@ export class TopPostListComponent implements OnInit {
       const sub$ = feedQuery.valueChanges;
       sub$
         .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
-        .subscribe(endCursor.next);
+        .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(
           (x) =>
