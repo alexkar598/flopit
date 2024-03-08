@@ -1,6 +1,13 @@
 import { Injectable } from "@angular/core";
-import { CurrentUserGQL, LoginGQL, UserSelfFragment } from "~/graphql";
+import {
+  CreateUserGQL,
+  CreateUserInput,
+  CurrentUserGQL,
+  LoginGQL,
+  UserSelfFragment,
+} from "~/graphql";
 import { BehaviorSubject } from "rxjs";
+import { WatchQueryFetchPolicy } from "@apollo/client";
 
 @Injectable({
   providedIn: "root",
@@ -13,11 +20,10 @@ export class UserService {
 
   constructor(
     private loginMut: LoginGQL,
+    private createUserMut: CreateUserGQL,
     private currentUserGql: CurrentUserGQL,
   ) {
-    this.currentUserGql.watch().valueChanges.subscribe((result) => {
-      this.currentUserSubject$.next(result.data.currentUser);
-    });
+    this.refreshCurrentUser();
   }
 
   login(email: string, password: string): Promise<void> {
@@ -35,6 +41,51 @@ export class UserService {
             return reject(result.errors?.map((err) => err.message).join("\n"));
           this.currentUserSubject$.next(result.data.startSession?.user);
           resolve();
+        });
+    });
+  }
+
+  refreshCurrentUser() {
+    this.currentUserGql
+      .watch({}, { errorPolicy: "ignore", fetchPolicy: "network-only" })
+      .valueChanges.subscribe((result) => {
+        this.currentUserSubject$.next(result.data.currentUser);
+      });
+  }
+
+  async register(
+    input: CreateUserInput & { passwordConfirm: string },
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (
+        !input.email ||
+        !input.username ||
+        !input.password ||
+        !input.passwordConfirm
+      ) {
+        return reject("Tous les champs sont obligatoires");
+      }
+
+      if (input.password !== input.passwordConfirm) {
+        return reject("Les deux mots de passes ne sont pas identiques");
+      }
+
+      this.createUserMut
+        .mutate(
+          {
+            input: {
+              email: input.email,
+              username: input.username,
+              password: input.password,
+            },
+          },
+          { errorPolicy: "ignore" },
+        )
+        .subscribe(async (res) => {
+          if (!res.data)
+            return reject(res.errors?.map((err) => err.message).join("\n"));
+          await this.login(input.email, input.password);
+          return resolve();
         });
     });
   }

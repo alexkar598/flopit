@@ -3,16 +3,24 @@
     <h1>S'inscrire</h1>
   </nb-card-header>
   <nb-card-body>
-    <ng-form>
+    <form #form="ngForm" (ngSubmit)="register(form)">
       <div class="input">
         <label for="courriel">Courriel</label>
-        <input nbInput required fullWidth id="courriel" />
+        <input nbInput required fullWidth id="courriel" ngModel name="email" />
       </div>
 
       <div class="input">
         <label for="nom-utilisateur">Nom d'utilisateur</label>
         <nb-form-field>
-          <input type="text" nbInput required fullWidth id="nom-utilisateur" />
+          <input
+            type="text"
+            nbInput
+            required
+            fullWidth
+            id="nom-utilisateur"
+            ngModel
+            name="username"
+          />
         </nb-form-field>
       </div>
 
@@ -25,6 +33,8 @@
             required
             fullWidth
             id="mot-passe"
+            ngModel
+            name="password"
           />
           <button
             type="button"
@@ -50,6 +60,8 @@
             required
             fullWidth
             id="mot-passe-confirmation"
+            ngModel
+            name="passwordConfirm"
           />
           <button
             type="button"
@@ -70,7 +82,16 @@
         <a routerLink="/connexion">Déjà un compte?</a>
       </div>
 
-      <button nbButton status="primary">Créer le compte</button>
-    </ng-form>
+      <button
+        nbButton
+        status="primary"
+        type="submit"
+        nbSpinnerStatus="primary"
+        [disabled]="loading"
+        [nbSpinner]="loading"
+      >
+        Créer le compte
+      </button>
+    </form>
   </nb-card-body>
 </nb-card>
