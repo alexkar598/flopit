@@ -1,0 +1,24 @@
+{
+  "folders": {},
+  "connections": {
+    "mariaDB-18d7a4edd64-4256efdf3c48b33a": {
+      "provider": "mysql",
+      "driver": "mariaDB",
+      "name": "mariadb",
+      "save-password": true,
+      "configuration": {
+        "host": "mariadb",
+        "port": "3306",
+        "database": "MARIADB_DB",
+        "url": "jdbc:mariadb://mariadb:3306",
+        "configurationType": "MANUAL",
+        "type": "dev",
+        "auth-model": "native",
+        "auth-properties": {
+          "user": "root",
+          "password": "MARIADB_ROOT_PASSWORD"
+        }
+      }
+    }
+  }
+}

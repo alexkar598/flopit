@@ -1,6 +1,4 @@
 name: "flopit"
-include:
-  - path: compose/cloudbeaver-config.yaml
 services:
   apiserver:
     build:
@@ -73,7 +71,7 @@ services:
       - source: cloudbeaver
         target: /opt/cloudbeaver/conf/cloudbeaver.conf
       - source: cloudbeaver-datasource
-        target: /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json
+        target: /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources-template.json
     volumes:
       - cloudbeaver:/opt/cloudbeaver/workspace
     links:
@@ -81,6 +79,12 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    entrypoint: ["/bin/bash", "-c", "
+      cp /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources-template.json /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json;
+      sed -i 's/MARIADB_DB/${MARIADB_DB}/g' /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json;
+      sed -i 's/MARIADB_ROOT_PASSWORD/${MARIADB_ROOT_PASSWORD}/g' /opt/cloudbeaver/workspace/GlobalConfiguration/.dbeaver/data-sources.json;
+      /opt/cloudbeaver/run-server.sh;
+    "]
     environment:
       CB_SERVER_NAME: Base de données Flopit
       CB_SERVER_URL: ${PUBLIC_URL}/_db
@@ -171,3 +175,7 @@ volumes:
 configs:
   nginx:
     file: compose/nginx.conf
+  cloudbeaver:
+    file: compose/cloudbeaver/config.json5
+  cloudbeaver-datasource:
+    file: compose/cloudbeaver/datasources.json
