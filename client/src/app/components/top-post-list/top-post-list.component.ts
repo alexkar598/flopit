@@ -15,8 +15,8 @@ import { PostSingleComponent } from "~/app/components/post-single/post-single.co
   styleUrl: "./top-post-list.component.scss",
 })
 export class TopPostListComponent implements OnInit {
-  @Input()
-  subName?: string;
+  @Input({ required: true })
+  subName: string | null = null;
 
   public posts$!: Observable<TopPostCardFragment[]>;
   public loadMore!: () => Promise<ApolloQueryResult<unknown>>;
