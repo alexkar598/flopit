@@ -18,6 +18,7 @@ WORKDIR /app
 
 RUN mkdir client server
 COPY /client/package.json client/
+COPY /client/patches/ client/patches/
 COPY /server/package.json server/
 COPY /package-lock.json .
 COPY /package.json .

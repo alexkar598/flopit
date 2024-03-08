@@ -1,23 +1,29 @@
 <div class="barre">
   <div class="connexion">
-    <button routerLink="/inscription" nbButton status="primary">
-      S'inscrire
-    </button>
-    <button routerLink="/connexion" nbButton outline status="primary">
-      Connexion
-    </button>
+    @if (userService.currentUser$ | async; as user) {
+      <nb-user
+        [name]="user.username"
+        [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
+        color="#EEE"
+      />
+    } @else {
+      <div>
+        <button routerLink="/inscription" nbButton status="primary">S'inscrire</button>
+        <a routerLink="/connexion" nbButton outline status="primary">
+          Connexion
+        </a>
+      </div>
+    }
   </div>
 
-  <div class="logo">
-    <img class="image-logo" src="../../../assets/FlopIt.svg" />
-  </div>
+  <a class="logo" routerLink="/">
+    <img class="image-logo" src="../../../assets/FlopIt.svg" alt="Flopit" />
+  </a>
 
-  <div class="recherche">
-    <ng-form>
-      <button nbPrefix nbButton ghost>
-        <nb-icon icon="search-outline" pack="eva" />
-      </button>
-      <input type="text" nbInput placeholder="Rechercher..." />
-    </ng-form>
-  </div>
+  <nb-form-field>
+    <input nbInput placeholder="Rechercher..." />
+    <button nbSuffix nbButton ghost>
+      <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
+    </button>
+  </nb-form-field>
 </div>
