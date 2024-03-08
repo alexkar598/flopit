@@ -1,5 +1,9 @@
 mutation Vote($input: VotePostInput!) {
   votePost(input: $input) {
+    ... on TopPost {
+      id
+    }
     currentVote
+    cachedVotes
   }
 }

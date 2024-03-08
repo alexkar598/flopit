@@ -41,7 +41,7 @@ export function apolloOptionsFactory(
         errorPolicy: "ignore",
       },
       mutate: {
-        errorPolicy: "ignore",
+        errorPolicy: "all",
       },
     },
   };
