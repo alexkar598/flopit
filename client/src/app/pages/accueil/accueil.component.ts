@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 import {
   NbButtonGroupModule,
@@ -7,6 +7,7 @@ import {
   NbIconModule,
   NbUserModule,
 } from "@nebular/theme";
+import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
 @Component({
   selector: "app-accueil",
@@ -17,6 +18,7 @@ import {
     NbButtonGroupModule,
     NbButtonModule,
     NbUserModule,
+    TopPostListComponent,
   ],
   templateUrl: "./accueil.component.html",
   styleUrl: "./accueil.component.scss",
