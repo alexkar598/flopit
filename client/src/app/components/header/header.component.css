@@ -4,24 +4,28 @@ button {
 
 .barre {
   display: grid;
-  grid-template-columns: auto auto auto;
-  width: auto;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 100%;
 }
 
 .connexion {
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+nb-form-field {
+  margin-left: auto;
 }
 
 .logo {
-  text-align: center;
-  margin-top: 1.5rem;
-}
-
-.recherche {
-  text-align: right;
-  margin-right: 1.5rem;
+  margin: auto;
+  display: block;
 }
 
 .image-logo {
   width: 15rem;
+}
+
+nb-user {
+  margin: auto 0 auto 0;
 }

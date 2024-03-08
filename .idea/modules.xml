@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/flopit.iml" filepath="$PROJECT_DIR$/.idea/flopit.iml" />
       <module fileurl="file://$PROJECT_DIR$/rwar.iml" filepath="$PROJECT_DIR$/rwar.iml" />
       <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
     </modules>
   </component>
 </project>

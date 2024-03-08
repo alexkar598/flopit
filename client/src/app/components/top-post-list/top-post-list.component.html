@@ -1,0 +1,14 @@
+<nb-list
+  class="container"
+  nbInfiniteList
+  listenWindowScroll
+  [threshold]="800"
+  [throttleTime]="100"
+  (bottomThreshold)="loadMore()"
+>
+  @for (post of posts$ | async; track post.id) {
+    <nb-list-item>
+      <app-post-single [post]="post" />
+    </nb-list-item>
+  }
+</nb-list>

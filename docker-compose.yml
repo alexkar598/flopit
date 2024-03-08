@@ -8,22 +8,32 @@ services:
     volumes:
       - ./server/src:/app/server/src
       - ./client/src:/app/client/src
+      - ./shared:/app/shared
+      - mariadb-import:/db-import
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
+      PRISMA_ROOT_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
     restart: unless-stopped
     depends_on:
+      mariadb:
+        condition: service_healthy
       db-deploy:
         condition: service_completed_successfully
     links:
       - mariadb
       - minio
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "wget localhost:3000/health -O - && wget localhost:4200 -O -"]
+      timeout: "10s"
+      interval: "1m30s"
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
   nginx:
     image: nginx:1.25.3-alpine-slim
     networks:
       - backend
-    depends_on:
-      createbuckets:
-        condition: service_completed_successfully
     links:
       - cloudbeaver
       - minio
@@ -64,6 +74,7 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - mariadb:/var/lib/mysql
+      - mariadb-import:/import
   cloudbeaver:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
@@ -112,7 +123,8 @@ services:
   createbuckets:
     image: minio/mc:RELEASE.2024-01-31T08-59-40Z
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     networks:
       - backend
     entrypoint: >
@@ -161,15 +173,31 @@ services:
     networks:
       - backend
     environment:
-      PRISMA_MARIADB_URL: mysql://root:${MARIADB_ROOT_PASSWORD}@${MARIADB_HOST:-mariadb}:3306/${MARIADB_DB}
+      PRISMA_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
     restart: on-failure
+    depends_on:
+      mariadb:
+        condition: service_healthy
     links:
       - mariadb
+  seed:
+    profiles: ["seed"]
+    build:
+      dockerfile: server/seed.Dockerfile
+    networks:
+      - backend
+    restart: on-failure
+    depends_on:
+      devserver:
+        condition: service_healthy
+    links:
+      - devserver:apiserver
 networks:
   backend:
 volumes:
   cloudbeaver:
   mariadb:
+  mariadb-import:
   minio:
 configs:
   nginx:

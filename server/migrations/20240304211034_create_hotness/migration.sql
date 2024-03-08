@@ -1,0 +1,2 @@
+ALTER TABLE Post
+    ADD COLUMN hotness FLOAT GENERATED ALWAYS AS (ROUND(SIGN(cached_votes) * LOG10(GREATEST(ABS(cached_votes), 1)) + timestampdiff(SECOND, DATE '1970-01-01', created_at) / 75000, 7)) VIRTUAL;
