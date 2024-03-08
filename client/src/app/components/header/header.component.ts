@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
@@ -20,6 +21,7 @@ import {
     NbEvaIconsModule,
     FormsModule,
     NbInputModule,
+    RouterLink,
   ],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.css",
