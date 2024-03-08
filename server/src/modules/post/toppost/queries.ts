@@ -13,10 +13,16 @@ builder.queryField("homefeed", (t) =>
     cursor: "id",
     args: {
       sortOptions: t.arg({ type: postSortOptionsRef, required: false }),
+      ignoreFollows: t.arg.boolean({ required: false }),
     },
-    resolve: async (query, _, { sortOptions }, { authenticated_user_id }) => {
+    resolve: async (
+      query,
+      _,
+      { sortOptions, ignoreFollows },
+      { authenticated_user_id },
+    ) => {
       const followedSubs: string[] = [];
-      if (authenticated_user_id != null) {
+      if (!ignoreFollows && authenticated_user_id != null) {
         followedSubs.push(
           ...(
             await prisma.follow.findMany({
