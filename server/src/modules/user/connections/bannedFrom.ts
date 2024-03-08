@@ -1,5 +1,6 @@
 import { prismaConnectionHelpers } from "@pothos/plugin-prisma";
 import { builder, frozenWithTotalCount } from "../../../builder.ts";
+import { prisma } from "../../../db.ts";
 import { subRef } from "../../sub/schema.ts";
 
 const helper = prismaConnectionHelpers(builder, "Ban", {
@@ -26,7 +27,10 @@ builder.prismaObjectField("User", "bannedFrom", (t) =>
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["BannedFrom"], args, context),
-          parent["BannedFrom"].length,
+          () =>
+            prisma.ban.count({
+              where: { user_id: parent.id },
+            }),
         ),
     },
     {},

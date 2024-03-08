@@ -1,5 +1,6 @@
 import { prismaConnectionHelpers } from "@pothos/plugin-prisma";
 import { builder, frozenWithTotalCount } from "../../../builder.ts";
+import { prisma } from "../../../db.ts";
 import { userRef } from "../../user/schema.ts";
 
 const helper = prismaConnectionHelpers(builder, "Moderator", {
@@ -24,7 +25,10 @@ builder.prismaObjectField("Sub", "moderators", (t) =>
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["Moderators"], args, context),
-          parent["Moderators"].length,
+          () =>
+            prisma.moderator.count({
+              where: { sub_id: parent.id },
+            }),
         ),
     },
     {},
