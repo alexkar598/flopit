@@ -8,6 +8,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
@@ -32,7 +33,9 @@ import { GetImgPipe } from "~/app/pipes/get-img.pipe";
   styleUrl: "./header.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class HeaderComponent {
-  constructor(public userService: UserService) {}
+  constructor(
+    public userService: UserService,
+    public toastr: NbToastrService,
+  ) {}
 }
