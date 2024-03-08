@@ -11,6 +11,7 @@ import {
 } from "@nebular/theme";
 
 @Component({
+  selector: "app-creation-compte",
   standalone: true,
   imports: [
     NbButtonModule,
@@ -22,20 +23,10 @@ import {
     FormsModule,
     RouterLink,
   ],
-  templateUrl: "./connexion.component.html",
-  styleUrl: "./connexion.component.scss",
+  templateUrl: "./creation-compte.component.html",
+  styleUrl: "./creation-compte.component.scss",
 })
-export class ConnexionComponent {
+export class CreationCompteComponent {
   showPassword = false;
-
-  getInputType() {
-    if (this.showPassword) {
-      return "text";
-    }
-    return "password";
-  }
-
-  toggleShowPassword() {
-    this.showPassword = !this.showPassword;
-  }
+  showConfirmPassword = false;
 }

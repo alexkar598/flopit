@@ -3,7 +3,7 @@
     <h1>Se connecter</h1>
   </nb-card-header>
   <nb-card-body>
-    <ng-form novalidate>
+    <ng-form>
       <div class="input">
         <label for="nom">Nom d'utilisateur / Courriel</label>
         <input nbInput required fullWidth id="nom" />
@@ -35,7 +35,7 @@
       </div>
 
       <div class="pas-compte">
-        <a href="">Pas de compte?</a>
+        <a routerLink="/inscription">Pas de compte?</a>
       </div>
 
       <button nbButton status="primary">Connexion</button>

@@ -1,0 +1,15 @@
+query HomeFeed($cursor: ID) {
+  __typename
+  homefeed(after: $cursor) {
+    edges {
+      node {
+        ...TopPostCard
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
