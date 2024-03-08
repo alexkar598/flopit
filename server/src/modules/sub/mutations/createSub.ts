@@ -25,10 +25,12 @@ builder.mutationField("createSub", (t) =>
           },
         });
       } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-          if (e.meta?.target === "Sub_name_key")
+        if (e instanceof PrismaClientKnownRequestError) {
+          //"Unique constraint failed on the {constraint}"
+          if (e.code === "P2002" && e.meta?.target === "Sub_name_key")
             throw getAPIError("DUPLICATE_SUB_NAME");
         }
+        throw e;
       }
     },
   }),
