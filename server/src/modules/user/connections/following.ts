@@ -1,5 +1,6 @@
 import { prismaConnectionHelpers } from "@pothos/plugin-prisma";
 import { builder, frozenWithTotalCount } from "../../../builder.ts";
+import { prisma } from "../../../db.ts";
 import { subRef } from "../../sub/schema.ts";
 
 const helper = prismaConnectionHelpers(builder, "Follow", {
@@ -24,7 +25,10 @@ builder.prismaObjectField("User", "following", (t) =>
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["FollowedSubs"], args, context),
-          parent["FollowedSubs"].length,
+          () =>
+            prisma.follow.count({
+              where: { user_id: parent.id },
+            }),
         ),
     },
     {},
