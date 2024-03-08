@@ -1,6 +1,6 @@
 mutation Vote($input: VotePostInput!) {
   votePost(input: $input) {
-    ... on TopPost {
+    ... on Node {
       id
     }
     currentVote
