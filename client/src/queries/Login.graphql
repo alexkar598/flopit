@@ -1,0 +1,9 @@
+mutation Login($email: String!, $password: String!) {
+  startSession(email: $email, password: $password) {
+    user {
+      username
+      avatarOid
+      theme
+    }
+  }
+}

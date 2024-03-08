@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { getImg, ImageTransformations } from "~/app/utils";
+import { getImg, ImageTransformations } from "~/app/util";
 
 @Pipe({
   name: "getImg",
