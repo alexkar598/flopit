@@ -8,7 +8,6 @@ import { schema, writeSchemaToFile } from "./schema.ts";
 const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
   schema: schema,
   landingPage: false,
-  batching: true,
   context: async ({ req, res }) => {
     const [authenticated_user_id, authenticated_session_id] =
       (await resolveAuthentication(req, res)) ?? [];
