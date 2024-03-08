@@ -7,7 +7,7 @@ import {
   UserSelfFragment,
 } from "~/graphql";
 import { BehaviorSubject } from "rxjs";
-import { WatchQueryFetchPolicy } from "@apollo/client";
+import { Apollo } from "apollo-angular";
 
 @Injectable({
   providedIn: "root",
@@ -22,8 +22,13 @@ export class UserService {
     private loginMut: LoginGQL,
     private createUserMut: CreateUserGQL,
     private currentUserGql: CurrentUserGQL,
+    private apollo: Apollo,
   ) {
-    this.refreshCurrentUser();
+    this.currentUserGql
+      .watch({}, { errorPolicy: "ignore" })
+      .valueChanges.subscribe((result) => {
+        this.currentUserSubject$.next(result.data.currentUser);
+      });
   }
 
   login(email: string, password: string): Promise<void> {
@@ -39,18 +44,11 @@ export class UserService {
         .subscribe((result) => {
           if (result.data == null)
             return reject(result.errors?.map((err) => err.message).join("\n"));
+          void this.apollo.client.resetStore();
           this.currentUserSubject$.next(result.data.startSession?.user);
           resolve();
         });
     });
-  }
-
-  refreshCurrentUser() {
-    this.currentUserGql
-      .watch({}, { errorPolicy: "ignore", fetchPolicy: "network-only" })
-      .valueChanges.subscribe((result) => {
-        this.currentUserSubject$.next(result.data.currentUser);
-      });
   }
 
   async register(
