@@ -4,5 +4,5 @@ import { ConnexionComponent } from "./pages/connexion/connexion.component";
 
 export const routes: Routes = [
   { path: "connexion", component: ConnexionComponent },
-  { path: "creer-compte", component: CreationCompteComponent },
+  { path: "inscription", component: CreationCompteComponent },
 ];
