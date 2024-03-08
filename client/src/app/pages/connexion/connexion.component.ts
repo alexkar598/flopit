@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
@@ -23,6 +24,7 @@ import { Router } from "@angular/router";
     NbEvaIconsModule,
     FormsModule,
     NbSpinnerModule,
+    RouterLink,
   ],
   templateUrl: "./connexion.component.html",
   styleUrl: "./connexion.component.scss",
