@@ -9,6 +9,7 @@ const config: CodegenConfig = {
         "typescript",
         "typescript-operations",
         "typescript-apollo-angular",
+        "typescript-apollo-client-helpers",
       ],
     },
   },
