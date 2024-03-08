@@ -6,6 +6,10 @@ generator client {
   previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
 datasource mariadb {
   provider = "mysql"
   url      = env("PRISMA_MARIADB_URL")
@@ -17,16 +21,15 @@ enum Theme {
 }
 
 model User {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   username String @unique @mariadb.VarChar(64)
   email    String @unique @mariadb.VarChar(320)
   password Bytes  @mariadb.Binary(255)
   salt     Bytes  @mariadb.Binary(32)
 
-  avatar_oid    String? @mariadb.Char(40)
-  theme         Theme   @default(Dark)
-  notifications Boolean @mariadb.Bit(1)
+  avatar_oid String? @mariadb.Char(40)
+  theme      Theme   @default(Dark)
 
   Sessions          Session[]
   ModeratedSubs     Moderator[]
@@ -40,22 +43,22 @@ model User {
 }
 
 model Session {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user_id BigInt @mariadb.UnsignedBigInt
+  user_id String @mariadb.Char(36)
 
-  creation_time   DateTime  @default(now())
+  creation_time   DateTime  @default(dbgenerated("current_timestamp(3)"))
   revocation_time DateTime?
 
   @@index([user_id, revocation_time, creation_time])
 }
 
 model PushNotification {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user_id BigInt @mariadb.UnsignedBigInt
+  user_id String @mariadb.Char(36)
 
   endpoint        String    @mariadb.VarChar(512)
   expiration_time DateTime?
@@ -65,16 +68,16 @@ model PushNotification {
 
 model Block {
   Blocked    User   @relation(fields: [blocked_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Blockee")
-  blocked_id BigInt @mariadb.UnsignedBigInt
+  blocked_id String @mariadb.Char(36)
 
   Blocker    User   @relation(fields: [blocker_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Blocker")
-  blocker_id BigInt @mariadb.UnsignedBigInt
+  blocker_id String @mariadb.Char(36)
 
   @@id([blocked_id, blocker_id])
 }
 
 model Sub {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   name        String @unique @mariadb.VarChar(64)
   description String @default("") @mariadb.VarChar(512)
@@ -92,33 +95,33 @@ model Sub {
 
 model Moderator {
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user_id BigInt @mariadb.UnsignedBigInt
+  user_id String @mariadb.Char(36)
 
   Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  sub_id BigInt @mariadb.UnsignedBigInt
+  sub_id String @mariadb.Char(36)
 
   @@id([user_id, sub_id])
 }
 
 model Ban {
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
+
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user_id BigInt @mariadb.UnsignedBigInt
+  user_id String @mariadb.Char(36)
 
   Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  sub_id BigInt @mariadb.UnsignedBigInt
+  sub_id String @mariadb.Char(36)
 
   reason String   @mariadb.VarChar(512)
   expiry DateTime
-
-  @@id([user_id, sub_id, expiry])
 }
 
 model Follow {
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user_id BigInt @mariadb.UnsignedBigInt
+  user_id String @mariadb.Char(36)
 
   Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  sub_id BigInt @mariadb.UnsignedBigInt
+  sub_id String @mariadb.Char(36)
 
   @@id([user_id, sub_id])
 }
@@ -130,7 +133,7 @@ enum TextContentType {
 }
 
 model TopPost {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   title String @mariadb.VarChar(256)
 
@@ -141,13 +144,13 @@ model TopPost {
 }
 
 model Post {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  sub_id BigInt @mariadb.UnsignedBigInt
+  sub_id String @mariadb.Char(36)
 
   Author    User?   @relation(fields: [author_id], references: [id], onDelete: SetNull, onUpdate: Restrict)
-  author_id BigInt? @mariadb.UnsignedBigInt
+  author_id String? @mariadb.Char(36)
 
   created_at DateTime @default(now())
 
@@ -155,14 +158,18 @@ model Post {
   delta_content Json
 
   TopPost     TopPost @relation(fields: [top_post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  top_post_id BigInt  @mariadb.UnsignedBigInt
+  top_post_id String  @mariadb.Char(36)
 
   Parent    Post?   @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "chains")
-  parent_id BigInt? @mariadb.UnsignedBigInt
+  parent_id String? @mariadb.Char(36)
   Children  Post[]  @relation(name: "chains")
 
   Votes        Vote[]
   cached_votes BigInt
+
+  // Colonnes virtuelles
+
+  hotness Float @default(dbgenerated()) @mariadb.Double
 
   @@index([sub_id, parent_id, created_at])
   @@index([sub_id, parent_id, cached_votes])
@@ -179,7 +186,7 @@ enum AttachmentType {
 
 model Attachment {
   TopPost     TopPost        @relation(fields: [top_post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  top_post_id BigInt         @mariadb.UnsignedBigInt
+  top_post_id String         @mariadb.Char(36)
   order       Int            @mariadb.UnsignedTinyInt
   type        AttachmentType
 
@@ -189,13 +196,13 @@ model Attachment {
 }
 
 model Vote {
-  id BigInt @id @default(dbgenerated("uuid_short()")) @mariadb.UnsignedBigInt
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Restrict)
-  user_id BigInt? @mariadb.UnsignedBigInt
+  user_id String? @mariadb.Char(36)
 
   Post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  post_id BigInt @mariadb.UnsignedBigInt
+  post_id String @mariadb.Char(36)
 
   value Int @mariadb.TinyInt
 

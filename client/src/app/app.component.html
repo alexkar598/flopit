@@ -1,9 +1,9 @@
 <nb-layout>
-  <nb-layout-header fixed>Company Name</nb-layout-header>
+  <nb-layout-header fixed>
+    <app-header />
+  </nb-layout-header>
 
   <nb-layout-column>
-    Page Content <button nbButton>Hello World</button>
+    <router-outlet />
   </nb-layout-column>
 </nb-layout>
-
-<router-outlet></router-outlet>

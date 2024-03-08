@@ -1,14 +1,21 @@
 {
 	"name": "flopit",
-	"workspaces": [
-		"server",
-		"client",
-		"flopit"
-	],
-	"dependencies": {
-		"@fastify/autoload": "^5.8.0",
-		"@fastify/cors": "^8.5.0",
-		"@fastify/sensible": "^5.5.0",
-		"fastify": "^4.25.2"
+	"workspaces": {
+		"packages": [
+			"server",
+			"client",
+			"flopit"
+		],
+		"nohoist": [
+			"**/.prisma/**",
+			"**/.prisma",
+			"**/@prisma/**",
+			"**/@prisma",
+			"**/prisma/**",
+			"**/prisma"
+		]
+	},
+	"devDependencies": {
+		"prettier": "^3.2.5"
 	}
 }

@@ -1,5 +1,5 @@
-import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
-import {HttpLink} from "apollo-angular/http";
+import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
+import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
@@ -7,7 +7,7 @@ import {
   makeStateKey,
   TransferState,
 } from "@angular/core";
-import {ApolloClientOptions, InMemoryCache} from "@apollo/client/core";
+import { ApolloClientOptions, InMemoryCache } from "@apollo/client/core";
 
 const uri = "/graphql";
 
@@ -33,7 +33,7 @@ export function apolloOptionsFactory(
   }
 
   return {
-    link: httpLink.create({uri}),
+    link: httpLink.create({ uri }),
     cache,
   };
 }

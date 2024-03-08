@@ -18,12 +18,12 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom",
-      "esnext.asynciterable"
-    ],
-    "allowSyntheticDefaultImports": true
+    "lib": ["ES2022", "dom", "esnext.asynciterable"],
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "~shared/*": ["../shared/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
