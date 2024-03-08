@@ -13,11 +13,37 @@
 
   <nb-card-footer>
     <div>
-      <button nbButton ghost shape="round" size="large" title="Vote positif">
-        <nb-icon icon="arrow-up-outline" />
+      <button
+        nbButton
+        ghost
+        shape="round"
+        size="large"
+        title="Vote positif"
+        (click)="vote(VoteValue.Up)"
+      >
+        <nb-icon
+          [status]="post.currentVote == VoteValue.Up ? 'primary' : ''"
+          [icon]="
+            post.currentVote == VoteValue.Up ? 'arrow-up' : 'arrow-up-outline'
+          "
+        />
       </button>
-      <button nbButton ghost shape="round" size="large" title="Vote négatif">
-        <nb-icon icon="arrow-down-outline" />
+      <button
+        nbButton
+        ghost
+        shape="round"
+        size="large"
+        title="Vote négatif"
+        (click)="vote(VoteValue.Down)"
+      >
+        <nb-icon
+          [status]="post.currentVote == VoteValue.Down ? 'primary' : ''"
+          [icon]="
+            post.currentVote == VoteValue.Down
+              ? 'arrow-down'
+              : 'arrow-down-outline'
+          "
+        />
       </button>
     </div>
 

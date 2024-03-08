@@ -7,4 +7,5 @@ fragment TopPostCard on TopPost {
   }
   textContent
   createdAt
+  currentVote
 }

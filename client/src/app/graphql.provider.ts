@@ -36,6 +36,14 @@ export function apolloOptionsFactory(
   return {
     link: httpLink.create({ uri }),
     cache,
+    defaultOptions: {
+      query: {
+        errorPolicy: "ignore",
+      },
+      mutate: {
+        errorPolicy: "ignore",
+      },
+    },
   };
 }
 
