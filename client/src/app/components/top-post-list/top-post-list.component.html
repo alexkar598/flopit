@@ -1,0 +1,23 @@
+<nb-card class="container">
+  <nb-list
+    nbInfiniteList
+    listenWindowScroll
+    [threshold]="800"
+    [throttleTime]="100"
+    (bottomThreshold)="loadMore()"
+  >
+    @for (post of posts$ | async; track post.id) {
+      <nb-list-item>
+        <nb-card class="publication">
+          <nb-card-header>
+            f/{{ post.sub.name }} <br />
+            {{ post.title }}</nb-card-header
+          >
+          <nb-card-body>
+            <p>{{ post.textContent }}</p>
+          </nb-card-body>
+        </nb-card>
+      </nb-list-item>
+    }
+  </nb-list>
+</nb-card>

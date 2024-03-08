@@ -39,12 +39,15 @@ builder.mutationField("createUser", (t) =>
           },
         });
       } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-          if (e.meta?.target === "User_username_key")
+        if (e instanceof PrismaClientKnownRequestError) {
+          //"Unique constraint failed on the {constraint}"
+          if (e.code === "P2002" && e.meta?.target === "User_username_key")
             throw getAPIError("DUPLICATE_USERNAME");
-          if (e.meta?.target === "User_email_key")
+          //"Unique constraint failed on the {constraint}"
+          if (e.code === "P2002" && e.meta?.target === "User_email_key")
             throw getAPIError("DUPLICATE_EMAIL");
         }
+        throw e;
       }
     },
   }),

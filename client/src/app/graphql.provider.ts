@@ -1,13 +1,14 @@
-import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
-import {HttpLink} from "apollo-angular/http";
+import { relayStylePagination } from "@apollo/client/utilities";
+import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
+import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
-  inject,
   InjectionToken,
   makeStateKey,
   TransferState,
 } from "@angular/core";
-import {ApolloClientOptions, InMemoryCache} from "@apollo/client/core";
+import { ApolloClientOptions, InMemoryCache } from "@apollo/client/core";
+import { StrictTypedTypePolicies } from "~/graphql";
 
 const uri = "/graphql";
 
@@ -33,7 +34,7 @@ export function apolloOptionsFactory(
   }
 
   return {
-    link: httpLink.create({uri}),
+    link: httpLink.create({ uri }),
     cache,
   };
 }
@@ -42,7 +43,15 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache(),
+    useValue: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            homefeed: relayStylePagination(),
+          },
+        },
+      } satisfies StrictTypedTypePolicies,
+    }),
   },
   {
     provide: APOLLO_OPTIONS,
