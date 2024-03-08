@@ -58,7 +58,7 @@ export class ConnexionComponent implements OnInit {
   async login(form: NgForm) {
     this.loading = true;
 
-    this.userService
+    await this.userService
       .login(form.value.email, form.value.password)
       .finally(() => (this.loading = false));
   }

@@ -40,7 +40,7 @@ export function apolloOptionsFactory(
       return cache.extract();
     });
     // Reset cache after extraction to avoid sharing between requests
-    cache.reset().then();
+    cache.reset();
   }
 
   const proxyCookiesLink = new ApolloLink((operation, forward) => {

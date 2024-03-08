@@ -12,7 +12,6 @@ import {
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
-import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-header",

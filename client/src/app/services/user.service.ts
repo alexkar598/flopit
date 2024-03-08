@@ -56,11 +56,4 @@ export class UserService {
         });
     });
   }
-
-  register(input: CreateUserInput): Promise<void> {
-    return new Promise((resolve) => {
-      this.createUserMut.mutate({ input });
-      resolve();
-    });
-  }
 }
