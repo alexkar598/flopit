@@ -1,0 +1,16 @@
+query SubFeed($cursor: ID, $sub_name: String!) {
+  __typename
+  subByName(name: $sub_name) {
+    posts(after: $cursor) {
+      edges {
+        node {
+          ...TopPostCard
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
