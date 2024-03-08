@@ -3,6 +3,7 @@ import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
+  inject,
   InjectionToken,
   makeStateKey,
   TransferState,
