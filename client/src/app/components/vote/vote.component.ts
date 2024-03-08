@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { TopPostCardFragment, VoteGQL, VoteValue } from "~/graphql";
+import { PostVoteFragment, VoteGQL, VoteValue } from "~/graphql";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
 
 @Component({
@@ -10,7 +10,7 @@ import { NbButtonModule, NbIconModule } from "@nebular/theme";
   styleUrl: "./vote.component.scss",
 })
 export class VoteComponent {
-  @Input({ required: true }) post!: TopPostCardFragment;
+  @Input({ required: true }) post!: PostVoteFragment;
 
   protected readonly VoteValue = VoteValue;
 

@@ -1,9 +1,7 @@
 mutation Vote($input: VotePostInput!) {
   votePost(input: $input) {
-    ... on Node {
-      id
-    }
-    currentVote
+    id
     cachedVotes
+    currentVote
   }
 }
