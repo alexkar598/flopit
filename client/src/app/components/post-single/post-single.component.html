@@ -1,7 +1,6 @@
 <nb-card>
-
   <nb-card-header>
-    <a href="{{post.url}}">
+    <a>
       <h2>
         {{ post.title }}
       </h2>
@@ -9,25 +8,23 @@
   </nb-card-header>
 
   <nb-card-body>
-    {{ post.excerpt }}
+    {{ post.textContent }}
   </nb-card-body>
 
   <nb-card-footer>
     <div>
       <button nbButton ghost shape="round" size="large" title="Vote positif">
-        <nb-icon icon="arrow-up-outline"/>
+        <nb-icon icon="arrow-up-outline" />
       </button>
       <button nbButton ghost shape="round" size="large" title="Vote négatif">
-        <nb-icon icon="arrow-down-outline"/>
+        <nb-icon icon="arrow-down-outline" />
       </button>
     </div>
 
-    <a class="sub" href="{{post.sub.url}}">
-      <nb-user name="f/{{post.sub.name}}" picture="{{post.sub.icon}}"/>
+    <a class="sub" [routerLink]="['/f', post.sub.name]">
+      <nb-user name="f/{{ post.sub.name }}" />
     </a>
 
-    <span class="datetime text-hint">{{ post.date | relativeDate }}</span>
-
+    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
   </nb-card-footer>
-
 </nb-card>

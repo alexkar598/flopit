@@ -1,15 +1,17 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input } from "@angular/core";
 import {
   NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
   NbIconModule,
-  NbUserModule
+  NbUserModule,
 } from "@nebular/theme";
-import {RelativeDatePipe} from "../../pipes/relative-date.pipe";
+import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
+import { TopPostCardFragment } from "~/graphql";
+import { RouterLink } from "@angular/router";
 
 @Component({
-  selector: 'app-post-single',
+  selector: "app-post-single",
   standalone: true,
   imports: [
     NbCardModule,
@@ -17,13 +19,12 @@ import {RelativeDatePipe} from "../../pipes/relative-date.pipe";
     NbButtonGroupModule,
     NbButtonModule,
     NbUserModule,
-    RelativeDatePipe
+    RelativeDatePipe,
+    RouterLink,
   ],
-  templateUrl: './post-single.component.html',
-  styleUrl: './post-single.component.scss'
+  templateUrl: "./post-single.component.html",
+  styleUrl: "./post-single.component.scss",
 })
 export class PostSingleComponent {
-
-  @Input() post: unknown;
-
+  @Input({ required: true }) post!: TopPostCardFragment;
 }
