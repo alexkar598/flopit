@@ -16,4 +16,11 @@ export function getImg(
     transformations,
   );
   return `/image/_/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
+
+export function notNull<T>(val?: T | null | undefined): val is T {
+  return val != null;
+}
+
+export function throwException(exception: unknown): never {
+  throw exception;
 }

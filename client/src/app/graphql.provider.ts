@@ -1,8 +1,8 @@
+import { relayStylePagination } from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
-  inject,
   InjectionToken,
   makeStateKey,
   TransferState,
@@ -15,6 +15,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { HttpHeaders } from "@angular/common/http";
+import { StrictTypedTypePolicies } from "~/graphql";
 
 const uri = "/graphql";
 
@@ -76,7 +77,15 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache(),
+    useValue: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            homefeed: relayStylePagination(),
+          },
+        },
+      } satisfies StrictTypedTypePolicies,
+    }),
   },
   {
     provide: APOLLO_OPTIONS,
