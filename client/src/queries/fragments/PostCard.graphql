@@ -3,6 +3,10 @@ fragment TopPostCard on TopPost {
   title
   sub {
     name
+    iconOid
   }
   textContent
+  createdAt
+  currentVote
+  cachedVotes
 }

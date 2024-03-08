@@ -5,11 +5,12 @@ import { NbCardModule, NbListModule } from "@nebular/theme";
 import { BehaviorSubject, map, Observable } from "rxjs";
 import { notNull, throwException } from "~/app/util";
 import { HomeFeedGQL, SubFeedGQL, TopPostCardFragment } from "~/graphql";
+import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
 
 @Component({
   selector: "app-post-list",
   standalone: true,
-  imports: [NbListModule, NbCardModule, CommonModule],
+  imports: [NbListModule, NbCardModule, CommonModule, PostSingleComponent],
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
 })
