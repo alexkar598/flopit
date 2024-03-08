@@ -4,9 +4,7 @@ import {
   ApplicationConfig,
   inject,
   InjectionToken,
-  Injector,
   makeStateKey,
-  runInInjectionContext,
   TransferState,
 } from "@angular/core";
 import {
@@ -40,7 +38,7 @@ export function apolloOptionsFactory(
       return cache.extract();
     });
     // Reset cache after extraction to avoid sharing between requests
-    cache.reset();
+    void cache.reset();
   }
 
   const proxyCookiesLink = new ApolloLink((operation, forward) => {
@@ -54,12 +52,14 @@ export function apolloOptionsFactory(
 
   const errorLink = onError(({ graphQLErrors }) => {
     if (graphQLErrors == null) return;
-    graphQLErrors.forEach((err) =>
-      toastrService.danger(err.message, "Erreur", {
-        destroyByClick: true,
-        duration: 1500,
-      }),
-    );
+    graphQLErrors
+      .filter((err) => err.extensions?.["code"] !== "AUTHENTICATED_FIELD")
+      .forEach((err) =>
+        toastrService.danger(err.message, "Erreur", {
+          destroyByClick: true,
+          duration: 1500,
+        }),
+      );
   });
 
   const link = proxyCookiesLink.concat(

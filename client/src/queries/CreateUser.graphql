@@ -1,7 +1,5 @@
 mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
-    username
-    avatarOid
-    theme
+    ...UserSelf
   }
 }

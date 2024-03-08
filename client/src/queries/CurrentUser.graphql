@@ -1,7 +1,5 @@
 query CurrentUser {
   currentUser {
-    username
-    avatarOid
-    theme
+    ...UserSelf
   }
 }
