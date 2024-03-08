@@ -54,10 +54,20 @@ export class CreationCompteComponent implements OnInit, OnDestroy {
   }
 
   async register(form: NgForm) {
+    const { email, username, password, passwordConfirm } = form.value;
+
+    if (password !== passwordConfirm) {
+      this.toastr.danger(
+        "Les deux mots de passes ne sont pas identiques",
+        "Erreur",
+      );
+      return;
+    }
+
     this.loading = true;
 
     try {
-      await this.userService.register(form.value);
+      await this.userService.register({ email, username, password });
     } catch (e) {
       if (typeof e === "string") this.toastr.danger(e, "Erreur");
       else throw e;

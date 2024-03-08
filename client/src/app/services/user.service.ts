@@ -51,34 +51,14 @@ export class UserService {
     });
   }
 
-  async register(
-    input: CreateUserInput & { passwordConfirm: string },
-  ): Promise<void> {
+  async register(input: CreateUserInput): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (
-        !input.email ||
-        !input.username ||
-        !input.password ||
-        !input.passwordConfirm
-      ) {
+      if (!input.email || !input.username || !input.password) {
         return reject("Tous les champs sont obligatoires");
       }
 
-      if (input.password !== input.passwordConfirm) {
-        return reject("Les deux mots de passes ne sont pas identiques");
-      }
-
       this.createUserMut
-        .mutate(
-          {
-            input: {
-              email: input.email,
-              username: input.username,
-              password: input.password,
-            },
-          },
-          { errorPolicy: "ignore" },
-        )
+        .mutate({ input }, { errorPolicy: "ignore" })
         .subscribe(async (res) => {
           if (!res.data)
             return reject(res.errors?.map((err) => err.message).join("\n"));
