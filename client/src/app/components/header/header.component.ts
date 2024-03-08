@@ -8,7 +8,10 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbUserModule,
 } from "@nebular/theme";
+import { UserService } from "~/app/services/user.service";
+import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 
 @Component({
   selector: "app-header",
@@ -21,10 +24,15 @@ import {
     NbEvaIconsModule,
     FormsModule,
     NbInputModule,
+    NbUserModule,
+    GetImgPipe,
     RouterLink,
   ],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent {}
+
+export class HeaderComponent {
+  constructor(public userService: UserService) {}
+}
