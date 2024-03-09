@@ -1,0 +1,15 @@
+query HomeFeed($cursor: ID, $ignoreFollows: Boolean!, $sortOptions: PostSortOptions) {
+  __typename
+  homefeed(after: $cursor, ignoreFollows: $ignoreFollows, sortOptions: $sortOptions) {
+    edges {
+      node {
+        ...TopPostCard
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+

@@ -1,0 +1,7 @@
+mutation Vote($input: VotePostInput!) {
+  votePost(input: $input) {
+    id
+    cachedVotes
+    currentVote
+  }
+}

@@ -1,0 +1,12 @@
+fragment TopPostCard on TopPost {
+  id
+  title
+  sub {
+    name
+    iconOid
+  }
+  textContent
+  createdAt
+  currentVote
+  cachedVotes
+}

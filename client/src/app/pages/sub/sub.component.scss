@@ -1,0 +1,75 @@
+@use "../../../themes" as *;
+
+nb-card-header {
+  background-color: #eee;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  grid-template-columns: 1fr 4rem;
+  height: 10rem;
+  max-width: 100%;
+}
+
+nb-card-body {
+  overflow: visible;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: 5fr 2fr;
+  width: 100%;
+  height: 100%;
+}
+
+.sidebar {
+  position: relative;
+}
+
+.barre-infos {
+  height: fit-content;
+  position: sticky;
+  top: 8rem;
+  --card-border-radius: 0.5rem;
+}
+
+.nom-sub {
+  background: nb-theme(background-basic-color-1);
+  width: fit-content;
+  height: auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  word-break: break-all;
+  line-height: 1.2;
+}
+
+.icone {
+  background: nb-theme(background-basic-color-1);
+  padding: 0.5rem;
+  border-radius: 50%;
+  --icon-font-size: 3rem;
+  margin: auto;
+}
+
+.bouton-rejoindre {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.stats-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+}
+
+.stats-data {
+  font-size: 1.5rem;
+  font-weight: bolder;
+}
+
+.barre-infos-loading {
+  height: 20rem;
+}

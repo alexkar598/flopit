@@ -17,6 +17,7 @@ export const basePostRef = builder.prismaInterface("Post", {
     parent_id: true,
   },
   fields: (t) => ({
+    id: t.exposeID("id"),
     sub: t.relation("Sub"),
     author: t.relation("Author", {
       nullable: true,
