@@ -1,8 +1,8 @@
-query SubFeed($cursor: ID, $sub_name: String!) {
+query SubFeed($cursor: ID, $sub_name: String!, $sortOptions: PostSortOptions) {
   __typename
   subByName(name: $sub_name) {
     id
-    posts(after: $cursor) {
+    posts(after: $cursor, sortOptions: $sortOptions) {
       edges {
         node {
           ...TopPostCard
