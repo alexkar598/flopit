@@ -9,6 +9,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbToastrService,
   NbMenuItem,
   NbMenuService,
   NbUserModule,
@@ -37,10 +38,12 @@ import { filter } from "rxjs";
   styleUrl: "./header.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class HeaderComponent implements OnInit {
   constructor(
     public userService: UserService,
     private nbMenuService: NbMenuService,
+    public toastr: NbToastrService,
   ) {}
 
   public userMenuItems: NbMenuItem[] = [

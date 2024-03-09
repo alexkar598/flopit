@@ -13,8 +13,14 @@ button {
   flex-direction: column;
 }
 
-nb-form-field {
+form {
   margin-left: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+nb-form-field {
+  margin: auto;
 }
 
 .logo {

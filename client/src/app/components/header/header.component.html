@@ -24,10 +24,19 @@
     <img class="image-logo" src="../../../assets/FlopIt.svg" alt="Flopit" />
   </a>
 
-  <nb-form-field>
-    <input nbInput placeholder="Rechercher..." />
-    <button nbSuffix nbButton ghost>
-      <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
-    </button>
-  </nb-form-field>
+  <form
+    (submit)="
+      toastr.warning(
+        'La recherche n\'est pas encore implémentée',
+        'Pas implémenté'
+      )
+    "
+  >
+    <nb-form-field>
+      <input nbInput placeholder="Rechercher..." />
+      <button nbSuffix nbButton ghost>
+        <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
+      </button>
+    </nb-form-field>
+  </form>
 </div>
