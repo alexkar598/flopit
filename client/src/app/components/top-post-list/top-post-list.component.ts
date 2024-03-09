@@ -19,6 +19,7 @@ import {
 } from "~/graphql";
 import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
 import { FormsModule } from "@angular/forms";
+import { UserService } from "~/app/services/user.service";
 
 @Component({
   selector: "app-post-list",
@@ -50,6 +51,7 @@ export class TopPostListComponent implements OnInit {
   constructor(
     private homeFeedQuery: HomeFeedGQL,
     private subFeedQuery: SubFeedGQL,
+    public userService: UserService,
   ) {}
 
   ngOnInit(): void {
