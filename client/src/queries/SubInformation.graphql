@@ -1,0 +1,16 @@
+query SubInformation($sub_name: String!) {
+  subByName(name: $sub_name) {
+    id
+    name
+    description
+    iconOid
+    bannerOid
+    followers {
+      totalCount
+    }
+    posts {
+      totalCount
+    }
+    is_following
+  }
+}

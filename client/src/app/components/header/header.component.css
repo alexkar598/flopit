@@ -34,4 +34,5 @@ nb-form-field {
 
 nb-user {
   margin: auto 0 auto 0;
+  width: fit-content;
 }

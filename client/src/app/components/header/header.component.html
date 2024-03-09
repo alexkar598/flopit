@@ -5,6 +5,8 @@
         [name]="user.username"
         [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
         color="#EEE"
+        [nbContextMenu]="userMenuItems"
+        nbContextMenuTag="header-user-menu"
       />
     } @else {
       <div>

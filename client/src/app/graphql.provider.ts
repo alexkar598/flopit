@@ -1,6 +1,6 @@
 import { relayStylePagination } from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpLink } from "apollo-angular/http";
+import { HttpBatchLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
@@ -11,6 +11,7 @@ import {
 import {
   ApolloClientOptions,
   ApolloLink,
+  from,
   InMemoryCache,
 } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
@@ -24,7 +25,7 @@ const APOLLO_CACHE = new InjectionToken<InMemoryCache>("apollo-cache");
 const STATE_KEY = makeStateKey<any>("apollo.state");
 
 export function apolloOptionsFactory(
-  httpLink: HttpLink,
+  httpBatchLink: HttpBatchLink,
   cache: InMemoryCache,
   transferState: TransferState,
   toastrService: NbToastrService,
@@ -64,9 +65,11 @@ export function apolloOptionsFactory(
       );
   });
 
-  const link = proxyCookiesLink.concat(
-    errorLink.concat(httpLink.create({ uri })),
-  );
+  const link = from([
+    proxyCookiesLink,
+    errorLink,
+    httpBatchLink.create({ uri, batchInterval: 8 }),
+  ]);
 
   return {
     link,
@@ -102,6 +105,6 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpLink, APOLLO_CACHE, TransferState, NbToastrService],
+    deps: [HttpBatchLink, APOLLO_CACHE, TransferState, NbToastrService],
   },
 ];

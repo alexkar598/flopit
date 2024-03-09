@@ -1,6 +1,6 @@
 import { ApplicationConfig, importProvidersFrom } from "@angular/core";
 import { provideRouter } from "@angular/router";
-import { NbThemeModule, NbToastrModule } from "@nebular/theme";
+import { NbMenuModule, NbThemeModule, NbToastrModule } from "@nebular/theme";
 
 import { routes } from "./app.routes";
 import { provideClientHydration } from "@angular/platform-browser";
@@ -15,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       NbThemeModule.forRoot(),
       NbToastrModule.forRoot(),
+      NbMenuModule.forRoot(),
       BrowserAnimationsModule,
     ),
     provideHttpClient(withFetch()),

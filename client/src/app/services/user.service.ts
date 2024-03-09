@@ -4,6 +4,7 @@ import {
   CreateUserInput,
   CurrentUserGQL,
   LoginGQL,
+  LogoutGQL,
   UserSelfFragment,
 } from "~/graphql";
 import { BehaviorSubject } from "rxjs";
@@ -20,6 +21,7 @@ export class UserService {
 
   constructor(
     private loginMut: LoginGQL,
+    private logoutMut: LogoutGQL,
     private createUserMut: CreateUserGQL,
     private currentUserGql: CurrentUserGQL,
     private apollo: Apollo,
@@ -64,6 +66,19 @@ export class UserService {
             return reject(res.errors?.map((err) => err.message).join("\n"));
           await this.login(input.email, input.password);
           return resolve();
+        });
+    });
+  }
+
+  logout(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.logoutMut
+        .mutate({}, { errorPolicy: "ignore", fetchPolicy: "no-cache" })
+        .subscribe((result) => {
+          if (result.data == null)
+            return reject(result.errors?.map((err) => err.message).join("\n"));
+          void this.apollo.client.resetStore();
+          resolve();
         });
     });
   }

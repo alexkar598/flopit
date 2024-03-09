@@ -1,6 +1,7 @@
 query SubFeed($cursor: ID, $sub_name: String!) {
   __typename
   subByName(name: $sub_name) {
+    id
     posts(after: $cursor) {
       edges {
         node {
