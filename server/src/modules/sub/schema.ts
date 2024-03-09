@@ -12,7 +12,7 @@ export const subRef = builder.prismaNode("Sub", {
       type: "OID",
       nullable: true,
     }),
-    bananerOid: t.expose("banner_oid", {
+    bannerOid: t.expose("banner_oid", {
       type: "OID",
       nullable: true,
     }),
