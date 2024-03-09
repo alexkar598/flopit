@@ -1,6 +1,6 @@
-query HomeFeed($cursor: ID) {
+query HomeFeed($cursor: ID, $ignoreFollows: Boolean!, $sortOptions: PostSortOptions) {
   __typename
-  homefeed(after: $cursor) {
+  homefeed(after: $cursor, ignoreFollows: $ignoreFollows, sortOptions: $sortOptions) {
     edges {
       node {
         ...TopPostCard
