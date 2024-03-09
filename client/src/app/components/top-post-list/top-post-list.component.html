@@ -9,7 +9,7 @@
       <nb-option [value]="PostSortType.New">Nouveautés</nb-option>
       <nb-option [value]="PostSortType.Top">Top</nb-option>
     </nb-select>
-    @if (!subName) {
+    @if (!subName && (userService.currentUser$ | async)) {
       <nb-toggle
         [(checked)]="personalised"
         (checkedChange)="resetQuery()"
