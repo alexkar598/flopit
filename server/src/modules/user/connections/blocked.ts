@@ -1,5 +1,6 @@
 import { prismaConnectionHelpers } from "@pothos/plugin-prisma";
 import { builder, frozenWithTotalCount } from "../../../builder.ts";
+import { prisma } from "../../../db.ts";
 import { userRef } from "../schema.ts";
 
 const helper = prismaConnectionHelpers(builder, "Block", {
@@ -24,7 +25,10 @@ builder.prismaObjectField("User", "blocked", (t) =>
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["Blocked"], args, context),
-          parent["Blocked"].length,
+          () =>
+            prisma.block.count({
+              where: { blocker_id: parent.id },
+            }),
         ),
     },
     {},
