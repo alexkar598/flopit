@@ -9,6 +9,8 @@ import {
   NbWindowService,
 } from "@nebular/theme";
 import { CreatePostComponent } from "~/app/components/create-post/create-post.component";
+import { FooterComponent } from "./components/footer/footer.component";
+import { HeaderComponent } from "./components/header/header.component";
 
 @Component({
   selector: "app-root",
@@ -18,7 +20,9 @@ import { CreatePostComponent } from "~/app/components/create-post/create-post.co
     RouterOutlet,
     NbLayoutModule,
     NbButtonModule,
-    NbIconModule,
+    HeaderComponent,
+    FooterComponent,
+    NbIconModule
   ],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",

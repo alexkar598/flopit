@@ -1,12 +1,12 @@
 import { ApplicationConfig, importProvidersFrom } from "@angular/core";
 import { provideRouter } from "@angular/router";
-import { NbThemeModule, NbWindowModule } from "@nebular/theme";
+import { NbMenuModule, NbThemeModule, NbToastrModule, NbWindowModule } from "@nebular/theme";
 
 import { routes } from "./app.routes";
 import { provideClientHydration } from "@angular/platform-browser";
 import { provideHttpClient, withFetch } from "@angular/common/http";
 import { graphqlProvider } from "./graphql.provider";
-import { NbEvaIconsModule } from "@nebular/eva-icons";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { QuillConfig, QuillModule } from "ngx-quill";
 
 const quillConfig: QuillConfig = {
@@ -27,11 +27,13 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     importProvidersFrom(
       NbThemeModule.forRoot(),
+      NbToastrModule.forRoot(),
+      NbMenuModule.forRoot(),
       NbWindowModule.forRoot({
         buttons: { maximize: false, fullScreen: false, minimize: false },
       }),
-      NbEvaIconsModule,
       QuillModule.forRoot(quillConfig),
+      BrowserAnimationsModule,
     ),
     provideHttpClient(withFetch()),
     graphqlProvider,

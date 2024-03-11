@@ -1,0 +1,38 @@
+button {
+  margin: 1.5rem;
+}
+
+.barre {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 100%;
+}
+
+.connexion {
+  display: flex;
+  flex-direction: column;
+}
+
+form {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+nb-form-field {
+  margin: auto;
+}
+
+.logo {
+  margin: auto;
+  display: block;
+}
+
+.image-logo {
+  width: 15rem;
+}
+
+nb-user {
+  margin: auto 0 auto 0;
+  width: fit-content;
+}

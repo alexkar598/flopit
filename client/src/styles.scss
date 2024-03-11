@@ -6,6 +6,10 @@
   @include nb-theme-global();
 }
 
+body {
+  overflow-y: scroll;
+}
+
 .createpost__window.full-screen {
   width: min(90vw, 60rem);
 

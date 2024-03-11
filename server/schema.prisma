@@ -21,16 +21,15 @@ enum Theme {
 }
 
 model User {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   username String @unique @mariadb.VarChar(64)
   email    String @unique @mariadb.VarChar(320)
   password Bytes  @mariadb.Binary(255)
   salt     Bytes  @mariadb.Binary(32)
 
-  avatar_oid    String? @mariadb.Char(40)
-  theme         Theme   @default(Dark)
-  notifications Boolean @mariadb.Bit(1)
+  avatar_oid String? @mariadb.Char(40)
+  theme      Theme   @default(Dark)
 
   Sessions          Session[]
   ModeratedSubs     Moderator[]
@@ -44,19 +43,19 @@ model User {
 }
 
 model Session {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id String @mariadb.Char(36)
 
-  creation_time   DateTime  @default(now())
+  creation_time   DateTime  @default(dbgenerated("current_timestamp(3)"))
   revocation_time DateTime?
 
   @@index([user_id, revocation_time, creation_time])
 }
 
 model PushNotification {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id String @mariadb.Char(36)
@@ -78,7 +77,7 @@ model Block {
 }
 
 model Sub {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   name        String @unique @mariadb.VarChar(64)
   description String @default("") @mariadb.VarChar(512)
@@ -105,6 +104,8 @@ model Moderator {
 }
 
 model Ban {
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
+
   User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   user_id String @mariadb.Char(36)
 
@@ -113,8 +114,6 @@ model Ban {
 
   reason String   @mariadb.VarChar(512)
   expiry DateTime
-
-  @@id([user_id, sub_id, expiry])
 }
 
 model Follow {
@@ -134,7 +133,7 @@ enum TextContentType {
 }
 
 model TopPost {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   title String @mariadb.VarChar(256)
 
@@ -145,7 +144,7 @@ model TopPost {
 }
 
 model Post {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   Sub    Sub    @relation(fields: [sub_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
   sub_id String @mariadb.Char(36)
@@ -167,6 +166,10 @@ model Post {
 
   Votes        Vote[]
   cached_votes BigInt
+
+  // Colonnes virtuelles
+
+  hotness Float @default(dbgenerated()) @mariadb.Double
 
   @@index([sub_id, parent_id, created_at])
   @@index([sub_id, parent_id, cached_votes])
@@ -193,7 +196,7 @@ model Attachment {
 }
 
 model Vote {
-  id String @id @default(dbgenerated("CAST(create_uuid7() AS CHAR(36))")) @mariadb.Char(36)
+  id String @id @default(dbgenerated("(uuid())")) @mariadb.Char(36)
 
   User    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Restrict)
   user_id String? @mariadb.Char(36)

@@ -1,0 +1,42 @@
+<div class="barre">
+  <div class="connexion">
+    @if (userService.currentUser$ | async; as user) {
+      <nb-user
+        [name]="user.username"
+        [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
+        color="#EEE"
+        [nbContextMenu]="userMenuItems"
+        nbContextMenuTag="header-user-menu"
+      />
+    } @else {
+      <div>
+        <button routerLink="/inscription" nbButton status="primary">
+          S'inscrire
+        </button>
+        <a routerLink="/connexion" nbButton outline status="primary">
+          Connexion
+        </a>
+      </div>
+    }
+  </div>
+
+  <a class="logo" routerLink="/">
+    <img class="image-logo" src="../../../assets/FlopIt.svg" alt="Flopit" />
+  </a>
+
+  <form
+    (submit)="
+      toastr.warning(
+        'La recherche n\'est pas encore implémentée',
+        'Pas implémenté'
+      )
+    "
+  >
+    <nb-form-field>
+      <input nbInput placeholder="Rechercher..." />
+      <button nbSuffix nbButton ghost>
+        <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
+      </button>
+    </nb-form-field>
+  </form>
+</div>

@@ -1,5 +1,7 @@
 <nb-layout>
-  <nb-layout-header fixed>Company Name</nb-layout-header>
+  <nb-layout-header fixed>
+    <app-header />
+  </nb-layout-header>
 
   <nb-layout-column>
     <router-outlet />
@@ -15,4 +17,10 @@
       <nb-icon icon="plus-circle-outline" />
     </button>
   </nb-layout-column>
+
+  <nb-layout-footer>
+    <app-footer/>
+  </nb-layout-footer>
+
 </nb-layout>
+

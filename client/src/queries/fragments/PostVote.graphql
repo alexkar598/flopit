@@ -1,0 +1,5 @@
+fragment PostVote on BasePost {
+  id
+  cachedVotes
+  currentVote
+}
