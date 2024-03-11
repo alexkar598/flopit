@@ -19,6 +19,14 @@ Optionellement, changer les valeurs de configuration
 | IMGPROXY_SALT           | Sel pour la signature des images              |
 | JWT_SIGNING_KEY         | Clé de signature des jetons d'authentication  |
 
+## URLs
+| Url                           | Description               |
+|-------------------------------|---------------------------|
+| http://localhost:8080         | Page client               |
+| http://localhost:8080/graphql | Console GraphQL           |
+| http://localhost:8080/_db     | Console SQL               |
+| http://localhost:8080/_minio  | Console stockage d'images |
+
 ## Commandes
 ### Démarrage
 > [!NOTE]
