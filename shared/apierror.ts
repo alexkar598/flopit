@@ -12,4 +12,5 @@ export const APIError = Object.freeze({
   SUB_NOT_FOUND: "Ce f/ n'a pas été trouvé",
   POST_NOT_FOUND: "Ce message n'a pas été trouvé",
   INVALID_DELTA: "Le contenue Delta n'est pas valide",
+  TITLE_TOO_SHORT: "Le titre doit faire au moins 1 caractère",
 });
