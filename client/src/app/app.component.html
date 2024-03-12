@@ -5,22 +5,10 @@
 
   <nb-layout-column>
     <router-outlet />
-
-    <button
-      (click)="ecrirePost()"
-      class="createpost__button"
-      nbButton
-      size="giant"
-      shape="round"
-      status="primary"
-    >
-      <nb-icon icon="plus-circle-outline" />
-    </button>
+    <app-button-new-post />
   </nb-layout-column>
 
   <nb-layout-footer>
-    <app-footer/>
+    <app-footer />
   </nb-layout-footer>
-
 </nb-layout>
-
