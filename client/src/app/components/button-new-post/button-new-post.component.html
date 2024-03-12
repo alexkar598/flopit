@@ -5,6 +5,13 @@
   size="giant"
   shape="round"
   status="primary"
+  [disabled]="!(userService.currentUser$ | async)"
+  [nbTooltip]="
+    !(userService.currentUser$ | async)
+      ? 'Vous devez être connecté pour publié'
+      : ''
+  "
+  nbTooltipStatus="basic"
 >
   <nb-icon icon="plus-circle-outline" />
 </button>
