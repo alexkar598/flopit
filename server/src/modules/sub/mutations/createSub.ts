@@ -15,23 +15,44 @@ builder.mutationField("createSub", (t) =>
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
-    resolve: async (query, _root, { input: { name, description } }) => {
-      try {
-        return await prisma.sub.create({
-          ...query,
-          data: {
-            name,
-            description: description ?? undefined,
-          },
-        });
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-          //"Unique constraint failed on the {constraint}"
-          if (e.code === "P2002" && e.meta?.target === "Sub_name_key")
-            throw getAPIError("DUPLICATE_SUB_NAME");
+    resolve: (
+      query,
+      _root,
+      { input: { name, description } },
+      { authenticated_user_id },
+    ) => {
+      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
+
+      return prisma.$transaction(async (tx) => {
+        try {
+          const sub = await tx.sub.create({
+            select: { id: true },
+            data: {
+              name,
+              description: description ?? undefined,
+            },
+          });
+
+          await tx.moderator.create({
+            data: {
+              user_id: authenticated_user_id,
+              sub_id: sub.id,
+            },
+          });
+
+          return await tx.sub.findUnique({
+            ...query,
+            where: { id: sub.id },
+          });
+        } catch (e) {
+          if (e instanceof PrismaClientKnownRequestError) {
+            //"Unique constraint failed on the {constraint}"
+            if (e.code === "P2002" && e.meta?.target === "Sub_name_key")
+              throw getAPIError("DUPLICATE_SUB_NAME");
+          }
+          throw e;
         }
-        throw e;
-      }
+      });
     },
   }),
 );
