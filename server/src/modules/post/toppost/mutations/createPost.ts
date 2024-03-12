@@ -2,7 +2,7 @@ import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
 import { topPostRef } from "../schema.ts";
 import { getAPIError } from "../../../../util.ts";
-import { Delta, quillDeltaToPlainText } from "../../delta.ts";
+import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const input = builder.inputType("CreatePostInput", {
@@ -19,9 +19,11 @@ builder.mutationField("createPost", (t) =>
     nullable: true,
     args: { input: t.arg({ type: input }) },
     resolve: async (query, _root, { input }, { authenticated_user_id }) => {
+      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
+
       if (!input.title.length) throw getAPIError("TITLE_TOO_SHORT");
 
-      const delta = await Delta.safeParseAsync(input.delta_content);
+      const delta = await deltaValidator.safeParseAsync(input.delta_content);
       if (!delta.success) throw getAPIError("INVALID_DELTA");
 
       try {
@@ -39,7 +41,7 @@ builder.mutationField("createPost", (t) =>
             Sub: {
               connect: { name: input.sub },
             },
-            delta_content: <any>delta.data,
+            delta_content: delta.data,
             text_content: quillDeltaToPlainText(delta.data),
             cached_votes: 0,
           },
