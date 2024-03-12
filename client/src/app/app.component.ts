@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterOutlet } from "@angular/router";
-import { NbButtonModule, NbIconModule, NbLayoutModule } from "@nebular/theme";
+import { NbButtonModule, NbLayoutModule } from "@nebular/theme";
 import { FooterComponent } from "./components/footer/footer.component";
 import { HeaderComponent } from "./components/header/header.component";
 import { ButtonNewPostComponent } from "~/app/components/button-new-post/button-new-post.component";
@@ -16,7 +16,6 @@ import { ButtonNewPostComponent } from "~/app/components/button-new-post/button-
     NbButtonModule,
     HeaderComponent,
     FooterComponent,
-    NbIconModule,
     ButtonNewPostComponent,
   ],
   templateUrl: "./app.component.html",
