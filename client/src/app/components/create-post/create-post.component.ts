@@ -42,7 +42,7 @@ export class CreatePostComponent {
   protected readonly getImg = getImg;
 
   constructor(
-    private findSubsGQL: FindSubsGQL,
+    findSubsGQL: FindSubsGQL,
     private createPostMut: CreatePostGQL,
     private windowRef: NbWindowRef,
     private router: Router,
@@ -66,7 +66,15 @@ export class CreatePostComponent {
             delta_content: { ops: f.value.content?.ops ?? [] },
           },
         },
-        { refetchQueries: [{ query: SubFeedDocument }] },
+        {
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: SubFeedDocument,
+              variables: { cursor: null, sub_name: f.value.sub },
+            },
+          ],
+        },
       )
       .subscribe(async (res) => {
         this.loading = false;
