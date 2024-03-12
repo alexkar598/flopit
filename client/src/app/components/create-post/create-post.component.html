@@ -7,6 +7,7 @@
     fieldSize="giant"
     name="title"
     ngModel
+    required
   />
 
   <div class="sub-field">
@@ -18,14 +19,17 @@
       (input)="rechercheSub(subFilter)"
       placeholder="Recherche subs"
       [nbAutocomplete]="autoSub"
+      ngModel
+      name="sub"
+      required
     />
-    <nb-autocomplete #autoSub (selectedChange)="onSubSelection($event)">
+    <nb-autocomplete #autoSub>
       @for (sub of subs$ | async; track sub.id) {
         <nb-option [value]="sub.name">
           <nb-user
             [picture]="
               sub.iconOid != null
-                ? getImgUrl(sub.iconOid, { width: 64, height: 64 })
+                ? getImg(sub.iconOid, { width: 64, height: 64 })
                 : ''
             "
             [name]="'f/' + sub.name"
@@ -38,6 +42,14 @@
   <quill-editor class="quill" ngModel format="object" name="content" />
 
   <div class="submit-wrapper">
-    <button nbButton status="primary" class="submit">Publier</button>
+    <button
+      nbButton
+      status="primary"
+      class="submit"
+      [disabled]="loading"
+      [nbSpinner]="loading"
+    >
+      Publier
+    </button>
   </div>
 </form>

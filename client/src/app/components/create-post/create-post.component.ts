@@ -5,13 +5,16 @@ import {
   NbButtonModule,
   NbInputModule,
   NbSelectWithAutocompleteModule,
+  NbSpinnerModule,
   NbUserModule,
+  NbWindowRef,
 } from "@nebular/theme";
 import { QuillEditorComponent } from "ngx-quill";
 import { AsyncPipe, NgForOf } from "@angular/common";
 import { map } from "rxjs";
-import { FindSubsGQL } from "~/graphql";
-import { getImgUrl, notNull } from "~/util";
+import { CreatePostGQL, FindSubsGQL, SubFeedDocument } from "~/graphql";
+import { getImg, notNull } from "~/app/util";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-create-post",
@@ -26,6 +29,7 @@ import { getImgUrl, notNull } from "~/util";
     AsyncPipe,
     NbAutocompleteModule,
     NbUserModule,
+    NbSpinnerModule,
   ],
   templateUrl: "./create-post.component.html",
   styleUrl: "./create-post.component.scss",
@@ -33,8 +37,16 @@ import { getImgUrl, notNull } from "~/util";
 export class CreatePostComponent {
   public subsQuery$;
   public subs$;
+  public loading = false;
 
-  constructor(private findSubsGQL: FindSubsGQL) {
+  protected readonly getImg = getImg;
+
+  constructor(
+    private findSubsGQL: FindSubsGQL,
+    private createPostMut: CreatePostGQL,
+    private windowRef: NbWindowRef,
+    private router: Router,
+  ) {
     this.subsQuery$ = findSubsGQL.watch();
     this.subsQuery$.setVariables({ search: "" });
     this.subs$ = this.subsQuery$.valueChanges.pipe(
@@ -43,16 +55,28 @@ export class CreatePostComponent {
   }
 
   submit(f: NgForm) {
-    console.log(f.value);
+    this.loading = true;
+
+    this.createPostMut
+      .mutate(
+        {
+          input: {
+            title: f.value.title,
+            sub: f.value.sub,
+            delta_content: { ops: f.value.content?.ops ?? [] },
+          },
+        },
+        { refetchQueries: [{ query: SubFeedDocument }] },
+      )
+      .subscribe(async (res) => {
+        this.loading = false;
+        if (!res.data) return;
+        await this.router.navigate(["f", res.data.createPost?.sub.name]);
+        this.windowRef.close();
+      });
   }
 
   rechercheSub(field: HTMLInputElement) {
     this.subsQuery$.setVariables({ search: field.value });
   }
-
-  onSubSelection($event: any) {
-    console.log($event);
-  }
-
-  protected readonly getImgUrl = getImgUrl;
 }
