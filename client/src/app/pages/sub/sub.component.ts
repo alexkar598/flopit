@@ -17,7 +17,7 @@ import {
 } from "~/graphql";
 import { ActivatedRoute } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
-import { Observable, map, Subscription } from "rxjs";
+import { Observable, map, Subscription, filter } from "rxjs";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
@@ -39,7 +39,8 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 })
 export class SubComponent implements OnInit, OnDestroy {
   private sub$!: Observable<SubInformationQuery["subByName"]>;
-  private subSubscription!: Subscription;
+  private subSubscription?: Subscription;
+  private routeSubscription?: Subscription;
   public sub?: SubInformationQuery["subByName"];
 
   constructor(
@@ -50,17 +51,28 @@ export class SubComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.sub$ = this.subInfoQuery
-      .watch({
-        sub_name: this.route.snapshot.params?.["subName"],
-      })
-      .valueChanges.pipe(map((res) => res.data.subByName));
+    this.routeSubscription = this.route.paramMap
+      .pipe(
+        map((route) => route.get("subName")),
+        filter((sub) => sub != null),
+      )
+      .subscribe((subName) => {
+        this.subSubscription?.unsubscribe();
+        this.sub = null;
 
-    this.subSubscription = this.sub$.subscribe((sub) => (this.sub = sub));
+        this.sub$ = this.subInfoQuery
+          .watch({
+            sub_name: subName!,
+          })
+          .valueChanges.pipe(map((res) => res.data.subByName));
+
+        this.subSubscription = this.sub$.subscribe((sub) => (this.sub = sub));
+      });
   }
 
   ngOnDestroy() {
-    this.subSubscription.unsubscribe();
+    this.subSubscription?.unsubscribe();
+    this.routeSubscription?.unsubscribe();
   }
 
   toggleFollow() {

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnChanges, OnInit } from "@angular/core";
 import { ApolloQueryResult } from "@apollo/client";
 import {
   NbCardModule,
@@ -37,7 +37,7 @@ import { UserService } from "~/app/services/user.service";
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
 })
-export class TopPostListComponent implements OnInit {
+export class TopPostListComponent implements OnInit, OnChanges {
   @Input({ required: true })
   subName: string | null = null;
   sortOptions: PostSortOptions = { type: PostSortType.Hot };
@@ -55,6 +55,10 @@ export class TopPostListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.resetQuery();
+  }
+
+  ngOnChanges(): void {
     this.resetQuery();
   }
 
