@@ -11,4 +11,6 @@ export const APIError = Object.freeze({
   AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
   SUB_NOT_FOUND: "Ce f/ n'a pas été trouvé",
   POST_NOT_FOUND: "Ce message n'a pas été trouvé",
+  NOT_SUB_MODERATOR:
+    "Vous devez être modérateur de ce sub pour effectuer cette action",
 });
