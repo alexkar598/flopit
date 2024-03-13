@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { ApolloQueryResult, makeVar } from "@apollo/client";
+import { ApolloQueryResult } from "@apollo/client";
 import {
   NbCardModule,
   NbListModule,
@@ -12,19 +12,14 @@ import { BehaviorSubject, map, Observable, Subscription } from "rxjs";
 import { notNull, throwException } from "~/app/util";
 import {
   HomeFeedGQL,
-  HomeFeedQuery,
-  HomeFeedQueryVariables,
   PostSortOptions,
   PostSortType,
   SubFeedGQL,
-  SubFeedQuery,
-  SubFeedQueryVariables,
   TopPostCardFragment,
 } from "~/graphql";
 import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
 import { FormsModule } from "@angular/forms";
 import { UserService } from "~/app/services/user.service";
-import { QueryRef } from "apollo-angular";
 
 @Component({
   selector: "app-post-list",
@@ -48,12 +43,10 @@ export class TopPostListComponent implements OnInit, OnDestroy {
   sortOptions: PostSortOptions = { type: PostSortType.Hot };
   personalised: boolean = false;
   cursorSubscription?: Subscription;
-  feedQuery!:
-    | QueryRef<SubFeedQuery, SubFeedQueryVariables>
-    | QueryRef<HomeFeedQuery, HomeFeedQueryVariables>;
 
   public posts$!: Observable<TopPostCardFragment[]>;
   public loadMore!: () => Promise<ApolloQueryResult<unknown>>;
+  public applyVariables!: () => Promise<unknown>;
 
   protected readonly PostSortType = PostSortType;
 
@@ -71,26 +64,19 @@ export class TopPostListComponent implements OnInit, OnDestroy {
     this.cursorSubscription?.unsubscribe();
   }
 
-  applyVariables() {
-    this.feedQuery.variables.cursor = null;
-    if (this.subName == null)
-      (<HomeFeedQueryVariables>this.feedQuery.variables).ignoreFollows =
-        !this.personalised;
-
-    this.feedQuery.refetch();
-  }
-
   resetQuery() {
     this.cursorSubscription?.unsubscribe();
 
     const endCursor = new BehaviorSubject<string | null | undefined>(null);
 
     if (this.subName != null) {
-      this.feedQuery = this.subFeedQuery.watch(
-        { sub_name: this.subName, sortOptions: this.sortOptions, cursor: null },
-        {},
-      );
-      const sub$ = this.feedQuery.valueChanges;
+      const getVariables = (withCursor = true) => ({
+        sub_name: this.subName!,
+        sortOptions: this.sortOptions,
+        cursor: withCursor ? endCursor.getValue() : null,
+      });
+      const feedQuery = this.subFeedQuery.watch(getVariables());
+      const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
         .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
         .subscribe(endCursor);
@@ -101,20 +87,16 @@ export class TopPostListComponent implements OnInit, OnDestroy {
             throwException(Error("subName invalide")),
         ),
       );
-      this.loadMore = () =>
-        this.feedQuery.fetchMore({
-          variables: {
-            sortOptions: this.sortOptions,
-            cursor: endCursor.getValue(),
-          },
-        });
+      this.loadMore = () => feedQuery.fetchMore({ variables: getVariables() });
+      this.applyVariables = () => feedQuery.refetch(getVariables(false));
     } else {
-      this.feedQuery = this.homeFeedQuery.watch({
+      const getVariables = (withCursor = true) => ({
         sortOptions: this.sortOptions,
         ignoreFollows: !this.personalised,
-        cursor: null,
+        cursor: withCursor ? endCursor.getValue() : null,
       });
-      const sub$ = this.feedQuery.valueChanges;
+      const feedQuery = this.homeFeedQuery.watch(getVariables());
+      const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
         .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
         .subscribe(endCursor);
@@ -124,14 +106,8 @@ export class TopPostListComponent implements OnInit, OnDestroy {
             x.data.homefeed.edges.map((x) => x?.node).filter(notNull) ?? null,
         ),
       );
-      this.loadMore = () =>
-        this.feedQuery.fetchMore({
-          variables: {
-            sortOptions: this.sortOptions,
-            ignoreFollows: !this.personalised,
-            cursor: endCursor.getValue(),
-          },
-        });
+      this.loadMore = () => feedQuery.fetchMore({ variables: getVariables() });
+      this.applyVariables = () => feedQuery.refetch(getVariables(false));
     }
   }
 }
