@@ -7,6 +7,8 @@ const input = builder.inputType("EditSubInput", {
   fields: (t) => ({
     sub: t.globalID({ for: subRef }),
     description: t.string({ required: false }),
+    icon: t.field({ type: "Image", required: false }),
+    banner: t.field({ type: "Image", required: false }),
   }),
 });
 
@@ -33,6 +35,8 @@ builder.mutationField("editSub", (t) =>
         where: { id: input.sub.id },
         data: {
           description: input.description ?? undefined,
+          icon_oid: await input.icon,
+          banner_oid: await input.banner,
         },
       });
     },

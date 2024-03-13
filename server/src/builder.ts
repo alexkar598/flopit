@@ -11,6 +11,7 @@ import {
 import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
 import { capitalizeFirst, getAPIError } from "./util.ts";
+import { minioUploadBuffer } from "./minio.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -37,6 +38,10 @@ export const builder = new SchemaBuilder<{
     Void: {
       Input: void;
       Output: void;
+    };
+    Image: {
+      Input: Promise<string>;
+      Output: string;
     };
   };
   Context: {
@@ -80,6 +85,29 @@ builder.scalarType("OID", {
     }
 
     return x;
+  },
+});
+builder.scalarType("Image", {
+  serialize: (x) => x,
+  parseValue: (x) => {
+    if (typeof x !== "string")
+      throw getAPIError(
+        "INVALID_BASE64",
+        "Le contenue Base64 doit être un string",
+      );
+
+    let buffer: Buffer | undefined;
+    try {
+      buffer = Buffer.from(x, "base64");
+    } catch {
+      throw getAPIError("INVALID_BASE64");
+    }
+
+    try {
+      return minioUploadBuffer(buffer);
+    } catch {
+      throw getAPIError("FILE_UPLOAD_FAIL");
+    }
   },
 });
 
