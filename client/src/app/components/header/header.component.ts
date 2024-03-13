@@ -9,9 +9,9 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
-  NbToastrService,
   NbMenuItem,
   NbMenuService,
+  NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
@@ -38,7 +38,6 @@ import { filter } from "rxjs";
   styleUrl: "./header.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class HeaderComponent implements OnInit {
   constructor(
     public userService: UserService,
@@ -48,7 +47,7 @@ export class HeaderComponent implements OnInit {
 
   public userMenuItems: NbMenuItem[] = [
     {
-      title: "Log out",
+      title: "Déconnexion",
       icon: "log-out",
       data: {
         onClick: (async () => {
