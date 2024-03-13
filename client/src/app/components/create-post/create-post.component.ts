@@ -62,7 +62,7 @@ export class CreatePostComponent {
         {
           input: {
             title: f.value.title,
-            sub: f.value.sub,
+            sub_name: f.value.sub,
             delta_content: { ops: f.value.content?.ops ?? [] },
           },
         },
