@@ -5,6 +5,8 @@ import {
   NbButtonModule,
   NbCardModule,
   NbIconModule,
+  NbToggleModule,
+  NbTooltipModule,
   NbUserModule,
 } from "@nebular/theme";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
@@ -19,6 +21,8 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbButtonModule,
     NbUserModule,
     TopPostListComponent,
+    NbToggleModule,
+    NbTooltipModule,
   ],
   templateUrl: "./parametres.component.html",
   styleUrl: "./parametres.component.scss",

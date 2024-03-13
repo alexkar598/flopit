@@ -14,8 +14,15 @@ nb-card-body {
   --card-padding: 0 1rem;
 }
 
-nb-card-footer {
-  --card-padding: 0.25rem 1rem;
+h2 {
+  font-size: 1.4rem;
+}
+
+button {
+  width: fit-content;
+}
+
+.parametre {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 }
