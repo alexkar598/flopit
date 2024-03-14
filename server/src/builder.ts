@@ -93,7 +93,7 @@ builder.scalarType("Image", {
     if (typeof x !== "string")
       throw getAPIError(
         "INVALID_BASE64",
-        "Le contenue Base64 doit être un string",
+        "Le contenu Base64 doit être un string",
       );
 
     let buffer: Buffer | undefined;
