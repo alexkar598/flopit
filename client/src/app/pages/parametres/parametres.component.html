@@ -4,8 +4,15 @@
     <div>
       <h2>Thème</h2>
       <div class="parametre">
-        <label for="toggle-theme">Thème sombre</label>
-        <nb-toggle id="toggle-theme" />
+        <label for="select-theme">Thème</label>
+        <nb-select
+          placeholder="Select Showcase"
+          [(selected)]="selectedItem"
+          id="select-theme"
+        >
+          <nb-option value="0">Clair</nb-option>
+          <nb-option value="1">Sombre</nb-option>
+        </nb-select>
       </div>
     </div>
 

@@ -5,7 +5,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbIconModule,
-  NbToggleModule,
+  NbSelectModule,
   NbTooltipModule,
   NbUserModule,
 } from "@nebular/theme";
@@ -21,10 +21,12 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbButtonModule,
     NbUserModule,
     TopPostListComponent,
-    NbToggleModule,
+    NbSelectModule,
     NbTooltipModule,
   ],
   templateUrl: "./parametres.component.html",
   styleUrl: "./parametres.component.scss",
 })
-export class ParametresComponent {}
+export class ParametresComponent {
+  selectedItem = "0";
+}
