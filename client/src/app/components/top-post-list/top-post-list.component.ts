@@ -75,7 +75,10 @@ export class TopPostListComponent implements OnInit, OnDestroy {
         sortOptions: this.sortOptions,
         cursor: withCursor ? endCursor.getValue() : null,
       });
-      const feedQuery = this.subFeedQuery.watch(getVariables());
+      const feedQuery = this.subFeedQuery.watch(getVariables(), {
+        fetchPolicy: "cache-and-network",
+        nextFetchPolicy: "cache-first",
+      });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
         .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
@@ -95,7 +98,10 @@ export class TopPostListComponent implements OnInit, OnDestroy {
         ignoreFollows: !this.personalised,
         cursor: withCursor ? endCursor.getValue() : null,
       });
-      const feedQuery = this.homeFeedQuery.watch(getVariables());
+      const feedQuery = this.homeFeedQuery.watch(getVariables(), {
+        fetchPolicy: "cache-and-network",
+        nextFetchPolicy: "cache-first",
+      });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
         .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
