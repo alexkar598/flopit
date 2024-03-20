@@ -18,6 +18,8 @@ import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { HttpHeaders } from "@angular/common/http";
 import { StrictTypedTypePolicies } from "~/graphql";
+import { ErrorCode } from "~shared/apierror";
+import { Router } from "@angular/router";
 
 const uri = "/graphql";
 
@@ -29,6 +31,7 @@ export function apolloOptionsFactory(
   cache: InMemoryCache,
   transferState: TransferState,
   toastrService: NbToastrService,
+  router: Router,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
@@ -55,14 +58,23 @@ export function apolloOptionsFactory(
 
   const errorLink = onError(({ graphQLErrors }) => {
     if (graphQLErrors == null) return;
-    graphQLErrors
-      .filter((err) => err.extensions?.["code"] !== "AUTHENTICATED_FIELD")
-      .forEach((err) =>
-        toastrService.danger(err.message, "Erreur", {
-          destroyByClick: true,
-          duration: 1500,
-        }),
-      );
+    graphQLErrors.forEach((err) => {
+      const code = <ErrorCode>err.extensions?.["code"];
+
+      if (code === "AUTHENTICATED_FIELD") return;
+
+      if (code === "AUTHENTICATED_MUTATION") {
+        const toast = toastrService.info(
+          "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
+          "Inscrivez-vous!",
+          { icon: "log-in", duration: 2500 },
+        );
+        toast.onClick().subscribe(() => router.navigate(["inscription"]));
+        return;
+      }
+
+      toastrService.danger(err.message, "Erreur");
+    });
   });
 
   const link = from([
@@ -105,6 +117,6 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpBatchLink, APOLLO_CACHE, TransferState, NbToastrService],
+    deps: [HttpBatchLink, APOLLO_CACHE, TransferState, NbToastrService, Router],
   },
 ];

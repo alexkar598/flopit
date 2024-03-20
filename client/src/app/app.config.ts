@@ -14,7 +14,11 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     importProvidersFrom(
       NbThemeModule.forRoot(),
-      NbToastrModule.forRoot(),
+      NbToastrModule.forRoot({
+        destroyByClick: true,
+        preventDuplicates: true,
+        duration: 1500,
+      }),
       NbMenuModule.forRoot(),
       BrowserAnimationsModule,
     ),
