@@ -72,14 +72,12 @@ export class UserService {
 
   logout(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.logoutMut
-        .mutate({}, { errorPolicy: "ignore", fetchPolicy: "no-cache" })
-        .subscribe((result) => {
-          if (result.data == null)
-            return reject(result.errors?.map((err) => err.message).join("\n"));
-          void this.apollo.client.resetStore();
-          resolve();
-        });
+      this.logoutMut.mutate({}).subscribe((result) => {
+        if (result.errors)
+          return reject(result.errors?.map((err) => err.message).join("\n"));
+        void this.apollo.client.resetStore();
+        resolve();
+      });
     });
   }
 }
