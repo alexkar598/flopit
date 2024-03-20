@@ -1,7 +1,30 @@
 <nb-card>
   <nb-card-header> <h1>Paramètres</h1> </nb-card-header>
   <nb-card-body>
-    <div>
+    <div class="categorie">
+      <h2>Informations</h2>
+
+      @if (userService.currentUser$ | async; as user) {
+        <div class="utilisateur">
+          <nb-user
+            [name]="user.username"
+            [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
+            color="#EEE"
+          />
+        </div>
+      }
+      <div class="parametre">
+        <label for="changer-icone">Changer l'icône</label>
+        <input
+          nbInput
+          type="file"
+          accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+          id="changer-icone"
+        />
+      </div>
+    </div>
+
+    <div class="categorie">
       <h2>Thème</h2>
       <div class="parametre">
         <label for="select-theme">Thème</label>
@@ -16,7 +39,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="categorie">
       <h2>Compte</h2>
       <div class="parametre">
         <label for="supprimer-compte">Supprimer le compte</label>

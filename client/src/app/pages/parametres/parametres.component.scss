@@ -10,23 +10,27 @@ nb-card-header {
   text-align: center;
 }
 
-nb-card-body {
-  --card-padding: 0 1rem;
-}
-
 h2 {
   font-size: 1.4rem;
 }
 
+input,
+button,
 nb-select {
   width: fit-content;
 }
 
-button {
-  width: fit-content;
+.categorie {
+  margin-bottom: 2rem;
+}
+
+.utilisateur {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .parametre {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  vertical-align: center;
 }
