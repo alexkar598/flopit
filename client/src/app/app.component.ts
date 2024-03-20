@@ -1,7 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterOutlet } from "@angular/router";
-import { NbButtonModule, NbLayoutModule } from "@nebular/theme";
+import { NbButtonModule, NbLayoutModule, NbMenuService } from "@nebular/theme";
 import { FooterComponent } from "./components/footer/footer.component";
 import { HeaderComponent } from "./components/header/header.component";
 import { ButtonNewPostComponent } from "~/app/components/button-new-post/button-new-post.component";
@@ -21,4 +21,12 @@ import { ButtonNewPostComponent } from "~/app/components/button-new-post/button-
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  constructor(private nbMenuService: NbMenuService) {}
+
+  ngOnInit(): void {
+    this.nbMenuService
+      .onItemClick()
+      .subscribe(({ item }) => item.data?.onClick());
+  }
+}
