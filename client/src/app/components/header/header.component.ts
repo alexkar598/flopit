@@ -1,22 +1,20 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
+  NbClickableMenuItem,
   NbContextMenuModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
-  NbMenuItem,
-  NbMenuService,
   NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
-import { filter } from "rxjs";
 
 @Component({
   selector: "app-header",
@@ -38,29 +36,19 @@ import { filter } from "rxjs";
   styleUrl: "./header.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   constructor(
     public userService: UserService,
-    private nbMenuService: NbMenuService,
     public toastr: NbToastrService,
   ) {}
 
-  public userMenuItems: NbMenuItem[] = [
+  public userMenuItems: NbClickableMenuItem[] = [
     {
       title: "Déconnexion",
       icon: "log-out",
       data: {
-        onClick: (async () => {
-          await this.userService.logout();
-        }).bind(this),
+        onClick: () => this.userService.logout(),
       },
     },
   ];
-
-  ngOnInit() {
-    this.nbMenuService
-      .onItemClick()
-      .pipe(filter(({ tag }) => tag === "header-user-menu"))
-      .subscribe(({ item }) => item.data?.onClick());
-  }
 }
