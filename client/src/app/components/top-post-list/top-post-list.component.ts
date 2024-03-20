@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ApolloQueryResult } from "@apollo/client";
 import {
   NbCardModule,
@@ -8,7 +8,7 @@ import {
   NbToggleModule,
   NbTooltipModule,
 } from "@nebular/theme";
-import { BehaviorSubject, map, Observable } from "rxjs";
+import { BehaviorSubject, map, Observable, Subscription } from "rxjs";
 import { notNull, throwException } from "~/app/util";
 import {
   HomeFeedGQL,
@@ -37,14 +37,16 @@ import { UserService } from "~/app/services/user.service";
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
 })
-export class TopPostListComponent implements OnInit {
+export class TopPostListComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   subName: string | null = null;
   sortOptions: PostSortOptions = { type: PostSortType.Hot };
   personalised: boolean = false;
+  cursorSubscription?: Subscription;
 
   public posts$!: Observable<TopPostCardFragment[]>;
   public loadMore!: () => Promise<ApolloQueryResult<unknown>>;
+  public applyVariables!: () => Promise<unknown>;
 
   protected readonly PostSortType = PostSortType;
 
@@ -58,16 +60,24 @@ export class TopPostListComponent implements OnInit {
     this.resetQuery();
   }
 
+  ngOnDestroy(): void {
+    this.cursorSubscription?.unsubscribe();
+  }
+
   resetQuery() {
+    this.cursorSubscription?.unsubscribe();
+
     const endCursor = new BehaviorSubject<string | null | undefined>(null);
 
     if (this.subName != null) {
-      const feedQuery = this.subFeedQuery.watch(
-        { sub_name: this.subName, sortOptions: this.sortOptions, cursor: null },
-        {},
-      );
+      const getVariables = (withCursor = true) => ({
+        sub_name: this.subName!,
+        sortOptions: this.sortOptions,
+        cursor: withCursor ? endCursor.getValue() : null,
+      });
+      const feedQuery = this.subFeedQuery.watch(getVariables());
       const sub$ = feedQuery.valueChanges;
-      sub$
+      this.cursorSubscription = sub$
         .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
@@ -77,24 +87,17 @@ export class TopPostListComponent implements OnInit {
             throwException(Error("subName invalide")),
         ),
       );
-      this.loadMore = () =>
-        feedQuery.fetchMore({
-          variables: {
-            sortOptions: this.sortOptions,
-            cursor: endCursor.getValue(),
-          },
-        });
+      this.loadMore = () => feedQuery.fetchMore({ variables: getVariables() });
+      this.applyVariables = () => feedQuery.refetch(getVariables(false));
     } else {
-      const feedQuery = this.homeFeedQuery.watch(
-        {
-          sortOptions: this.sortOptions,
-          ignoreFollows: !this.personalised,
-          cursor: null,
-        },
-        { fetchPolicy: "cache-and-network" },
-      );
+      const getVariables = (withCursor = true) => ({
+        sortOptions: this.sortOptions,
+        ignoreFollows: !this.personalised,
+        cursor: withCursor ? endCursor.getValue() : null,
+      });
+      const feedQuery = this.homeFeedQuery.watch(getVariables());
       const sub$ = feedQuery.valueChanges;
-      sub$
+      this.cursorSubscription = sub$
         .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
@@ -103,14 +106,8 @@ export class TopPostListComponent implements OnInit {
             x.data.homefeed.edges.map((x) => x?.node).filter(notNull) ?? null,
         ),
       );
-      this.loadMore = () =>
-        feedQuery.fetchMore({
-          variables: {
-            sortOptions: this.sortOptions,
-            ignoreFollows: !this.personalised,
-            cursor: endCursor.getValue(),
-          },
-        });
+      this.loadMore = () => feedQuery.fetchMore({ variables: getVariables() });
+      this.applyVariables = () => feedQuery.refetch(getVariables(false));
     }
   }
 }
