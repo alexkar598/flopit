@@ -25,24 +25,31 @@ builder.mutationField("createSub", (t) =>
 
       return prisma.$transaction(async (tx) => {
         try {
-          const sub = await tx.sub.create({
-            select: { id: true },
+          const moderator = await tx.moderator.create({
+            select: { sub_id: true },
             data: {
-              name,
-              description: description ?? undefined,
-            },
-          });
-
-          await tx.moderator.create({
-            data: {
-              user_id: authenticated_user_id,
-              sub_id: sub.id,
+              User: {
+                connect: {
+                  id: authenticated_user_id,
+                },
+              },
+              Sub: {
+                create: {
+                  name,
+                  description: description ?? undefined,
+                  Followers: {
+                    create: {
+                      user_id: authenticated_user_id,
+                    },
+                  },
+                },
+              },
             },
           });
 
           return await tx.sub.findUnique({
             ...query,
-            where: { id: sub.id },
+            where: { id: moderator.sub_id },
           });
         } catch (e) {
           if (e instanceof PrismaClientKnownRequestError) {

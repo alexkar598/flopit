@@ -10,16 +10,25 @@ export const minioClient = new Client({
   region: process.env.S3_REGION!,
 });
 
-export async function minioUploadBuffer(
-  content: Buffer,
+export async function minioUploadFile(
+  file: File,
   bucket = "images",
 ): Promise<string> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+
   const hash = createHash("sha1");
-  hash.write(content);
+  hash.write(buffer);
 
   const objectName = hash.digest("hex");
 
-  await minioClient.putObject(bucket, objectName, content);
+  await minioClient.putObject(bucket, objectName, buffer);
 
   return objectName;
+}
+
+export async function minioUploadFileNullableHelper(
+  file: File | null | undefined,
+  bucket?: string,
+) {
+  return file != null ? await minioUploadFile(file, bucket) : file;
 }

@@ -153,8 +153,8 @@ services:
       - backend
     restart: unless-stopped
     environment:
-      # IMGPROXY_KEY: ${IMGPROXY_KEY}
-      # IMGPROXY_SALT: ${IMGPROXY_SALT}
+      IMGPROXY_KEY: ${IMGPROXY_KEY}
+      IMGPROXY_SALT: ${IMGPROXY_SALT}
       IMGPROXY_QUALITY: 85
       IMGPROXY_WORKERS: 8
       IMGPROXY_REQUESTS_QUEUE_SIZE: 32
