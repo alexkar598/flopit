@@ -5,9 +5,8 @@ import { prisma } from "../../db.ts";
 export interface Message {
   id: string;
   author_id: string;
-  receiver_id: string;
+  target_id: string;
   textContent: string;
-  created: string;
 }
 
 export const messageRef = builder.objectRef<Message>("Message");
@@ -16,7 +15,10 @@ messageRef.implement({
   fields: (t) => ({
     id: t.exposeID("id"),
     textContent: t.exposeString("textContent"),
-    created: t.exposeString("created"),
+    created: t.field({
+      type: "DateTime",
+      resolve: (message) => new Date(parseInt(message.id.split("-")[0])),
+    }),
     author: t.field({
       type: userRef,
       resolve: (messsage) =>
@@ -24,11 +26,11 @@ messageRef.implement({
           where: { id: messsage.author_id },
         }),
     }),
-    receiver: t.field({
+    target: t.field({
       type: userRef,
       resolve: (messsage) =>
         prisma.user.findUnique({
-          where: { id: messsage.receiver_id },
+          where: { id: messsage.target_id },
         }),
     }),
   }),
