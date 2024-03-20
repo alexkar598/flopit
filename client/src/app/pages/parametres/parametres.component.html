@@ -1,9 +1,7 @@
 <nb-card>
   <nb-card-header> <h1>Paramètres</h1> </nb-card-header>
   <nb-card-body>
-    <div class="categorie">
-      <h2>Informations</h2>
-
+    <div>
       @if (userService.currentUser$ | async; as user) {
         <div class="utilisateur">
           <nb-user
@@ -13,6 +11,7 @@
           />
         </div>
       }
+      <h2>Informations</h2>
       <div class="parametre">
         <label for="changer-icone">Changer l'icône</label>
         <input
@@ -22,9 +21,14 @@
           id="changer-icone"
         />
       </div>
+      <div class="parametre">
+        <button nbButton status="primary" class="appliquer">
+          Appliquer les modifications
+        </button>
+      </div>
     </div>
 
-    <div class="categorie">
+    <div>
       <h2>Thème</h2>
       <div class="parametre">
         <label for="select-theme">Thème</label>
@@ -39,7 +43,7 @@
       </div>
     </div>
 
-    <div class="categorie">
+    <div>
       <h2>Compte</h2>
       <div class="parametre">
         <label for="supprimer-compte">Supprimer le compte</label>

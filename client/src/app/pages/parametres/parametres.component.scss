@@ -56,10 +56,6 @@ nb-select {
   width: 15rem;
 }
 
-.categorie {
-  margin-bottom: 2rem;
-}
-
 .utilisateur {
   margin-left: auto;
   margin-right: auto;
@@ -69,4 +65,10 @@ nb-select {
   display: grid;
   grid-template-columns: 1fr 1fr;
   vertical-align: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.appliquer {
+  grid-column: 2;
 }
