@@ -96,7 +96,12 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
       typePolicies: {
         Query: {
           fields: {
-            homefeed: relayStylePagination(),
+            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+          },
+        },
+        Sub: {
+          fields: {
+            posts: relayStylePagination(["sortOptions"]),
           },
         },
       } satisfies StrictTypedTypePolicies,
