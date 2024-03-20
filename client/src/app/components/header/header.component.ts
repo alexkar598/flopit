@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
@@ -43,9 +43,19 @@ export class HeaderComponent implements OnInit {
     public userService: UserService,
     private nbMenuService: NbMenuService,
     public toastr: NbToastrService,
+    private router: Router,
   ) {}
 
   public userMenuItems: NbMenuItem[] = [
+    {
+      title: "Paramètres",
+      icon: "settings-2-outline",
+      data: {
+        onClick: (async () => {
+          await this.router.navigate(["/parametres"]);
+        }).bind(this),
+      },
+    },
     {
       title: "Déconnexion",
       icon: "log-out",
