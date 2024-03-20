@@ -11,4 +11,6 @@ export const APIError = Object.freeze({
   AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
   SUB_NOT_FOUND: "Ce f/ n'a pas été trouvé",
   POST_NOT_FOUND: "Ce message n'a pas été trouvé",
+  USER_NOT_FOUND: "Cet utilisateur n'existe pas",
+  MESSAGE_SELF: "Vous ne pouvez pas envoyer un message à vous-même",
 });

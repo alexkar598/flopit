@@ -20,9 +20,12 @@ services:
         condition: service_healthy
       db-deploy:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     links:
       - mariadb
       - minio
+      - redis
     healthcheck:
       test: [ "CMD", "sh", "-c", "wget localhost:3000/health -O - && wget localhost:4200 -O -"]
       timeout: "10s"
@@ -75,6 +78,20 @@ services:
     volumes:
       - mariadb:/var/lib/mysql
       - mariadb-import:/import
+  redis:
+    image: redis:7.0-alpine3.19
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
+    networks:
+      - backend
+    restart: unless-stopped
+    volumes:
+      - redis:/data
   cloudbeaver:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
@@ -199,6 +216,7 @@ volumes:
   mariadb:
   mariadb-import:
   minio:
+  redis:
 configs:
   nginx:
     file: compose/nginx.conf
