@@ -2,7 +2,6 @@ export type ErrorCode = keyof typeof APIError;
 export const APIError = Object.freeze({
   NOT_IMPLEMENTED: "Cette opération n'est pas encore implémentée",
   INVALID_OID: "Un OID fournit est invalide",
-  INVALID_BASE64: "Le contenu base64 fournit est invalide",
   BAD_CREDENTIALS: "Courriel ou mot de passe invalide",
   DUPLICATE_USERNAME: "Ce nom d'utilisateur est déja utilisé",
   DUPLICATE_EMAIL: "Ce courriel est déja utilisé",

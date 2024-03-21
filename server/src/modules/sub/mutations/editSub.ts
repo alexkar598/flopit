@@ -34,13 +34,24 @@ builder.mutationField("editSub", (t) =>
         )
           throw getAPIError("NOT_SUB_MODERATOR");
 
+        let icon_oid, banner_oid;
+
+        try {
+          [icon_oid, banner_oid] = await Promise.all([
+            minioUploadFileNullableHelper(input.icon),
+            minioUploadFileNullableHelper(input.banner),
+          ]);
+        } catch {
+          throw getAPIError("FILE_UPLOAD_FAIL");
+        }
+
         return tx.sub.update({
           ...query,
           where: { id: input.id.id },
           data: {
             description: input.description ?? undefined,
-            icon_oid: await minioUploadFileNullableHelper(input.icon),
-            banner_oid: await minioUploadFileNullableHelper(input.banner),
+            icon_oid,
+            banner_oid,
           },
         });
       });

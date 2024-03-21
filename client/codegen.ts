@@ -22,7 +22,7 @@ const config: CodegenConfig = {
       DateTime: "string",
       JSON: "unknown",
       Void: "void",
-      Image: "string",
+      File: "File",
     },
   },
   ignoreNoDocuments: true,
