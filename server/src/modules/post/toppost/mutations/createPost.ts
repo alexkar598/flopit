@@ -22,12 +22,12 @@ builder.mutationField("createPost", (t) =>
     resolve: async (query, _root, { input }, { authenticated_user_id }) => {
       if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
 
+      if (input.title.length < 1) throw getAPIError("TITLE_TOO_SHORT");
+
+      const delta = await deltaValidator.safeParseAsync(input.delta_content);
+      if (!delta.success) throw getAPIError("INVALID_DELTA");
+
       return prisma.$transaction(async (tx) => {
-        if (!input.title.length) throw getAPIError("TITLE_TOO_SHORT");
-
-        const delta = await deltaValidator.safeParseAsync(input.delta_content);
-        if (!delta.success) throw getAPIError("INVALID_DELTA");
-
         const subId = await tx.sub
           .findUnique({
             select: { id: true },
@@ -40,7 +40,7 @@ builder.mutationField("createPost", (t) =>
         if (await isBanned(authenticated_user_id, subId, tx))
           throw getAPIError("BANNED");
 
-        const post = await tx.post.create({
+        return tx.post.create({
           ...query,
           data: {
             TopPost: {
@@ -54,20 +54,17 @@ builder.mutationField("createPost", (t) =>
             Sub: {
               connect: { id: subId },
             },
+            Votes: {
+              create: {
+                user_id: authenticated_user_id,
+                value: VoteValue.Up,
+              },
+            },
             delta_content: delta.data,
             text_content: quillDeltaToPlainText(delta.data),
             cached_votes: 1,
           },
         });
-
-        await tx.vote.create({
-          data: {
-            user_id: authenticated_user_id,
-            post_id: post.id,
-            value: VoteValue.Up,
-          },
-        });
-        return post;
       });
     },
   }),

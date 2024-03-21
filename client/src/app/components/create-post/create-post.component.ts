@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import {
   NbAutocompleteModule,
@@ -11,10 +11,19 @@ import {
 } from "@nebular/theme";
 import { QuillEditorComponent } from "ngx-quill";
 import { AsyncPipe, NgForOf } from "@angular/common";
-import { map } from "rxjs";
-import { CreatePostGQL, FindSubsGQL, SubFeedDocument } from "~/graphql";
-import { getImg, notNull } from "~/app/util";
+import { map, Observable } from "rxjs";
+import {
+  CreatePostGQL,
+  FindSubsGQL,
+  FindSubsQuery,
+  FindSubsQueryVariables,
+  FindSubsSubFragment,
+  HomeFeedDocument,
+  SubFeedDocument,
+} from "~/graphql";
+import { debounce, getImg, notNull } from "~/app/util";
 import { Router } from "@angular/router";
+import { QueryRef } from "apollo-angular";
 
 @Component({
   selector: "app-create-post",
@@ -34,21 +43,29 @@ import { Router } from "@angular/router";
   templateUrl: "./create-post.component.html",
   styleUrl: "./create-post.component.scss",
 })
-export class CreatePostComponent {
-  public subsQuery$;
-  public subs$;
+export class CreatePostComponent implements OnInit {
+  public subsQuery$!: QueryRef<FindSubsQuery, FindSubsQueryVariables>;
+  public subs$!: Observable<FindSubsSubFragment[]>;
   public loading = false;
+  public debouncedRechercheSub;
 
   protected readonly getImg = getImg;
 
   constructor(
-    findSubsGQL: FindSubsGQL,
+    private findSubsGQL: FindSubsGQL,
     private createPostMut: CreatePostGQL,
     private windowRef: NbWindowRef,
     private router: Router,
   ) {
-    this.subsQuery$ = findSubsGQL.watch();
-    this.subsQuery$.setVariables({ search: "" });
+    this.debouncedRechercheSub = debounce(
+      (field: HTMLInputElement) =>
+        void this.subsQuery$.setVariables({ filter: { name: field.value } }),
+      500,
+    );
+  }
+
+  ngOnInit() {
+    this.subsQuery$ = this.findSubsGQL.watch({ filter: { name: "" } });
     this.subs$ = this.subsQuery$.valueChanges.pipe(
       map((q) => q.data.subs.edges.map((e) => e?.node).filter(notNull)),
     );
@@ -67,24 +84,14 @@ export class CreatePostComponent {
           },
         },
         {
-          awaitRefetchQueries: true,
-          refetchQueries: [
-            {
-              query: SubFeedDocument,
-              variables: { cursor: null, sub_name: f.value.sub },
-            },
-          ],
+          refetchQueries: [SubFeedDocument, HomeFeedDocument],
         },
       )
       .subscribe(async (res) => {
         this.loading = false;
-        if (!res.data) return;
-        await this.router.navigate(["f", res.data.createPost?.sub.name]);
+        if (res.errors) return;
+        await this.router.navigate(["f", res.data?.createPost?.sub.name]);
         this.windowRef.close();
       });
-  }
-
-  rechercheSub(field: HTMLInputElement) {
-    this.subsQuery$.setVariables({ search: field.value });
   }
 }

@@ -16,7 +16,7 @@
       nbInput
       fullWidth
       #subFilter
-      (input)="rechercheSub(subFilter)"
+      (input)="debouncedRechercheSub(subFilter)"
       placeholder="Recherche subs"
       [nbAutocomplete]="autoSub"
       ngModel

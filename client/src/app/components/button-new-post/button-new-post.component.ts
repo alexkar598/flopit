@@ -27,7 +27,7 @@ export class ButtonNewPostComponent {
   ecrirePost() {
     this.windowService.open(CreatePostComponent, {
       title: "Nouvelle publication",
-      windowClass: "createpost__window",
+      windowClass: "createpost-window",
       closeOnEsc: false,
     });
   }

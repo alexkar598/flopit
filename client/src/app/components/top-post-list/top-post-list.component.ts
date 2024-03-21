@@ -1,5 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnChanges, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from "@angular/core";
 import { ApolloQueryResult } from "@apollo/client";
 import {
   NbCardModule,
@@ -37,7 +44,6 @@ import { UserService } from "~/app/services/user.service";
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
 })
-
 export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true })
   subName: string | null = null;
@@ -61,8 +67,12 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
     this.resetQuery();
   }
 
-  ngOnChanges(): void {
-    this.resetQuery();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      !changes?.["subName"]?.firstChange &&
+      changes?.["subName"]?.previousValue !== changes?.["subName"]?.currentValue
+    )
+      void this.applyVariables();
   }
 
   ngOnDestroy(): void {
