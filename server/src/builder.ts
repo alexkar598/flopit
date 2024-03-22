@@ -8,9 +8,9 @@ import {
   JSONObjectResolver,
   VoidResolver,
 } from "graphql-scalars";
-import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
 import { capitalizeFirst, getAPIError } from "./util.ts";
+import { HttpRequest, HttpResponse } from "uWebSockets.js";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -40,8 +40,8 @@ export const builder = new SchemaBuilder<{
     };
   };
   Context: {
-    req: IncomingMessage;
-    res: ServerResponse;
+    req: HttpRequest;
+    res: HttpResponse;
     authenticated_user_id: string;
     authenticated_session_id: string;
   };

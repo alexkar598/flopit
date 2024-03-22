@@ -3,6 +3,7 @@ import { Message, messageRef } from "../schema.ts";
 import { userRef } from "../../user/schema.ts";
 import { createRedisClient } from "../../../redis.ts";
 import { getConversationId } from "../util.ts";
+import { getAPIError } from "../../../util.ts";
 
 builder.subscriptionField("watchMessages", (t) =>
   t.field({
@@ -12,6 +13,8 @@ builder.subscriptionField("watchMessages", (t) =>
       max: t.arg.int({ required: false }),
     },
     subscribe: async function* (_, { target, max }, { authenticated_user_id }) {
+      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_FIELD");
+
       const conversationId = getConversationId(
         authenticated_user_id,
         target.id,

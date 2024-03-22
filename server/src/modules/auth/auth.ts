@@ -2,12 +2,12 @@ import { decodeGlobalID } from "@pothos/plugin-relay";
 import cookie from "cookie";
 import crypto from "crypto";
 import { jwtVerify, SignJWT } from "jose";
-import { IncomingMessage, ServerResponse } from "node:http";
 import {
   AuthenticationStatusHeader,
   HEADER_NAME_AUTHENTICATION_STATUS,
 } from "~shared/headers.ts";
 import { prisma } from "../../db.ts";
+import { HttpResponse } from "uWebSockets.js";
 
 export const JWT_SETTINGS = {
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
@@ -48,25 +48,33 @@ export async function get_token(user_gid: string, session_id: string) {
   });
 }
 
-export function clearCookie(res: ServerResponse) {
-  res.appendHeader("Set-Cookie", cookie.serialize("token", "_", { maxAge: 1 }));
-  res.setHeader(
-    HEADER_NAME_AUTHENTICATION_STATUS,
-    AuthenticationStatusHeader.DEAUTHENTICATED,
-  );
+export function clearCookie(res: HttpResponse) {
+  res.cork(() => {
+    res.writeHeader(
+      "Set-Cookie",
+      cookie.serialize("token", "_", { maxAge: 1 }),
+    );
+    res.writeHeader(
+      HEADER_NAME_AUTHENTICATION_STATUS,
+      AuthenticationStatusHeader.DEAUTHENTICATED.toString(),
+    );
+  });
 }
 
 export async function resolveAuthentication(
-  req: IncomingMessage,
-  res?: ServerResponse,
+  cookieHeader: string,
+  res?: HttpResponse,
 ) {
-  const jwt = cookie.parse(req.headers.cookie ?? "").token;
+  const jwt = cookie.parse(cookieHeader).token;
   if (jwt == null) {
-    res?.setHeader(
-      HEADER_NAME_AUTHENTICATION_STATUS,
-      AuthenticationStatusHeader.UNAUTHENTICATED,
-    );
-    return null;
+    if (res)
+      res.cork(() =>
+        res.writeHeader(
+          HEADER_NAME_AUTHENTICATION_STATUS,
+          AuthenticationStatusHeader.UNAUTHENTICATED.toString(),
+        ),
+      );
+    return;
   }
 
   const result = await jwtVerify(jwt, JWT_SETTINGS.SIGNING_KEY, {
@@ -94,10 +102,15 @@ export async function resolveAuthentication(
     return;
   }
 
-  res?.appendHeader("Set-Cookie", await get_token(user_gid, session_id));
-  res?.setHeader(
-    HEADER_NAME_AUTHENTICATION_STATUS,
-    AuthenticationStatusHeader.AUTHENTICATED,
-  );
+  if (res) {
+    res.cork(async () => {
+      res.writeHeader("Set-Cookie", await get_token(user_gid, session_id));
+      res.writeHeader(
+        HEADER_NAME_AUTHENTICATION_STATUS,
+        AuthenticationStatusHeader.AUTHENTICATED.toString(),
+      );
+    });
+  }
+
   return [decodeGlobalID(user_gid).id, session_id];
 }
