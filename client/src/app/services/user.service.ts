@@ -26,11 +26,9 @@ export class UserService {
     private currentUserGql: CurrentUserGQL,
     private apollo: Apollo,
   ) {
-    this.currentUserGql
-      .watch({}, { errorPolicy: "ignore" })
-      .valueChanges.subscribe((result) => {
-        this.currentUserSubject$.next(result.data.currentUser);
-      });
+    this.currentUserGql.watch().valueChanges.subscribe((result) => {
+      this.currentUserSubject$.next(result.data.currentUser);
+    });
   }
 
   login(email: string, password: string): Promise<void> {
@@ -38,48 +36,39 @@ export class UserService {
       if (!email || !password)
         return reject("Le courriel et le mots de passe ne peuvent être vide");
 
-      this.loginMut
-        .mutate(
-          { email, password },
-          { errorPolicy: "ignore", fetchPolicy: "no-cache" },
-        )
-        .subscribe((result) => {
-          if (result.data == null)
-            return reject(result.errors?.map((err) => err.message).join("\n"));
-          void this.apollo.client.resetStore();
-          this.currentUserSubject$.next(result.data.startSession?.user);
-          resolve();
-        });
+      this.loginMut.mutate({ email, password }).subscribe((result) => {
+        if (result.errors)
+          return reject(result.errors.map((err) => err.message).join("\n"));
+        void this.apollo.client.resetStore();
+        this.currentUserSubject$.next(result.data!.startSession!.user);
+        resolve();
+      });
     });
   }
 
-  async register(input: CreateUserInput): Promise<void> {
+  register(input: CreateUserInput): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!input.email || !input.username || !input.password) {
         return reject("Tous les champs sont obligatoires");
       }
 
-      this.createUserMut
-        .mutate({ input }, { errorPolicy: "ignore" })
-        .subscribe(async (res) => {
-          if (!res.data)
-            return reject(res.errors?.map((err) => err.message).join("\n"));
-          await this.login(input.email, input.password);
-          return resolve();
-        });
+      this.createUserMut.mutate({ input }).subscribe(async (res) => {
+        if (res.errors)
+          return reject(res.errors.map((err) => err.message).join("\n"));
+        await this.login(input.email, input.password);
+        return resolve();
+      });
     });
   }
 
   logout(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.logoutMut
-        .mutate({}, { errorPolicy: "ignore", fetchPolicy: "no-cache" })
-        .subscribe((result) => {
-          if (result.data == null)
-            return reject(result.errors?.map((err) => err.message).join("\n"));
-          void this.apollo.client.resetStore();
-          resolve();
-        });
+      this.logoutMut.mutate({}).subscribe((result) => {
+        if (result.errors)
+          return reject(result.errors?.map((err) => err.message).join("\n"));
+        void this.apollo.client.resetStore();
+        resolve();
+      });
     });
   }
 }
