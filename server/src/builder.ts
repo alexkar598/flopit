@@ -88,7 +88,7 @@ builder.scalarType("OID", {
 });
 builder.scalarType("File", {
   serialize: () =>
-    throwException(new Error("Uploads can only be used as input types")),
+    throwException(new Error("Not implemented")),
 });
 
 builder.globalConnectionField("totalCount", (t) =>
