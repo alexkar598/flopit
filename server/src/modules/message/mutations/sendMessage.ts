@@ -4,6 +4,7 @@ import { Message, messageRef } from "../schema.ts";
 import { getAPIError } from "../../../util.ts";
 import { prisma } from "../../../db.ts";
 import { createRedisClient } from "../../../redis.ts";
+import { getConversationId } from "../util.ts";
 
 const input = builder.inputType("SendMessageInput", {
   fields: (t) => ({
@@ -35,12 +36,16 @@ builder.mutationField("sendMessage", (t) =>
           textContent: input.text_content,
         };
 
-        const conversationId =
-          "conv:" + [input.target.id, authenticated_user_id].sort().join(":");
+        const conversationId = getConversationId(
+          authenticated_user_id,
+          input.target.id,
+        );
 
         const redis = await createRedisClient();
 
         const id = await redis.xAdd(conversationId, "*", message);
+
+        void redis.disconnect();
 
         return {
           id,
@@ -78,7 +83,9 @@ builder.mutationField("sendMessage", (t) =>
         );
       }
 
-      return (await Promise.all([redisWork(), dbWork()]))[0];
+      const [message] = await Promise.all([redisWork()]);
+
+      return message;
     },
   }),
 );

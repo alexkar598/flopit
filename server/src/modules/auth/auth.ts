@@ -49,8 +49,11 @@ export async function get_token(user_gid: string, session_id: string) {
 }
 
 export function clearCookie(res: ServerResponse) {
-  res.appendHeader("Set-Cookie", cookie.serialize("token", "_", { maxAge: 1 }));
-  res.setHeader(
+  res?.appendHeader(
+    "Set-Cookie",
+    cookie.serialize("token", "_", { maxAge: 1 }),
+  );
+  res?.setHeader(
     HEADER_NAME_AUTHENTICATION_STATUS,
     AuthenticationStatusHeader.DEAUTHENTICATED,
   );
@@ -62,7 +65,7 @@ export async function resolveAuthentication(
 ) {
   const jwt = cookie.parse(req.headers.cookie ?? "").token;
   if (jwt == null) {
-    res.setHeader(
+    res?.setHeader(
       HEADER_NAME_AUTHENTICATION_STATUS,
       AuthenticationStatusHeader.UNAUTHENTICATED,
     );
@@ -89,8 +92,8 @@ export async function resolveAuthentication(
   )
     return clearCookie(res);
 
-  res.appendHeader("Set-Cookie", await get_token(user_gid, session_id));
-  res.setHeader(
+  res?.appendHeader("Set-Cookie", await get_token(user_gid, session_id));
+  res?.setHeader(
     HEADER_NAME_AUTHENTICATION_STATUS,
     AuthenticationStatusHeader.AUTHENTICATED,
   );

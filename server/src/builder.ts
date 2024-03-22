@@ -95,6 +95,7 @@ builder.globalConnectionField("totalCount", (t) =>
 
 builder.queryType();
 builder.mutationType();
+builder.subscriptionType();
 
 export function frozenWithTotalCount<T extends object>(
   obj: T,
