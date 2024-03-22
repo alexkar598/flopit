@@ -7,7 +7,7 @@ import { schema, writeSchemaToFile } from "./schema.ts";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 
-const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
+const yoga = createYoga<{ req: IncomingMessage; res?: ServerResponse }>({
   schema: schema,
   landingPage: false,
   batching: true,

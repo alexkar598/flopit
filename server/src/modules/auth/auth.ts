@@ -49,11 +49,8 @@ export async function get_token(user_gid: string, session_id: string) {
 }
 
 export function clearCookie(res: ServerResponse) {
-  res?.appendHeader(
-    "Set-Cookie",
-    cookie.serialize("token", "_", { maxAge: 1 }),
-  );
-  res?.setHeader(
+  res.appendHeader("Set-Cookie", cookie.serialize("token", "_", { maxAge: 1 }));
+  res.setHeader(
     HEADER_NAME_AUTHENTICATION_STATUS,
     AuthenticationStatusHeader.DEAUTHENTICATED,
   );
@@ -61,7 +58,7 @@ export function clearCookie(res: ServerResponse) {
 
 export async function resolveAuthentication(
   req: IncomingMessage,
-  res: ServerResponse,
+  res?: ServerResponse,
 ) {
   const jwt = cookie.parse(req.headers.cookie ?? "").token;
   if (jwt == null) {
@@ -79,7 +76,10 @@ export async function resolveAuthentication(
     issuer: JWT_SETTINGS.AUTHORITY,
   }).catch(() => null);
 
-  if (result == null) return clearCookie(res);
+  if (result == null) {
+    if (res) clearCookie(res);
+    return;
+  }
 
   const session_id = result.payload.jti!;
   const user_gid = result.payload.sub!;
@@ -89,8 +89,10 @@ export async function resolveAuthentication(
       select: { id: true },
       where: { id: session_id, revocation_time: { not: null } },
     })
-  )
-    return clearCookie(res);
+  ) {
+    if (res) clearCookie(res);
+    return;
+  }
 
   res?.appendHeader("Set-Cookie", await get_token(user_gid, session_id));
   res?.setHeader(
