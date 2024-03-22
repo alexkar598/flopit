@@ -17,30 +17,32 @@ h2 {
 }
 
 input[type="file"] {
-  background-color: nb-theme(color-primary-default);
-  color: nb-theme(text-control-color);
+  background-color: nb-theme(color-basic-default);
+  color: nb-theme(color-basic-800);
   font-family: nb-theme(text-button-font-family);
   font-weight: nb-theme(text-button-font-weight);
   font-size: nb-theme(text-button-small-font-size);
   padding: 0.6875rem 1.125rem;
   border: 0;
   border-radius: nb-theme(border-radius);
-  transition: 0.25s;
+  transition:
+    0.25s outline-width,
+    0.25s background-color;
   cursor: pointer;
 }
 
 input[type="file"]:hover {
-  background-color: nb-theme(color-primary-hover);
+  background-color: nb-theme(color-basic-hover);
 }
 
 input[type="file"]:active {
-  background-color: nb-theme(color-primary-active);
-  outline: 0.37rem solid nb-theme(color-basic-active-border);
+  background-color: nb-theme(color-basic-active);
+  outline: 0.37rem solid nb-theme(outline-color);
 }
 
 input[type="file"]::file-selector-button {
   text-transform: uppercase;
-  color: nb-theme(text-control-color);
+  color: nb-theme(color-basic-800);
   font-family: nb-theme(text-button-font-family);
   font-weight: nb-theme(text-button-font-weight);
   padding: 0;
