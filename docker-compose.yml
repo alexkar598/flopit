@@ -95,6 +95,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis:/data
+    environment:
+      REDIS_ARGS: "--timeout 90"
   cloudbeaver:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
