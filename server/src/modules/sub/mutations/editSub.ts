@@ -18,42 +18,28 @@ builder.mutationField("editSub", (t) =>
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
-    resolve: (query, _root, { input }, { authenticated_user_id }) => {
+    resolve: async (query, _root, { input }, { authenticated_user_id }) => {
       if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
 
-      return prisma.$transaction(async (tx) => {
-        if (
-          !(await tx.moderator.findUnique({
-            where: {
-              user_id_sub_id: {
-                user_id: authenticated_user_id,
-                sub_id: input.id.id,
-              },
-            },
-          }))
-        )
-          throw getAPIError("NOT_SUB_MODERATOR");
+      let icon_oid, banner_oid;
 
-        let icon_oid, banner_oid;
+      try {
+        [icon_oid, banner_oid] = await Promise.all([
+          minioUploadFileNullableHelper(input.icon),
+          minioUploadFileNullableHelper(input.banner),
+        ]);
+      } catch {
+        throw getAPIError("FILE_UPLOAD_FAIL");
+      }
 
-        try {
-          [icon_oid, banner_oid] = await Promise.all([
-            minioUploadFileNullableHelper(input.icon),
-            minioUploadFileNullableHelper(input.banner),
-          ]);
-        } catch {
-          throw getAPIError("FILE_UPLOAD_FAIL");
-        }
-
-        return tx.sub.update({
-          ...query,
-          where: { id: input.id.id },
-          data: {
-            description: input.description ?? undefined,
-            icon_oid,
-            banner_oid,
-          },
-        });
+      return prisma.sub.update({
+        ...query,
+        where: { id: input.id.id },
+        data: {
+          description: input.description ?? undefined,
+          icon_oid,
+          banner_oid,
+        },
       });
     },
   }),
