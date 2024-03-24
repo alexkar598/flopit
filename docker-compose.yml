@@ -54,8 +54,6 @@ services:
     build:
       dockerfile: mariadb.Dockerfile
       context: compose
-    ports:
-      - 3306:3306
     healthcheck:
       test: [
         "CMD",
