@@ -14,4 +14,5 @@ export const APIError = Object.freeze({
   USER_NOT_FOUND: "Cet utilisateur n'existe pas",
   MESSAGE_SELF: "Vous ne pouvez pas envoyer un message à vous-même",
   CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
+  BLOCKED: "Cet utilisateur vous a bloqué",
 });

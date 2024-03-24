@@ -26,8 +26,26 @@ builder.mutationField("sendMessage", (t) =>
       if (authenticated_user_id === input.target.id)
         throw getAPIError("MESSAGE_SELF");
 
-      if (!(await prisma.user.findUnique({ where: { id: input.target.id } })))
+      if (
+        !(await prisma.user.findUnique({
+          select: { id: true },
+          where: { id: input.target.id },
+        }))
+      )
         throw getAPIError("USER_NOT_FOUND");
+
+      if (
+        !(await prisma.block.findUnique({
+          select: {},
+          where: {
+            blocked_id_blocker_id: {
+              blocker_id: input.target.id,
+              blocked_id: authenticated_user_id,
+            },
+          },
+        }))
+      )
+        throw getAPIError("BLOCKED");
 
       async function redisWork() {
         const message: Omit<Message, "id"> = {
