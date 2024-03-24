@@ -91,20 +91,26 @@ export async function resolveAuthentication(
 
   const session_id = result.payload.jti!;
   const user_gid = result.payload.sub!;
+  const user_id = decodeGlobalID(user_gid).id;
 
   if (
-    await prisma.session.findUnique({
+    !(await prisma.session.findUnique({
       select: { id: true },
-      where: { id: session_id, revocation_time: { not: null } },
-    })
+      where: {
+        id: session_id,
+        user_id: user_id,
+        revocation_time: null,
+      },
+    }))
   ) {
     if (res) clearCookie(res);
     return;
   }
 
   if (res) {
-    res.cork(async () => {
-      res.writeHeader("Set-Cookie", await get_token(user_gid, session_id));
+    const token = await get_token(user_gid, session_id);
+    res.cork(() => {
+      res.writeHeader("Set-Cookie", token);
       res.writeHeader(
         HEADER_NAME_AUTHENTICATION_STATUS,
         AuthenticationStatusHeader.AUTHENTICATED.toString(),
@@ -112,5 +118,5 @@ export async function resolveAuthentication(
     });
   }
 
-  return [decodeGlobalID(user_gid).id, session_id];
+  return [user_id, session_id];
 }

@@ -11,6 +11,11 @@ export interface Message {
 
 export const messageRef = builder.objectRef<Message>("Message");
 
+export const MessageConnection = builder.connectionObject({
+  type: messageRef,
+  name: "MessageConnection",
+});
+
 messageRef.implement({
   fields: (t) => ({
     id: t.exposeID("id"),

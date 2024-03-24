@@ -3,8 +3,8 @@ import { userRef } from "../../user/schema.ts";
 import { Message, messageRef } from "../schema.ts";
 import { getAPIError } from "../../../util.ts";
 import { prisma } from "../../../db.ts";
-import { createRedisClient } from "../../../redis.ts";
-import { getConversationId } from "../util.ts";
+import { getConversationId } from "../../conversation/util.ts";
+import { redis } from "../../../redis.ts";
 
 const input = builder.inputType("SendMessageInput", {
   fields: (t) => ({
@@ -41,11 +41,7 @@ builder.mutationField("sendMessage", (t) =>
           input.target.id,
         );
 
-        const redis = await createRedisClient();
-
         const id = await redis.xAdd(conversationId, "*", message);
-
-        void redis.disconnect();
 
         return {
           id,
@@ -83,7 +79,7 @@ builder.mutationField("sendMessage", (t) =>
         );
       }
 
-      const [message] = await Promise.all([redisWork()]);
+      const [message] = await Promise.all([redisWork(), dbWork()]);
 
       return message;
     },

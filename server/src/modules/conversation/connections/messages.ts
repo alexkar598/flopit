@@ -1,35 +1,22 @@
-import { builder } from "../../builder";
-import { Message, messageRef } from "./schema.ts";
-import { createRedisClient } from "../../redis.ts";
-import { userRef } from "../user/schema.ts";
-import { getConversationId } from "./util.ts";
-import { getAPIError } from "../../util.ts";
+import { builder } from "../../../builder.ts";
 import { resolveCursorConnection } from "@pothos/plugin-relay";
+import { Message, MessageConnection } from "../../message/schema.ts";
+import { getConversationId } from "../util.ts";
+import { redis } from "../../../redis.ts";
 
-const MessageConnection = builder.connectionObject({
-  type: messageRef,
-  name: "MessageConnection",
-});
-
-builder.queryField("messages", (t) =>
+builder.prismaObjectField("Conversation", "messages", (t) =>
   t.field({
     type: MessageConnection,
-    args: {
-      ...t.arg.connectionArgs(),
-      target: t.arg.globalID({ for: userRef }),
-    },
-    resolve: (_parent, args, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_FIELD");
-
+    args: t.arg.connectionArgs(),
+    // @ts-ignore
+    resolve: (parent, args) => {
       return resolveCursorConnection(
         { args, toCursor: (value) => (value as Message).id },
         async ({ limit, before, after, inverted }) => {
           const conversationId = getConversationId(
-            authenticated_user_id,
-            args.target.id,
+            parent.owner_id,
+            parent.target_id,
           );
-
-          const redis = await createRedisClient();
 
           const method = (inverted ? redis.xRevRange : redis.xRange).bind(
             redis,
@@ -46,8 +33,6 @@ builder.queryField("messages", (t) =>
               COUNT: limit,
             },
           );
-
-          void redis.disconnect();
 
           return redisMessages.map((msg) => ({
             id: msg.id,

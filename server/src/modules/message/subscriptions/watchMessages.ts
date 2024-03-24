@@ -1,9 +1,10 @@
 import { builder } from "../../../builder";
 import { Message, messageRef } from "../schema.ts";
 import { userRef } from "../../user/schema.ts";
-import { createRedisClient } from "../../../redis.ts";
-import { getConversationId } from "../util.ts";
 import { getAPIError } from "../../../util.ts";
+import { getConversationId } from "../../conversation/util.ts";
+import { redis } from "../../../redis.ts";
+import { commandOptions } from "redis";
 
 builder.subscriptionField("watchMessages", (t) =>
   t.field({
@@ -22,11 +23,10 @@ builder.subscriptionField("watchMessages", (t) =>
 
       let nextId = "$";
 
-      const redis = await createRedisClient();
-
       for (let i = 0; i < (max ?? Number.POSITIVE_INFINITY); i++) {
         while (true) {
           const redisMessage = await redis.xRead(
+            commandOptions({ isolated: true }),
             { key: conversationId, id: nextId },
             {
               BLOCK: 60 * 1000,
@@ -45,7 +45,6 @@ builder.subscriptionField("watchMessages", (t) =>
           break;
         }
       }
-      void redis.disconnect();
     },
     resolve: (payload) => payload,
   }),
