@@ -25,7 +25,10 @@ builder.mutationField("createPost", (t) =>
       if (input.title.length < 1) throw getAPIError("TITLE_TOO_SHORT");
 
       const delta = await deltaValidator.safeParseAsync(input.delta_content);
-      if (!delta.success) throw getAPIError("INVALID_DELTA");
+      if (!delta.success) {
+        console.error(delta.error);
+        throw getAPIError("INVALID_DELTA");
+      }
 
       return prisma.$transaction(async (tx) => {
         const subId = await tx.sub
