@@ -15,15 +15,38 @@ builder.mutationField("createSub", (t) =>
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
-    resolve: async (query, _root, { input: { name, description } }) => {
+    resolve: async (
+      query,
+      _root,
+      { input: { name, description } },
+      { authenticated_user_id },
+    ) => {
+      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
+
       try {
-        return await prisma.sub.create({
-          ...query,
+        const moderator = await prisma.moderator.create({
+          select: { Sub: { ...query } },
           data: {
-            name,
-            description: description ?? undefined,
+            User: {
+              connect: {
+                id: authenticated_user_id,
+              },
+            },
+            Sub: {
+              create: {
+                name,
+                description: description ?? undefined,
+                Followers: {
+                  create: {
+                    user_id: authenticated_user_id,
+                  },
+                },
+              },
+            },
           },
         });
+
+        return moderator.Sub;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           //"Unique constraint failed on the {constraint}"

@@ -10,7 +10,7 @@ import {
 } from "graphql-scalars";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
-import { capitalizeFirst, getAPIError } from "./util.ts";
+import { capitalizeFirst, getAPIError, throwException } from "./util.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -37,6 +37,10 @@ export const builder = new SchemaBuilder<{
     Void: {
       Input: void;
       Output: void;
+    };
+    File: {
+      Input: File;
+      Output: never;
     };
   };
   Context: {
@@ -81,6 +85,10 @@ builder.scalarType("OID", {
 
     return x;
   },
+});
+builder.scalarType("File", {
+  serialize: () =>
+    throwException(new Error("Not implemented")),
 });
 
 builder.globalConnectionField("totalCount", (t) =>
