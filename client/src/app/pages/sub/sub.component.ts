@@ -17,7 +17,7 @@ import {
 } from "~/graphql";
 import { ActivatedRoute } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
-import { Observable, map, Subscription, filter } from "rxjs";
+import { filter, map, Observable, Subscription } from "rxjs";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
@@ -39,8 +39,8 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 })
 export class SubComponent implements OnInit, OnDestroy {
   private sub$!: Observable<SubInformationQuery["subByName"]>;
-  private subSubscription?: Subscription;
-  private routeSubscription?: Subscription;
+  private subSubscription: Subscription | null = null;
+  private routeSubscription: Subscription | null = null;
   public sub?: SubInformationQuery["subByName"];
 
   constructor(

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import {
   NbAutocompleteModule,
@@ -11,7 +11,13 @@ import {
 } from "@nebular/theme";
 import { QuillEditorComponent } from "ngx-quill";
 import { AsyncPipe, NgForOf } from "@angular/common";
-import { map, Observable } from "rxjs";
+import {
+  BehaviorSubject,
+  debounceTime,
+  map,
+  Observable,
+  Subscription,
+} from "rxjs";
 import {
   CreatePostGQL,
   FindSubsGQL,
@@ -21,7 +27,7 @@ import {
   HomeFeedDocument,
   SubFeedDocument,
 } from "~/graphql";
-import { debounce, getImg, notNull } from "~/app/util";
+import { getImg, notNull } from "~/app/util";
 import { Router } from "@angular/router";
 import { QueryRef } from "apollo-angular";
 
@@ -43,11 +49,12 @@ import { QueryRef } from "apollo-angular";
   templateUrl: "./create-post.component.html",
   styleUrl: "./create-post.component.scss",
 })
-export class CreatePostComponent implements OnInit {
+export class CreatePostComponent implements OnInit, OnDestroy {
   public subsQuery$!: QueryRef<FindSubsQuery, FindSubsQueryVariables>;
   public subs$!: Observable<FindSubsSubFragment[]>;
   public loading = false;
-  public debouncedRechercheSub;
+  public subFilterSubject = new BehaviorSubject("");
+  public subFilterSub!: Subscription;
 
   protected readonly getImg = getImg;
 
@@ -56,19 +63,22 @@ export class CreatePostComponent implements OnInit {
     private createPostMut: CreatePostGQL,
     private windowRef: NbWindowRef,
     private router: Router,
-  ) {
-    this.debouncedRechercheSub = debounce(
-      (field: HTMLInputElement) =>
-        void this.subsQuery$.setVariables({ filter: { name: field.value } }),
-      500,
-    );
-  }
+  ) {}
 
   ngOnInit() {
     this.subsQuery$ = this.findSubsGQL.watch({ filter: { name: "" } });
     this.subs$ = this.subsQuery$.valueChanges.pipe(
       map((q) => q.data.subs.edges.map((e) => e?.node).filter(notNull)),
     );
+    this.subFilterSub = this.subFilterSubject
+      .pipe(debounceTime(400))
+      .subscribe(
+        (name) => void this.subsQuery$.setVariables({ filter: { name } }),
+      );
+  }
+
+  ngOnDestroy(): void {
+    this.subFilterSub.unsubscribe();
   }
 
   submit(f: NgForm) {

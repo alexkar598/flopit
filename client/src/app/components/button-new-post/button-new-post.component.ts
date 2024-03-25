@@ -17,8 +17,6 @@ import { AsyncPipe } from "@angular/common";
   styleUrl: "./button-new-post.component.scss",
 })
 export class ButtonNewPostComponent {
-  protected readonly Boolean = Boolean;
-
   constructor(
     private windowService: NbWindowService,
     public userService: UserService,
