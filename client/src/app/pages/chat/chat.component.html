@@ -1,0 +1,23 @@
+<nb-card>
+  <nb-list>
+    @for (conversation of conversations$ | async; track conversation.id) {
+      <nb-list-item nbButton (click)="activeConversation$.next(conversation)">
+        <nb-user
+          [name]="conversation.target.username"
+          [title]="conversation.lastInteraction | relativeDate"
+        />
+      </nb-list-item>
+    }
+  </nb-list>
+</nb-card>
+
+<nb-chat
+  noMessagesPlaceholder="Aucun message pour l'instant"
+  [scrollBottom]="true"
+  [title]="(activeConversation$ | async)?.target?.username ?? ''"
+>
+  <nb-chat-form
+    messagePlaceholder="Écrivez un message..."
+    (send)="sendMessage($event.message)"
+  />
+</nb-chat>

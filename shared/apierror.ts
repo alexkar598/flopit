@@ -15,4 +15,7 @@ export const APIError = Object.freeze({
   MESSAGE_SELF: "Vous ne pouvez pas envoyer un message à vous-même",
   CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
   BLOCKED: "Cet utilisateur vous a bloqué",
+  NOT_SUB_MODERATOR:
+    "Vous devez être modérateur de ce sub pour effectuer cette action",
+  FILE_UPLOAD_FAIL: "Le téléversement du fichier a échoué",
 });

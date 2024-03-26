@@ -1,0 +1,9 @@
+fragment Conversation on Conversation {
+  id
+  lastInteraction
+  target {
+    id
+    username
+    avatarOid
+  }
+}

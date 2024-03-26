@@ -15,6 +15,12 @@ services:
       PRISMA_ROOT_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
       REDIS_URL: redis://redis
       JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      S3_ENDPOINT: minio
+      S3_PORT: 9000
+      S3_SSL: false
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_REGION: ${S3_REGION}
     restart: unless-stopped
     depends_on:
       mariadb:
@@ -150,7 +156,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add minio http://minio:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY};
-      /usr/bin/mc mb minio/attachment-images;
+      /usr/bin/mc mb minio/images;
       exit 0;"
   imgproxy:
     links:
