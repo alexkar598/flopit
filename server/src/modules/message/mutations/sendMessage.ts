@@ -35,15 +35,15 @@ builder.mutationField("sendMessage", (t) =>
         throw getAPIError("USER_NOT_FOUND");
 
       if (
-        !(await prisma.block.findUnique({
-          select: {},
+        await prisma.block.findUnique({
+          select: { blocked_id: true },
           where: {
             blocked_id_blocker_id: {
               blocker_id: input.target.id,
               blocked_id: authenticated_user_id,
             },
           },
-        }))
+        })
       )
         throw getAPIError("BLOCKED");
 
