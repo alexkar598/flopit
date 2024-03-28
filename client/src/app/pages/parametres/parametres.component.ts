@@ -41,6 +41,8 @@ import { FormsModule, NgForm } from "@angular/forms";
   styleUrl: "./parametres.component.scss",
 })
 export class ParametresComponent {
+  showPassword = false;
+  showConfirmPassword = false;
   selectedItem = "0";
 
   constructor(public userService: UserService) {}

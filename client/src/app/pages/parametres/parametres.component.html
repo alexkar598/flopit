@@ -13,42 +13,82 @@
 
         <h2>Informations</h2>
         <form #form="ngForm" (ngSubmit)="changer(form)">
+          <label for="changer-nom">Changer le nom d'utilisateur</label>
           <nb-form-field class="parametre">
-            <label>Changer le nom d'utilisateur</label>
             <input
+              class="input-param"
               type="text"
               nbInput
               placeholder="Nom d'utilisateur"
               id="changer-nom"
               [defaultValue]="user.username"
+              name="changerNom"
             />
           </nb-form-field>
+
+          <label for="changer-password">Changer le mot de passe</label>
           <nb-form-field class="parametre">
-            <label>Changer le mot de passe</label>
             <input
-              type="text"
+              [type]="showConfirmPassword ? 'text' : 'password'"
               nbInput
-              placeholder="Nouveau mot de passe"
+              fullWidth
               id="changer-password"
+              ngModel
+              name="passwordConfirm"
+              placeholder="Nouveau mot de passe"
+              class="input-password"
             />
+            <button
+              type="button"
+              nbSuffix
+              nbButton
+              ghost
+              (click)="showPassword = !showPassword"
+            >
+              <nb-icon
+                [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+                pack="eva"
+              />
+            </button>
           </nb-form-field>
+
           <nb-form-field class="parametre">
             <input
-              type="text"
+              [type]="showConfirmPassword ? 'text' : 'password'"
               nbInput
+              fullWidth
+              id="mot-passe-confirmation"
+              ngModel
+              name="passwordConfirm"
               placeholder="Confirmer le nouveau mot de passe"
+              class="input-password"
             />
+            <button
+              type="button"
+              nbSuffix
+              nbButton
+              ghost
+              (click)="showConfirmPassword = !showConfirmPassword"
+            >
+              <nb-icon
+                [icon]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+                pack="eva"
+              />
+            </button>
           </nb-form-field>
+
           <nb-form-field class="parametre">
             <span>Changer l'icône</span>
             <input
+              class="input-param"
               nbInput
               type="file"
               accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
             />
           </nb-form-field>
+
           <div class="parametre">
-            <button nbButton status="primary">
+            <button nbButton status="primary" class="input-param">
               Appliquer les modifications
             </button>
           </div>
@@ -61,6 +101,7 @@
       <div class="parametre">
         <label for="select-theme">Thème</label>
         <nb-select
+          class="input-param"
           placeholder="Select Showcase"
           [(selected)]="selectedItem"
           id="select-theme"
@@ -75,7 +116,9 @@
       <h2>Compte</h2>
       <div class="parametre">
         <span>Supprimer le compte</span>
-        <button nbButton status="danger">Supprimer le compte</button>
+        <button nbButton status="danger" class="input-param">
+          Supprimer le compte
+        </button>
       </div>
     </div>
   </nb-card-body>

@@ -52,13 +52,12 @@ input[type="file"]::file-selector-button {
   background-color: transparent;
 }
 
-input,
-button,
-nb-select {
+.input-param {
   width: 15rem;
   height: 2.5rem;
-  margin-bottom: 1rem;
-  grid-column: 2;
+  margin-top: auto;
+  margin-bottom: auto;
+  grid-column: 3;
 }
 
 .utilisateur {
@@ -73,6 +72,17 @@ nb-select {
   margin-bottom: 1rem;
 }
 
+label,
+span {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 nb-form-field {
   min-width: 100%;
+}
+
+.input-password {
+  grid-column: 3;
+  width: 15rem;
 }
