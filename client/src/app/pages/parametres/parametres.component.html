@@ -10,21 +10,32 @@
             color="#EEE"
           />
         </div>
+
+        <h2>Informations</h2>
+        <div class="parametre">
+          <label>Changer le nom d'utilisateur</label>
+          <input
+            type="text"
+            nbInput
+            placeholder="Nom d'utilisateur"
+            id="changer-nom"
+            [defaultValue]="user.username"
+          />
+        </div>
+        <div class="parametre">
+          <span>Changer l'icône</span>
+          <input
+            nbInput
+            type="file"
+            accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+          />
+        </div>
+        <div class="parametre">
+          <button nbButton status="primary" class="appliquer">
+            Appliquer les modifications
+          </button>
+        </div>
       }
-      <h2>Informations</h2>
-      <div class="parametre">
-        <span>Changer l'icône</span>
-        <input
-          nbInput
-          type="file"
-          accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
-        />
-      </div>
-      <div class="parametre">
-        <button nbButton status="primary" class="appliquer">
-          Appliquer les modifications
-        </button>
-      </div>
     </div>
 
     <div>
