@@ -57,6 +57,8 @@ button,
 nb-select {
   width: 15rem;
   height: 2.5rem;
+  margin-bottom: 1rem;
+  grid-column: 2;
 }
 
 .utilisateur {
@@ -67,11 +69,10 @@ nb-select {
 .parametre {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  vertical-align: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.appliquer {
-  grid-column: 2;
+nb-form-field {
+  min-width: 100%;
 }

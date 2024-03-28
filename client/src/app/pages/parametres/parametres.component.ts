@@ -4,6 +4,7 @@ import {
   NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbSelectModule,
@@ -14,6 +15,7 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
+import { FormsModule, NgForm } from "@angular/forms";
 
 @Component({
   selector: "app-parametres",
@@ -32,6 +34,8 @@ import { UserService } from "~/app/services/user.service";
     NbUserModule,
     NgOptimizedImage,
     NbInputModule,
+    FormsModule,
+    NbFormFieldModule,
   ],
   templateUrl: "./parametres.component.html",
   styleUrl: "./parametres.component.scss",
@@ -40,4 +44,6 @@ export class ParametresComponent {
   selectedItem = "0";
 
   constructor(public userService: UserService) {}
+
+  async changer(form: NgForm) {}
 }
