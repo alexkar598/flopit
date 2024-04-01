@@ -1,8 +1,9 @@
-import {Routes} from "@angular/router";
-import { ConnexionComponent } from "./pages/connexion/connexion.component";
-import { CreationSubComponent } from "./pages/creationSub/creationSub.component";
+import { SubComponent } from "./pages/sub/sub.component";
+import { AccueilComponent } from "./pages/accueil/accueil.component";
 
 export const routes: Routes = [
-    {path: 'connexion', component: ConnexionComponent},
-    {path: 'f', component: CreationSubComponent}
+  { path: "", component: AccueilComponent },
+  { path: "connexion", component: ConnexionComponent },
+  { path: "inscription", component: CreationCompteComponent },
+  { path: "f/:subName", component: SubComponent },
 ];

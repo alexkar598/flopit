@@ -1,0 +1,23 @@
+<nb-card>
+  <nb-card-header>
+    <a>
+      <h2>
+        {{ post.title }}
+      </h2>
+    </a>
+  </nb-card-header>
+
+  <nb-card-body>
+    {{ post.textContent }}
+  </nb-card-body>
+
+  <nb-card-footer>
+    <app-vote [post]="post" />
+
+    <a class="sub" [routerLink]="['/f', post.sub.name]">
+      <nb-user name="f/{{ post.sub.name }}" />
+    </a>
+
+    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
+  </nb-card-footer>
+</nb-card>

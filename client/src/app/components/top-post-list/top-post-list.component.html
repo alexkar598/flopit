@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="controls">
+    <nb-select
+      (selectedChange)="applyVariables()"
+      [(ngModel)]="sortOptions.type"
+      status="primary"
+    >
+      <nb-option [value]="PostSortType.Hot">Populaires</nb-option>
+      <nb-option [value]="PostSortType.New">Nouveautés</nb-option>
+      <nb-option [value]="PostSortType.Top">Top</nb-option>
+    </nb-select>
+    @if (!subName && (userService.currentUser$ | async)) {
+      <nb-toggle
+        [(checked)]="personalised"
+        (checkedChange)="applyVariables()"
+        nbTooltip="Subs que vous suivez seulement"
+        nbTooltipStatus="basic"
+      >
+        Personnalisé
+      </nb-toggle>
+    }
+  </div>
+
+  <nb-list
+    nbInfiniteList
+    listenWindowScroll
+    [threshold]="800"
+    [throttleTime]="100"
+    (bottomThreshold)="loadMore()"
+  >
+    @for (post of posts$ | async; track post.id) {
+      <nb-list-item>
+        <app-post-single [post]="post" />
+      </nb-list-item>
+    }
+  </nb-list>
+</div>

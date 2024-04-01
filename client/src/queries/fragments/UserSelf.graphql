@@ -1,0 +1,5 @@
+fragment UserSelf on User {
+  username
+  avatarOid
+  theme
+}

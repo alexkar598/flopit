@@ -1,0 +1,97 @@
+<nb-card>
+  <nb-card-header>
+    <h1>S'inscrire</h1>
+  </nb-card-header>
+  <nb-card-body>
+    <form #form="ngForm" (ngSubmit)="register(form)">
+      <div class="input">
+        <label for="courriel">Courriel</label>
+        <input nbInput required fullWidth id="courriel" ngModel name="email" />
+      </div>
+
+      <div class="input">
+        <label for="nom-utilisateur">Nom d'utilisateur</label>
+        <nb-form-field>
+          <input
+            type="text"
+            nbInput
+            required
+            fullWidth
+            id="nom-utilisateur"
+            ngModel
+            name="username"
+          />
+        </nb-form-field>
+      </div>
+
+      <div class="input">
+        <label for="mot-passe">Mot de passe</label>
+        <nb-form-field>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            nbInput
+            required
+            fullWidth
+            id="mot-passe"
+            ngModel
+            name="password"
+          />
+          <button
+            type="button"
+            nbSuffix
+            nbButton
+            ghost
+            (click)="showPassword = !showPassword"
+          >
+            <nb-icon
+              [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              pack="eva"
+            />
+          </button>
+        </nb-form-field>
+      </div>
+
+      <div class="input">
+        <label for="mot-passe">Confirmer le mot de passe</label>
+        <nb-form-field>
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            nbInput
+            required
+            fullWidth
+            id="mot-passe-confirmation"
+            ngModel
+            name="passwordConfirm"
+          />
+          <button
+            type="button"
+            nbSuffix
+            nbButton
+            ghost
+            (click)="showConfirmPassword = !showConfirmPassword"
+          >
+            <nb-icon
+              [icon]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+              pack="eva"
+            />
+          </button>
+        </nb-form-field>
+      </div>
+
+      <div class="deja-compte">
+        <a routerLink="/connexion">Déjà un compte?</a>
+      </div>
+
+      <button
+        nbButton
+        status="primary"
+        type="submit"
+        nbSpinnerStatus="primary"
+        [disabled]="loading"
+        [nbSpinner]="loading"
+      >
+        Créer le compte
+      </button>
+    </form>
+  </nb-card-body>
+</nb-card>

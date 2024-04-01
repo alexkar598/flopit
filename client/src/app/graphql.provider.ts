@@ -1,5 +1,6 @@
-import {Apollo, APOLLO_OPTIONS} from "apollo-angular";
-import {HttpLink} from "apollo-angular/http";
+import { relayStylePagination } from "@apollo/client/utilities";
+import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
+import { HttpBatchLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
@@ -7,7 +8,18 @@ import {
   makeStateKey,
   TransferState,
 } from "@angular/core";
-import {ApolloClientOptions, InMemoryCache} from "@apollo/client/core";
+import {
+  ApolloClientOptions,
+  ApolloLink,
+  from,
+  InMemoryCache,
+} from "@apollo/client/core";
+import { onError } from "@apollo/client/link/error";
+import { NbToastrService } from "@nebular/theme";
+import { HttpHeaders } from "@angular/common/http";
+import { StrictTypedTypePolicies } from "~/graphql";
+import { ErrorCode } from "~shared/apierror";
+import { Router } from "@angular/router";
 
 const uri = "/graphql";
 
@@ -15,11 +27,14 @@ const APOLLO_CACHE = new InjectionToken<InMemoryCache>("apollo-cache");
 const STATE_KEY = makeStateKey<any>("apollo.state");
 
 export function apolloOptionsFactory(
-  httpLink: HttpLink,
+  httpBatchLink: HttpBatchLink,
   cache: InMemoryCache,
   transferState: TransferState,
+  toastrService: NbToastrService,
+  router: Router,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
+  const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
     const state = transferState.get<any>(STATE_KEY, null);
@@ -29,12 +44,59 @@ export function apolloOptionsFactory(
       return cache.extract();
     });
     // Reset cache after extraction to avoid sharing between requests
-    cache.reset();
+    void cache.reset();
   }
 
+  const proxyCookiesLink = new ApolloLink((operation, forward) => {
+    if (cookies)
+      operation.setContext({
+        headers: new HttpHeaders().set("Cookie", cookies),
+      });
+
+    return forward(operation);
+  });
+
+  const errorLink = onError(({ graphQLErrors }) => {
+    if (graphQLErrors == null) return;
+    graphQLErrors.forEach((err) => {
+      const code = <ErrorCode>err.extensions?.["code"];
+
+      if (code === "AUTHENTICATED_FIELD") return;
+
+      if (code === "AUTHENTICATED_MUTATION") {
+        const toast = toastrService.info(
+          "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
+          "Inscrivez-vous!",
+          { icon: "log-in", duration: 2500 },
+        );
+        toast.onClick().subscribe(() => router.navigate(["inscription"]));
+        return;
+      }
+
+      toastrService.danger(err.message, "Erreur");
+    });
+  });
+
+  const link = from([
+    proxyCookiesLink,
+    errorLink,
+    httpBatchLink.create({ uri, batchInterval: 8 }),
+  ]);
+
   return {
-    link: httpLink.create({uri}),
+    link,
     cache,
+    defaultOptions: {
+      watchQuery: {
+        errorPolicy: "ignore",
+      },
+      query: {
+        errorPolicy: "ignore",
+      },
+      mutate: {
+        errorPolicy: "all",
+      },
+    },
   };
 }
 
@@ -42,11 +104,24 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache(),
+    useValue: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+          },
+        },
+        Sub: {
+          fields: {
+            posts: relayStylePagination(["sortOptions"]),
+          },
+        },
+      } satisfies StrictTypedTypePolicies,
+    }),
   },
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpLink, APOLLO_CACHE, TransferState],
+    deps: [HttpBatchLink, APOLLO_CACHE, TransferState, NbToastrService, Router],
   },
 ];
