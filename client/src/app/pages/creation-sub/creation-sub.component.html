@@ -3,7 +3,7 @@
     <h1>Créer un f/</h1>
   </nb-card-header>
   <nb-card-body>
-    <form #f="ngForm" (ngSubmit)="submit(f)">
+    <form #f="ngForm" (ngSubmit)="createSub(f)">
       <div class="informations">
         <div>
           <div class="input">
@@ -17,7 +17,7 @@
                 maxlength="64"
                 id="nom"
                 ngModel
-                name="nom"
+                name="name"
               />
             </nb-form-field>
           </div>
@@ -67,7 +67,16 @@
         </div>
       </div>
 
-      <input type="submit" nbButton status="primary" value="Créer" />
+      <button
+        nbButton
+        status="primary"
+        type="submit"
+        nbSpinnerStatus="primary"
+        [disabled]="loading"
+        [nbSpinner]="loading"
+      >
+        Créer le compte
+      </button>
     </form>
   </nb-card-body>
 </nb-card>
