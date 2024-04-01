@@ -20,8 +20,8 @@ import {
     NbEvaIconsModule,
     FormsModule,
   ],
-  templateUrl: "./creationSub.component.html",
-  styleUrl: "./creationSub.component.scss",
+  templateUrl: "./creation-sub.component.html",
+  styleUrl: "./creation-sub.component.scss",
 })
 export class CreationSubComponent {
   submit(f: NgForm) {
