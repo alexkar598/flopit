@@ -68,20 +68,20 @@ export class SubComponent implements OnInit, OnDestroy {
 
     const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
       __typename: "Mutation",
-      [this.sub.is_following ? "unfollowSub" : "followSub"]: {
+      [this.sub.isFollowing ? "unfollowSub" : "followSub"]: {
         __typename: "Sub",
         id: this.sub.id,
-        is_following: !this.sub.is_following,
+        isFollowing: !this.sub.isFollowing,
         followers: {
           __typename: "SubFollowersConnection",
           totalCount: this.sub.followers.totalCount
-            ? this.sub.followers.totalCount + (this.sub.is_following ? -1 : 1)
+            ? this.sub.followers.totalCount + (this.sub.isFollowing ? -1 : 1)
             : null,
         },
       },
     };
 
-    if (this.sub.is_following)
+    if (this.sub.isFollowing)
       this.unfollowSubMut
         .mutate({ input: { subId: this.sub.id } }, { optimisticResponse })
         .subscribe();

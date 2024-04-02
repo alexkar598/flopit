@@ -16,7 +16,7 @@ export const subRef = builder.prismaNode("Sub", {
       type: "OID",
       nullable: true,
     }),
-    is_following: t.boolean({
+    isFollowing: t.boolean({
       select: {
         id: true,
       },

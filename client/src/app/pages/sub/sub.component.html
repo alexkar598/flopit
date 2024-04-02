@@ -30,11 +30,11 @@
         <nb-card-body>
           <button
             nbButton
-            [status]="sub.is_following ? 'basic' : 'primary'"
+            [status]="sub.isFollowing ? 'basic' : 'primary'"
             class="bouton-rejoindre"
             (click)="toggleFollow()"
           >
-            {{ sub.is_following ? "Quitter" : "Rejoindre" }}
+            {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
           </button>
 
           <p>{{ sub.description }}</p>
