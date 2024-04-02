@@ -4,6 +4,7 @@ import { RouterOutlet } from "@angular/router";
 import { NbButtonModule, NbLayoutModule, NbMenuService } from "@nebular/theme";
 import { FooterComponent } from "./components/footer/footer.component";
 import { HeaderComponent } from "./components/header/header.component";
+import { ButtonNewPostComponent } from "~/app/components/button-new-post/button-new-post.component";
 
 @Component({
   selector: "app-root",
@@ -15,6 +16,7 @@ import { HeaderComponent } from "./components/header/header.component";
     NbButtonModule,
     HeaderComponent,
     FooterComponent,
+    ButtonNewPostComponent,
   ],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
