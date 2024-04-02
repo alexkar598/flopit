@@ -11,9 +11,7 @@ import {
   NbToastrService,
 } from "@nebular/theme";
 import { CreateSubGQL } from "~/graphql";
-import { UserService } from "~/app/services/user.service";
 import { Router } from "@angular/router";
-import { CreateSubInput } from "~/graphql";
 
 @Component({
   standalone: true,
@@ -31,11 +29,10 @@ import { CreateSubInput } from "~/graphql";
   styleUrl: "./creation-sub.component.scss",
 })
 export class CreationSubComponent {
-  loading = false;
+  public loading = false;
 
   constructor(
     private createSubMut: CreateSubGQL,
-    private userService: UserService,
     private toastr: NbToastrService,
     private router: Router,
   ) {}
