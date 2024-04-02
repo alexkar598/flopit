@@ -41,6 +41,9 @@ export interface ImageTransformations {
   gravity?: "sm";
 }
 
+const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
+const imgproxy_salt = Buffer.from(process.env.IMGPROXY_SALT!, "hex");
+
 export function getImg<OID extends string | null>(
   oid: OID,
   transformations: ImageTransformations = {},
@@ -55,8 +58,10 @@ export function getImg<OID extends string | null>(
   );
   const unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
   const hmac = crypto
-    .createHmac("sha256", process.env.IMGPROXY_KEY!)
-    .update(process.env.IMGPROXY_SALT! + unsigned_url)
-    .digest();
+    .createHmac("sha256", imgproxy_key)
+    .update(imgproxy_salt)
+    .update(unsigned_url)
+    .digest()
+    .toString("base64url");
   return "/image/" + hmac + unsigned_url;
 }
