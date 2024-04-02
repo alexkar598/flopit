@@ -1,5 +1,0 @@
-fragment FindSubsSub on Sub {
-  id
-  name
-  iconOid
-}

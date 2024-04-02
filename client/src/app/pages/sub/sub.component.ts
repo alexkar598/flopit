@@ -39,8 +39,8 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 })
 export class SubComponent implements OnInit, OnDestroy {
   private sub$!: Observable<SubInformationQuery["subByName"]>;
-  private subSubscription: Subscription | null = null;
-  private routeSubscription: Subscription | null = null;
+  private subSubscription!: Subscription;
+  private routeSubscription!: Subscription;
   public sub?: SubInformationQuery["subByName"];
 
   constructor(
@@ -71,8 +71,8 @@ export class SubComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subSubscription?.unsubscribe();
-    this.routeSubscription?.unsubscribe();
+    this.subSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
   }
 
   toggleFollow() {
