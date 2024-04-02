@@ -1,6 +1,6 @@
 import { builder } from "../../builder.ts";
 import { prisma } from "../../db.ts";
-import { getAPIError } from "../../util.ts";
+import { getAPIError, getImg } from "../../util.ts";
 
 export const subRef = builder.prismaNode("Sub", {
   id: { field: "id" },
@@ -8,13 +8,19 @@ export const subRef = builder.prismaNode("Sub", {
   fields: (t) => ({
     name: t.exposeString("name"),
     description: t.exposeString("description"),
-    iconOid: t.expose("icon_oid", {
-      type: "OID",
+    iconUrl: t.string({
+      select: {
+        icon_oid: true,
+      },
       nullable: true,
+      resolve: (sub) => getImg(sub.icon_oid),
     }),
-    bannerOid: t.expose("banner_oid", {
-      type: "OID",
+    bannerUrl: t.string({
+      select: {
+        banner_oid: true,
+      },
       nullable: true,
+      resolve: (sub) => getImg(sub.banner_oid),
     }),
     isFollowing: t.boolean({
       select: {
