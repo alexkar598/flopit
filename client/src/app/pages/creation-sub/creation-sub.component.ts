@@ -10,6 +10,7 @@ import {
   NbSpinnerModule,
   NbToastrService,
 } from "@nebular/theme";
+import { CreateSubGQL } from "~/graphql";
 import { UserService } from "~/app/services/user.service";
 import { Router } from "@angular/router";
 import { CreateSubInput } from "~/graphql";
@@ -33,7 +34,7 @@ export class CreationSubComponent {
   loading = false;
 
   constructor(
-    //private createSubMut:
+    private createSubMut: CreateSubGQL,
     private userService: UserService,
     private toastr: NbToastrService,
     private router: Router,
@@ -51,28 +52,20 @@ export class CreationSubComponent {
     this.loading = true;
 
     try {
-      await this.create({ description, name });
+      this.createSubMut
+        .mutate({
+          input: { name: f.value.name, description: f.value.description },
+        })
+        .subscribe(async (res) => {
+          this.loading = false;
+          if (res.errors) return;
+          await this.router.navigate(["f", f.value.name]);
+        });
     } catch (e) {
       if (typeof e === "string") this.toastr.danger(e, "Erreur");
       else throw e;
     } finally {
       this.loading = false;
     }
-  }
-
-  create(input: CreateSubInput): Promise<void> {
-    return new Promise((resolve, reject) => {});
-    // return new Promise((resolve, reject) => {
-    //   if (!input.email || !input.username || !input.password) {
-    //     return reject("Tous les champs sont obligatoires");
-    //   }
-    //
-    //   this.createUserMut.mutate({ input }).subscribe(async (res) => {
-    //     if (res.errors)
-    //       return reject(res.errors.map((err) => err.message).join("\n"));
-    //     await this.login(input.email, input.password);
-    //     return resolve();
-    //   });
-    // });
   }
 }
