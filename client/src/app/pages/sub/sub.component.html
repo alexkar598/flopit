@@ -5,19 +5,17 @@
     @if (sub) {
       <nb-card class="barre-infos">
         <nb-card-header
-          style="background-image: url('{{
-            sub.bannerOid ? (sub.bannerOid | getImg) : ''
-          }}');"
+          style="background-image: url('{{ sub.bannerUrl ?? '' }}');"
         >
           <div>
             <h1 class="nom-sub">f/{{ sub.name }}</h1>
           </div>
 
           <div>
-            @if (sub.iconOid) {
+            @if (sub.iconUrl) {
               <nb-user
                 onlyPicture
-                [picture]="sub.iconOid | getImg"
+                [picture]="sub.iconUrl"
                 color="#fff"
                 size="large"
               />

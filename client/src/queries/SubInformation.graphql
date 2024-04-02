@@ -3,8 +3,8 @@ query SubInformation($sub_name: String!) {
     id
     name
     description
-    iconOid
-    bannerOid
+    iconUrl
+    bannerUrl
     followers {
       totalCount
     }
