@@ -18,7 +18,6 @@ import {
 import { ActivatedRoute } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
 import { Observable, map, Subscription } from "rxjs";
-import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
 @Component({
@@ -30,7 +29,6 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbButtonModule,
     AsyncPipe,
     NbUserModule,
-    GetImgPipe,
     TopPostListComponent,
     NbSpinnerModule,
   ],
