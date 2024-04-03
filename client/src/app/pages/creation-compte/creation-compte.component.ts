@@ -15,7 +15,6 @@ import { UserService } from "~/app/services/user.service";
 import { Subscription } from "rxjs";
 
 @Component({
-  selector: "app-creation-compte",
   standalone: true,
   imports: [
     NbButtonModule,
