@@ -42,7 +42,7 @@ export class CreationSubComponent {
     console.log(name, description, icon, banner);
 
     if (!name) {
-      this.toastr.danger("Le f/ doit avoir un nom", "Erreur");
+      this.toastr.danger("La communauté doit avoir un nom", "Erreur");
       return;
     }
 
