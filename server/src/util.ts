@@ -115,7 +115,16 @@ export interface ImageTransformations {
   height?: Number;
   resizeMode?: "fill" | "fit" | "fill-down" | "auto" | "force";
   gravity?: "sm" | "ce";
-  format?: string;
+  format?:
+    | "png"
+    | "jpg"
+    | "webp"
+    | "avif"
+    | "gif"
+    | "ico"
+    | "heic"
+    | "bmp"
+    | "tiff";
 }
 
 const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
