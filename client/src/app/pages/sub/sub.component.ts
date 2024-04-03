@@ -18,13 +18,7 @@ import {
 } from "~/graphql";
 import { ActivatedRoute } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
-import {
-  map,
-  distinctUntilChanged,
-  switchMap,
-  BehaviorSubject,
-  EMPTY,
-} from "rxjs";
+import { map, distinctUntilChanged, switchMap, BehaviorSubject } from "rxjs";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
@@ -57,14 +51,13 @@ export class SubComponent {
   ) {
     this.route.paramMap
       .pipe(
-        map((x) => x.get("subName")),
+        map((x) => x.get("subName")!),
         distinctUntilChanged(),
-        switchMap((subName) =>
-          subName == null
-            ? EMPTY
-            : this.subInfoQuery.watch({
-                sub_name: subName,
-              }).valueChanges,
+        switchMap(
+          (subName) =>
+            this.subInfoQuery.watch({
+              sub_name: subName,
+            }).valueChanges,
         ),
         map((res) => res.data.subByName),
         takeUntilDestroyed(),
