@@ -54,8 +54,9 @@ export function unslugify(slug: string) {
   const type = buffer.readUint8(0);
   const typeName = SlugType[type];
   const uuid = buffer.subarray(1).toString("hex");
-  if (typeName == undefined) throw Error("Type invalide");
-  if (uuid.length !== 32) throw Error("UUID de mauvaise grandeur");
+  if (typeName == undefined) throw getAPIError("INVALID_SLUG", "Type invalide");
+  if (uuid.length !== 32)
+    throw getAPIError("INVALID_SLUG", "UUID de mauvaise grandeur");
 
   return {
     type: typeName,
