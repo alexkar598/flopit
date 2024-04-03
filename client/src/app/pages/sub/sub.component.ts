@@ -6,6 +6,7 @@ import {
   NbIconModule,
   NbListModule,
   NbSpinnerModule,
+  NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import {
@@ -16,9 +17,15 @@ import {
   UnfollowSubGQL,
   UnfollowSubMutation,
 } from "~/graphql";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
-import { map, distinctUntilChanged, switchMap, BehaviorSubject } from "rxjs";
+import {
+  map,
+  distinctUntilChanged,
+  switchMap,
+  BehaviorSubject,
+  tap,
+} from "rxjs";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
@@ -44,6 +51,8 @@ export class SubComponent {
   );
 
   constructor(
+    router: Router,
+    toastrService: NbToastrService,
     public route: ActivatedRoute,
     private subInfoQuery: SubInformationGQL,
     private followSubMut: FollowSubGQL,
@@ -60,6 +69,15 @@ export class SubComponent {
             }).valueChanges,
         ),
         map((res) => res.data.subByName),
+        tap((sub) => {
+          if (sub == null) {
+            toastrService.danger(
+              "Cette communauté n'a pas pu être trouvée",
+              "Communauté introuvée!",
+            );
+            void router.navigate(["/"]);
+          }
+        }),
         takeUntilDestroyed(),
       )
       .subscribe(this.sub$);

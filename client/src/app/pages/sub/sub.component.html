@@ -1,5 +1,5 @@
 <div class="page">
-  <app-post-list [subName]="(route.paramMap | async)!.get('subName')" />
+  <app-post-list [subName]="(route.paramMap | async)!.get('subName')!" />
 
   <div class="sidebar">
     @if (sub$ | async; as sub) {
