@@ -15,7 +15,7 @@ import {
 } from "rxjs";
 import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
 import { isFragment } from "~/app/util";
-import { PostBySlugGQL, TopPostCardFragment } from "~/graphql";
+import { PostByIdGQL, TopPostCardFragment } from "~/graphql";
 
 @Component({
   standalone: true,
@@ -27,23 +27,23 @@ export class TopPostComponent {
   public post$ = new BehaviorSubject<TopPostCardFragment | null>(null);
 
   constructor(
-    postBySlugQuery: PostBySlugGQL,
+    postByIdQuery: PostByIdGQL,
     toastrService: NbToastrService,
     private route: ActivatedRoute,
     private router: Router,
   ) {
     route.paramMap
       .pipe(
-        map((x) => x.get("topPostSlug")!),
+        map((x) => x.get("topPostId")!),
         distinctUntilChanged(),
         tap(() => this.post$.next(null)),
         switchMap(
-          (slug) =>
-            postBySlugQuery.watch({
-              slug: slug,
+          (id) =>
+            postByIdQuery.watch({
+              id,
             }).valueChanges,
         ),
-        map((res) => res.data.nodeBySlug!),
+        map((res) => res.data.node!),
         tap((post) => {
           if (post == null) {
             toastrService.danger(
@@ -72,7 +72,7 @@ export class TopPostComponent {
         void this.router.navigate([
           "/f",
           realSub,
-          this.route.snapshot.paramMap.get("topPostSlug"),
+          this.route.snapshot.paramMap.get("topPostId"),
         ]);
       });
   }

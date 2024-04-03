@@ -1,6 +1,5 @@
 fragment TopPostCard on TopPost {
   id
-  slug
   title
   sub {
     name

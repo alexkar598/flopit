@@ -1,5 +1,0 @@
-query PostBySlug($slug: String!) {
-  nodeBySlug(slug: $slug) {
-    ...TopPostCard
-  }
-}

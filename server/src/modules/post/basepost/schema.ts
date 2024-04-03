@@ -1,6 +1,6 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
-import { getAPIError, slugify, SlugType } from "../../../util.ts";
+import { getAPIError } from "../../../util.ts";
 
 export enum VoteValue {
   Down = -1,
@@ -18,14 +18,6 @@ export const basePostRef = builder.prismaInterface("Post", {
   },
   fields: (t) => ({
     id: t.exposeID("id"),
-    slug: t.string({
-      select: {
-        id: true,
-        parent_id: true,
-      },
-      resolve: ({ id, parent_id }) =>
-        slugify(id, parent_id == null ? SlugType.TopPost : SlugType.Comment),
-    }),
     sub: t.relation("Sub"),
     author: t.relation("Author", {
       nullable: true,

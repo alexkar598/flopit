@@ -10,5 +10,5 @@ export const routes: Routes = [
   { path: "connexion", component: ConnexionComponent },
   { path: "inscription", component: CreationCompteComponent },
   { path: "f/:subName", component: SubComponent },
-  { path: "f/:subName/:topPostSlug", component: TopPostComponent },
+  { path: "f/:subName/:topPostId", component: TopPostComponent },
 ];
