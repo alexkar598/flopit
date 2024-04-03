@@ -118,6 +118,7 @@ export interface ImageTransformations {
   format?:
     | "png"
     | "jpg"
+    | "jpeg"
     | "webp"
     | "avif"
     | "gif"
