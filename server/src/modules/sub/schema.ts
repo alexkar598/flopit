@@ -13,14 +13,14 @@ export const subRef = builder.prismaNode("Sub", {
         icon_oid: true,
       },
       nullable: true,
-      resolve: (sub) => getImg(sub.icon_oid),
+      resolve: ({ icon_oid }) => getImg(icon_oid),
     }),
     bannerUrl: t.string({
       select: {
         banner_oid: true,
       },
       nullable: true,
-      resolve: (sub) => getImg(sub.banner_oid),
+      resolve: ({ banner_oid }) => getImg(banner_oid),
     }),
     isFollowing: t.boolean({
       select: {
