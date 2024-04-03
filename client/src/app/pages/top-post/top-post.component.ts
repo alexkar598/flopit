@@ -82,6 +82,6 @@ export class TopPostComponent {
       this.post$.getValue()?.sub.name ??
       this.route.snapshot.paramMap.get("subName");
     if (subName) void this.router.navigate(["/f", subName]);
-    else void this.router.navigate([""]);
+    else void this.router.navigate(["/"]);
   }
 }
