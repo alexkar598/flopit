@@ -1,8 +1,7 @@
-import { encodeGlobalID } from "@pothos/plugin-relay";
 import crypto from "crypto";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
-import { getAPIError } from "../../../util.ts";
+import { getAPIError, slugify, SlugType } from "../../../util.ts";
 import { compute_hash, get_token } from "../auth.ts";
 
 // Garanti d'être 100% aléatoire, généré avec un lancer de dés
@@ -39,7 +38,7 @@ builder.mutationField("startSession", (t) =>
       )
         throw getAPIError("BAD_CREDENTIALS");
 
-      const user_gid = encodeGlobalID("User", user.id);
+      const user_gid = slugify(SlugType.User, user.id);
 
       const session = await prisma.session.create({
         ...query,
