@@ -114,7 +114,8 @@ export interface ImageTransformations {
   width?: Number;
   height?: Number;
   resizeMode?: "fill" | "fit" | "fill-down" | "auto" | "force";
-  gravity?: "sm";
+  gravity?: "sm" | "ce";
+  format?: string;
 }
 
 const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
@@ -132,7 +133,8 @@ export function getImg<OID extends string | null>(
     { width: 0, height: 0, resizeMode: "auto", gravity: "sm" },
     transformations,
   );
-  const unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
+  let unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
+  if (trans.format) unsigned_url += `.${trans.format}`;
   const hmac = crypto
     .createHmac("sha256", imgproxy_key)
     .update(imgproxy_salt)
