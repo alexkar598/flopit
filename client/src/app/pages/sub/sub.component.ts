@@ -8,7 +8,6 @@ import {
   NbSpinnerModule,
   NbUserModule,
 } from "@nebular/theme";
-import { notNull } from "~/app/util";
 import {
   FollowSubGQL,
   FollowSubMutation,
@@ -24,7 +23,7 @@ import {
   distinctUntilChanged,
   switchMap,
   BehaviorSubject,
-  filter,
+  EMPTY,
 } from "rxjs";
 import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
@@ -60,13 +59,14 @@ export class SubComponent {
       .pipe(
         map((x) => x.get("subName")),
         distinctUntilChanged(),
-        filter(notNull),
         switchMap((subName) =>
-          this.subInfoQuery
-            .watch({
-              sub_name: subName,
-            })
-            .valueChanges.pipe(map((res) => res.data.subByName)),
+          subName == null
+            ? EMPTY
+            : this.subInfoQuery
+                .watch({
+                  sub_name: subName,
+                })
+                .valueChanges.pipe(map((res) => res.data.subByName)),
         ),
         takeUntilDestroyed(),
       )
