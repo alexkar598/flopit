@@ -1,0 +1,6 @@
+mutation CreateSub($input: CreateSubInput!) {
+  createSub(input: $input) {
+    name
+    description
+  }
+}

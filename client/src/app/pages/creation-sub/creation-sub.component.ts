@@ -53,7 +53,7 @@ export class CreationSubComponent {
         .mutate({
           input: { name: f.value.name, description: f.value.description },
         })
-        .subscribe(async (res) => {
+        .subscribe(async (res: any) => {
           this.loading = false;
           if (res.errors) return;
           await this.router.navigate(["f", f.value.name]);
