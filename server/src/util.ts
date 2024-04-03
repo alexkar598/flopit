@@ -1,6 +1,7 @@
 import base from "base-x";
 import { GraphQLError } from "graphql/error";
 import { Writable } from "node:stream";
+import crypto from "node:crypto";
 import { APIError, ErrorCode } from "~shared/apierror.ts";
 
 export const base62 = base(
@@ -107,4 +108,48 @@ export function unslugify(slug: string) {
     console.error("ID invalide:", slug, e);
     throw getAPIError("INVALID_ID");
   }
+}
+
+export interface ImageTransformations {
+  width?: Number;
+  height?: Number;
+  resizeMode?: "fill" | "fit" | "fill-down" | "auto" | "force";
+  gravity?: "sm" | "ce";
+  format?:
+    | "png"
+    | "jpg"
+    | "jpeg"
+    | "webp"
+    | "avif"
+    | "gif"
+    | "ico"
+    | "heic"
+    | "bmp"
+    | "tiff";
+}
+
+const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
+const imgproxy_salt = Buffer.from(process.env.IMGPROXY_SALT!, "hex");
+
+export function getImg<OID extends string | null>(
+  oid: OID,
+  transformations: ImageTransformations = {},
+  bucket = "images",
+): OID | string {
+  if (oid === null) return oid;
+
+  const base64url = btoa("s3://" + bucket + "/" + oid);
+  const trans = Object.assign(
+    { width: 0, height: 0, resizeMode: "auto", gravity: "sm" },
+    transformations,
+  );
+  let unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
+  if (trans.format) unsigned_url += `.${trans.format}`;
+  const hmac = crypto
+    .createHmac("sha256", imgproxy_key)
+    .update(imgproxy_salt)
+    .update(unsigned_url)
+    .digest()
+    .toString("base64url");
+  return "/image/" + hmac + unsigned_url;
 }
