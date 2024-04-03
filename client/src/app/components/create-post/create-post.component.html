@@ -25,14 +25,7 @@
     <nb-autocomplete #autoSub>
       @for (sub of subs$ | async; track sub.id) {
         <nb-option [value]="sub.name">
-          <nb-user
-            [picture]="
-              sub.iconOid != null
-                ? getImg(sub.iconOid, { width: 64, height: 64 })
-                : ''
-            "
-            [name]="'f/' + sub.name"
-          />
+          <nb-user [picture]="sub.iconUrl ?? ''" [name]="'f/' + sub.name" />
         </nb-option>
       }
     </nb-autocomplete>
