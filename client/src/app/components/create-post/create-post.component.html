@@ -1,0 +1,47 @@
+<form #f="ngForm" novalidate (ngSubmit)="submit(f)">
+  <input
+    nbInput
+    fullWidth
+    placeholder="Titre de la publication"
+    type="text"
+    fieldSize="giant"
+    name="title"
+    ngModel
+    required
+  />
+
+  <div class="sub-field">
+    <input
+      type="text"
+      nbInput
+      fullWidth
+      (ngModelChange)="subFilterSubject.next($event)"
+      placeholder="Recherche subs"
+      [nbAutocomplete]="autoSub"
+      ngModel
+      name="sub"
+      required
+    />
+    <nb-autocomplete #autoSub>
+      @for (sub of subs$ | async; track sub.id) {
+        <nb-option [value]="sub.name">
+          <nb-user [picture]="sub.iconUrl ?? ''" [name]="'f/' + sub.name" />
+        </nb-option>
+      }
+    </nb-autocomplete>
+  </div>
+
+  <quill-editor class="quill" ngModel format="object" name="content" />
+
+  <div class="submit-wrapper">
+    <button
+      nbButton
+      status="primary"
+      class="submit"
+      [disabled]="loading"
+      [nbSpinner]="loading"
+    >
+      Publier
+    </button>
+  </div>
+</form>

@@ -14,7 +14,6 @@ import {
   NbUserModule,
 } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
-import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 
 @Component({
   selector: "app-header",
@@ -28,7 +27,6 @@ import { GetImgPipe } from "~/app/pipes/get-img.pipe";
     FormsModule,
     NbInputModule,
     NbUserModule,
-    GetImgPipe,
     RouterLink,
     NbContextMenuModule,
   ],

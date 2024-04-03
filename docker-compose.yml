@@ -20,6 +20,8 @@ services:
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_REGION: ${S3_REGION}
+      IMGPROXY_KEY: ${IMGPROXY_KEY}
+      IMGPROXY_SALT: ${IMGPROXY_SALT}
     restart: unless-stopped
     depends_on:
       mariadb:
