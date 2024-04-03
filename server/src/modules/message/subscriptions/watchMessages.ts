@@ -12,8 +12,13 @@ builder.subscriptionField("watchMessages", (t) =>
     args: {
       target: t.arg.globalID({ for: userRef }),
       max: t.arg.int({ required: false }),
+      after: t.arg.string({ required: false }),
     },
-    subscribe: async function* (_, { target, max }, { authenticated_user_id }) {
+    subscribe: async function* (
+      _,
+      { target, max, after },
+      { authenticated_user_id },
+    ) {
       if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_FIELD");
 
       const conversationId = getConversationId(
@@ -21,7 +26,7 @@ builder.subscriptionField("watchMessages", (t) =>
         target.id,
       );
 
-      let nextId = "$";
+      let nextId = after ?? "$";
 
       for (let i = 0; i < (max ?? Number.POSITIVE_INFINITY); i++) {
         while (true) {
