@@ -1,8 +1,8 @@
 <div class="page">
-  <app-post-list [subName]="(route.params | async)?.['subName']" />
+  <app-post-list [subName]="(route.paramMap | async)!.get('subName')!" />
 
   <div class="sidebar">
-    @if (sub) {
+    @if (sub$ | async; as sub) {
       <nb-card class="barre-infos">
         <nb-card-header
           style="background-image: url('{{

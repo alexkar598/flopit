@@ -1,11 +1,17 @@
 import { fakerEN, fakerFR_CA as faker } from "@faker-js/faker";
-import { $Enums, PrismaClient } from "@prisma/client";
+import { $Enums, Prisma, PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import { UniqueEnforcer } from "enforce-unique";
 import fs from "fs/promises";
 import { finished } from "node:stream/promises";
 import { compute_hash } from "./modules/auth/auth.ts";
 import { pauseWrite } from "./util.ts";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+
+export type PrismaClientTransaction = Omit<
+  PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
 
 export const prisma = new PrismaClient({
   log: ["info", "warn", "error"],
