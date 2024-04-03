@@ -11,13 +11,23 @@
   </nb-list>
 </nb-card>
 
-<nb-chat
-  noMessagesPlaceholder="Aucun message pour l'instant"
-  [scrollBottom]="true"
-  [title]="(activeConversation$ | async)?.target?.username ?? ''"
->
-  <nb-chat-form
-    messagePlaceholder="Écrivez un message..."
-    (send)="sendMessage($event.message)"
-  />
-</nb-chat>
+@if (activeConversation$ | async; as conversation) {
+  <nb-chat
+    noMessagesPlaceholder="Aucun message pour l'instant"
+    [scrollBottom]="true"
+    [title]="conversation?.target?.username ?? ''"
+  >
+    @for (msg of messages$ | async; track msg.id) {
+      <nb-chat-message
+        type="text"
+        [message]="msg.textContent"
+        [reply]="conversation.target.id !== msg.author.id"
+      />
+    }
+
+    <nb-chat-form
+      messagePlaceholder="Écrivez un message..."
+      (send)="sendMessage($event.message)"
+    />
+  </nb-chat>
+}
