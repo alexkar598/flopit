@@ -68,7 +68,6 @@ export const builder = new SchemaBuilder<{
   relayOptions: {
     cursorType: "ID",
     encodeGlobalID: (typename, id) => {
-      console.log(typename, id);
       if (typeof id != "string") throw Error("ID n'est pas un string");
       //@ts-expect-error
       const type = SlugType[typename];
