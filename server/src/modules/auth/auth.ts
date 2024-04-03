@@ -1,4 +1,3 @@
-import { decodeGlobalID } from "@pothos/plugin-relay";
 import cookie from "cookie";
 import crypto from "crypto";
 import { jwtVerify, SignJWT } from "jose";
@@ -8,6 +7,7 @@ import {
   HEADER_NAME_AUTHENTICATION_STATUS,
 } from "~shared/headers.ts";
 import { prisma } from "../../db.ts";
+import { unslugify } from "../../util.ts";
 
 export const JWT_SETTINGS = {
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
@@ -94,5 +94,5 @@ export async function resolveAuthentication(
     HEADER_NAME_AUTHENTICATION_STATUS,
     AuthenticationStatusHeader.AUTHENTICATED,
   );
-  return [decodeGlobalID(user_gid).id, session_id];
+  return [unslugify(user_gid).id, session_id];
 }
