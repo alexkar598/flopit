@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
@@ -38,9 +38,17 @@ export class HeaderComponent {
   constructor(
     public userService: UserService,
     public toastr: NbToastrService,
+    private router: Router,
   ) {}
 
   public userMenuItems: NbClickableMenuItem[] = [
+    {
+      title: "Créer une communauté",
+      icon: "globe-2-outline",
+      data: {
+        onClick: () => this.router.navigate(["/f"]),
+      },
+    },
     {
       title: "Déconnexion",
       icon: "log-out",
