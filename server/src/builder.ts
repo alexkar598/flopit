@@ -10,7 +10,12 @@ import {
 } from "graphql-scalars";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
-import { capitalizeFirst, getAPIError, throwException } from "./util.ts";
+import {
+  capitalizeFirst,
+  getAPIError,
+  throwException,
+  unslugify,
+} from "./util.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -87,8 +92,7 @@ builder.scalarType("OID", {
   },
 });
 builder.scalarType("File", {
-  serialize: () =>
-    throwException(new Error("Not implemented")),
+  serialize: () => throwException(new Error("Not implemented")),
 });
 
 builder.globalConnectionField("totalCount", (t) =>
@@ -160,3 +164,12 @@ export function setupPluralIdentifyingRootFields<
       }),
   }));
 }
+
+builder.queryField("nodeBySlug", (t) =>
+  t.node({
+    args: {
+      slug: t.arg.string(),
+    },
+    id: (_, { slug }) => unslugify(slug),
+  }),
+);
