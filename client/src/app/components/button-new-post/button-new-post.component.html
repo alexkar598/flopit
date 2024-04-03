@@ -1,0 +1,17 @@
+<button
+  (click)="ecrirePost()"
+  class="createpost-button"
+  nbButton
+  size="giant"
+  shape="round"
+  status="primary"
+  [disabled]="!(userService.currentUser$ | async)"
+  [nbTooltip]="
+    !(userService.currentUser$ | async)
+      ? 'Vous devez être connecté pour publier'
+      : ''
+  "
+  nbTooltipStatus="basic"
+>
+  <nb-icon icon="plus-circle-outline" />
+</button>

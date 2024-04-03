@@ -1,7 +1,12 @@
+import base from "base-x";
 import { GraphQLError } from "graphql/error";
 import { Writable } from "node:stream";
 import crypto from "node:crypto";
 import { APIError, ErrorCode } from "~shared/apierror.ts";
+
+export const base62 = base(
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+);
 
 export function capitalizeFirst(input: string) {
   if (input.length <= 1) {
@@ -32,6 +37,77 @@ export async function pauseWrite(stream: Writable, chunk: any) {
 
 export function throwException(exception: any): never {
   throw exception;
+}
+
+export enum SlugType {
+  Attachment,
+  TopPost,
+  Comment,
+  PushNotification,
+  Session,
+  Sub,
+  User,
+}
+export function slugify(type: SlugType, uuid: string) {
+  //IDs composite
+  if (type === SlugType.Attachment) {
+    const [id, order] = JSON.parse(uuid);
+
+    const buffer = Buffer.allocUnsafe(18);
+    buffer.writeUint8(type, 0);
+    buffer.writeUint8(order, 1);
+    buffer.write(id.replaceAll("-", ""), 2, "hex");
+    return base62.encode(buffer);
+  }
+
+  const buffer = Buffer.allocUnsafe(17);
+  buffer.writeUint8(type, 0);
+  buffer.write(uuid.replaceAll("-", ""), 1, "hex");
+  return base62.encode(buffer);
+}
+
+export function unslugify(slug: string) {
+  try {
+    const buffer = Buffer.from(base62.decode(slug));
+    const type = buffer.readUint8(0);
+    const typeName = SlugType[type];
+    if (typeName == undefined) {
+      // noinspection ExceptionCaughtLocallyJS
+      throw getAPIError("INVALID_ID", "Type invalide");
+    }
+
+    if (type == SlugType.Attachment) {
+      const order = buffer.readUint8(1);
+      const uuid = buffer.subarray(2).toString("hex");
+      if (uuid.length !== 32) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw getAPIError("INVALID_ID", "UUID de mauvaise grandeur");
+      }
+
+      return {
+        typename: typeName,
+        id: JSON.stringify([
+          `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
+          order,
+        ]),
+      };
+    }
+
+    const uuid = buffer.subarray(1).toString("hex");
+    if (uuid.length !== 32) {
+      // noinspection ExceptionCaughtLocallyJS
+      throw getAPIError("INVALID_ID", "UUID de mauvaise grandeur");
+    }
+
+    return {
+      typename: typeName,
+      id: `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
+    };
+  } catch (e) {
+    if (e instanceof GraphQLError) throw e;
+    console.error("ID invalide:", slug, e);
+    throw getAPIError("INVALID_ID");
+  }
 }
 
 export interface ImageTransformations {
