@@ -62,12 +62,11 @@ export class SubComponent {
         switchMap((subName) =>
           subName == null
             ? EMPTY
-            : this.subInfoQuery
-                .watch({
-                  sub_name: subName,
-                })
-                .valueChanges.pipe(map((res) => res.data.subByName)),
+            : this.subInfoQuery.watch({
+                sub_name: subName,
+              }).valueChanges,
         ),
+        map((res) => res.data.subByName),
         takeUntilDestroyed(),
       )
       .subscribe(this.sub$);
