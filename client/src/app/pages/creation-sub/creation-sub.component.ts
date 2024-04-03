@@ -38,31 +38,21 @@ export class CreationSubComponent {
   ) {}
 
   async createSub(f: NgForm) {
-    const { name, description, icon, banner } = f.value;
-    console.log(name, description, icon, banner);
-
-    if (!name) {
+    if (!f.value.name) {
       this.toastr.danger("La communauté doit avoir un nom", "Erreur");
       return;
     }
 
     this.loading = true;
 
-    try {
-      this.createSubMut
-        .mutate({
-          input: { name: f.value.name, description: f.value.description },
-        })
-        .subscribe(async (res: any) => {
-          this.loading = false;
-          if (res.errors) return;
-          await this.router.navigate(["f", f.value.name]);
-        });
-    } catch (e) {
-      if (typeof e === "string") this.toastr.danger(e, "Erreur");
-      else throw e;
-    } finally {
-      this.loading = false;
-    }
+    this.createSubMut
+      .mutate({
+        input: { name: f.value.name, description: f.value.description },
+      })
+      .subscribe(async (res) => {
+        this.loading = false;
+        if (res.errors) return;
+        await this.router.navigate(["f", f.value.name]);
+      });
   }
 }

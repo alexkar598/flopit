@@ -48,9 +48,7 @@ export class HeaderComponent {
       title: "Créer une communauté",
       icon: "globe-2-outline",
       data: {
-        onClick: (async () => {
-          await this.router.navigate(["/f"]);
-        }).bind(this),
+        onClick: () => this.router.navigate(["/f"]),
       },
     },
     {

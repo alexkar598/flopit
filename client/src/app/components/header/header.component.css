@@ -36,7 +36,3 @@ nb-user {
   margin: auto 0 auto 0;
   width: fit-content;
 }
-
-nb-context-menu {
-  --context-menu-text-align: left;
-}
