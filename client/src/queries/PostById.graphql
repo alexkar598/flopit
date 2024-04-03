@@ -1,0 +1,5 @@
+query PostById($id: ID!) {
+  node(id: $id) {
+    ...TopPostCard
+  }
+}

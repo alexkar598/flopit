@@ -1,0 +1,15 @@
+query FindSubs($filter: SubsFilter!) {
+  subs(filter: $filter) {
+    edges {
+      node {
+        ...FindSubsSub
+      }
+    }
+  }
+}
+
+fragment FindSubsSub on Sub {
+  id
+  name
+  iconUrl
+}

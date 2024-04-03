@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header>
-    <a>
+    <a [routerLink]="['/f', post.sub.name, post.id]">
       <h2>
         {{ post.title }}
       </h2>
@@ -15,7 +15,10 @@
     <app-vote [post]="post" />
 
     <a class="sub" [routerLink]="['/f', post.sub.name]">
-      <nb-user name="f/{{ post.sub.name }}" />
+      <nb-user
+        name="f/{{ post.sub.name }}"
+        [picture]="post.sub.iconUrl ?? ''"
+      />
     </a>
 
     <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>

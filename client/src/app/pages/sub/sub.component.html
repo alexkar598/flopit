@@ -1,23 +1,21 @@
 <div class="page">
-  <app-post-list [subName]="(route.params | async)?.['subName']" />
+  <app-post-list [subName]="(route.paramMap | async)!.get('subName')!" />
 
   <div class="sidebar">
-    @if (sub) {
+    @if (sub$ | async; as sub) {
       <nb-card class="barre-infos">
         <nb-card-header
-          style="background-image: url('{{
-            sub.bannerOid ? (sub.bannerOid | getImg) : ''
-          }}');"
+          style="background-image: url('{{ sub.bannerUrl ?? '' }}');"
         >
           <div>
             <h1 class="nom-sub">f/{{ sub.name }}</h1>
           </div>
 
           <div>
-            @if (sub.iconOid) {
+            @if (sub.iconUrl) {
               <nb-user
                 onlyPicture
-                [picture]="sub.iconOid | getImg"
+                [picture]="sub.iconUrl"
                 color="#fff"
                 size="large"
               />
@@ -30,11 +28,11 @@
         <nb-card-body>
           <button
             nbButton
-            [status]="sub.is_following ? 'basic' : 'primary'"
+            [status]="sub.isFollowing ? 'basic' : 'primary'"
             class="bouton-rejoindre"
             (click)="toggleFollow()"
           >
-            {{ sub.is_following ? "Quitter" : "Rejoindre" }}
+            {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
           </button>
 
           <p>{{ sub.description }}</p>
