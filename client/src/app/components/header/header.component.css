@@ -37,6 +37,6 @@ nb-user {
   width: fit-content;
 }
 
-nbContextMenu {
-  text-align: left;
+nb-context-menu {
+  --context-menu-text-align: left;
 }
