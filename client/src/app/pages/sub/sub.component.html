@@ -37,6 +37,15 @@
 
           <p>{{ sub.description }}</p>
 
+          <!-- Temporaire -->
+          @if (sub.isFollowing) {
+            <div class="edit-description">
+              <button nbButton size="large" shape="round">
+                <nb-icon icon="edit-outline" />
+              </button>
+            </div>
+          }
+
           <div class="stats-item">
             <div class="stats">
               <span class="stats-data">{{ sub.followers.totalCount }}</span>
