@@ -1,0 +1,13 @@
+query SubModerators ($sub_name: String!) {
+  subByName(name: $sub_name) {
+    id
+    moderators {
+      edges {
+        node {
+          username
+          id
+        }
+      }
+    }
+  }
+}
