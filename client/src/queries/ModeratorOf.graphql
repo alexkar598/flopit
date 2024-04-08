@@ -1,0 +1,11 @@
+query ModeratorOf {
+  currentUser {
+    moderatorOf {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+}
