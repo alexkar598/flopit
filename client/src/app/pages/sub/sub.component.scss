@@ -78,3 +78,15 @@ nb-card-body {
   text-align: right;
   margin-bottom: 1rem;
 }
+
+textarea {
+  min-width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font: inherit;
+  resize: none;
+  padding: 0;
+  border: none;
+}

@@ -35,13 +35,30 @@
             {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
           </button>
 
-          <p>{{ sub.description }}</p>
+          @if (!sub.isFollowing) {
+            <p>{{ sub.description }}</p>
+          } @else {
+            @if (this.editing) {
+              <textarea
+                nbInput
+                fullWidth
+                placeholder="Description"
+                [defaultValue]="sub.description"
+              ></textarea>
+            } @else {
+              <p>{{ sub.description }}</p>
+            }
 
-          <!-- Temporaire -->
-          @if (sub.isFollowing) {
             <div class="edit-description">
-              <button nbButton size="large" shape="round">
-                <nb-icon icon="edit-outline" />
+              <button
+                nbButton
+                size="large"
+                shape="round"
+                (click)="editDescription()"
+              >
+                <nb-icon
+                  [icon]="this.editing ? 'checkmark-outline' : 'edit-outline'"
+                />
               </button>
             </div>
           }

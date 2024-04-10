@@ -48,6 +48,8 @@ export class SubComponent {
     null,
   );
 
+  public editing: boolean = false;
+
   constructor(
     router: Router,
     toastrService: NbToastrService,
@@ -108,5 +110,9 @@ export class SubComponent {
       this.followSubMut
         .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();
+  }
+
+  editDescription() {
+    this.editing = !this.editing;
   }
 }
