@@ -82,18 +82,31 @@ nb-card-body {
 textarea {
   min-width: 100%;
   max-width: 100%;
-  height: auto;
   margin-top: 1rem;
   font: inherit;
   resize: none;
   padding: 0;
   border: none;
-}
-
-textarea:focus {
   outline: none;
+  overflow: hidden;
 }
 
 .edit-button {
   margin-left: 1rem;
+}
+
+.grow-wrap {
+  display: grid;
+}
+
+.grow-wrap::after {
+  content: attr(data-replicated-value) " ";
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+  padding-bottom: 1rem;
+  grid-area: 1 / 1 / 2 / 2;
 }

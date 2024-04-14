@@ -110,6 +110,8 @@ export class SubComponent {
       this.followSubMut
         .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();
+
+    this.editing = false;
   }
 
   editDescription() {

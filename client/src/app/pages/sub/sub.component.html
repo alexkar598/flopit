@@ -39,10 +39,17 @@
             <p>{{ sub.description }}</p>
           } @else {
             @if (this.editing) {
-              <textarea
-                placeholder="Description"
-                [defaultValue]="sub.description"
-              ></textarea>
+              <!--
+              https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
+              i hate this
+              -->
+              <div class="grow-wrap">
+                <textarea
+                  placeholder="Description"
+                  [defaultValue]="sub.description"
+                  onInput="this.parentNode.dataset.replicatedValue = this.value"
+                ></textarea>
+              </div>
             } @else {
               <p>{{ sub.description }}</p>
             }
