@@ -40,8 +40,6 @@
           } @else {
             @if (this.editing) {
               <textarea
-                nbInput
-                fullWidth
                 placeholder="Description"
                 [defaultValue]="sub.description"
               ></textarea>
@@ -50,7 +48,20 @@
             }
 
             <div class="edit-description">
+              @if (this.editing) {
+                <button
+                  class="edit-button"
+                  nbButton
+                  size="large"
+                  shape="round"
+                  (click)="editDescription()"
+                >
+                  <nb-icon icon="close-outline" />
+                </button>
+              }
+
               <button
+                class="edit-button"
                 nbButton
                 size="large"
                 shape="round"
