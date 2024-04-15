@@ -43,11 +43,13 @@
               https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
               i hate this
               -->
-              <div class="grow-wrap">
+              <div
+                class="grow-wrap"
+                [attr.data-replicated-value]="newDescription"
+              >
                 <textarea
                   placeholder="Description"
-                  [defaultValue]="sub.description"
-                  onInput="this.parentNode.dataset.replicatedValue = this.value"
+                  [(ngModel)]="newDescription"
                 ></textarea>
               </div>
             } @else {

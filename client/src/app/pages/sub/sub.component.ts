@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   NbButtonModule,
@@ -27,6 +27,7 @@ import {
   tap,
 } from "rxjs";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
+import { FormsModule } from "@angular/forms";
 
 @Component({
   standalone: true,
@@ -39,6 +40,7 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbUserModule,
     TopPostListComponent,
     NbSpinnerModule,
+    FormsModule,
   ],
   templateUrl: "./sub.component.html",
   styleUrl: "./sub.component.scss",
@@ -49,6 +51,8 @@ export class SubComponent {
   );
 
   public editing: boolean = false;
+
+  public newDescription: string = "";
 
   constructor(
     router: Router,
@@ -116,5 +120,6 @@ export class SubComponent {
 
   editDescription() {
     this.editing = !this.editing;
+    this.newDescription = this.sub$.getValue()!.description;
   }
 }
