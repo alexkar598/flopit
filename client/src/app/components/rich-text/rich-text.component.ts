@@ -1,6 +1,5 @@
 import { Component, Input, ViewEncapsulation } from "@angular/core";
 import { QuillViewComponent } from "ngx-quill";
-import Delta from "quill-delta";
 
 @Component({
   selector: "app-rich-text",
@@ -12,5 +11,5 @@ import Delta from "quill-delta";
 })
 export class RichTextComponent {
   @Input({ required: true })
-  public delta: Delta = null!;
+  public delta: any = null!;
 }
