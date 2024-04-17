@@ -82,7 +82,6 @@ nb-card-body {
 textarea {
   min-width: 100%;
   max-width: 100%;
-  margin-top: 1rem;
   font: inherit;
   resize: none;
   padding: 0;
@@ -97,16 +96,24 @@ textarea {
 
 .grow-wrap {
   display: grid;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .grow-wrap::after {
   content: attr(data-replicated-value) " ";
   white-space: pre-wrap;
   visibility: hidden;
+  overflow-wrap: anywhere;
 }
 
 .grow-wrap > textarea,
 .grow-wrap::after {
-  padding-bottom: 1rem;
   grid-area: 1 / 1 / 2 / 2;
+}
+
+p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
 }
