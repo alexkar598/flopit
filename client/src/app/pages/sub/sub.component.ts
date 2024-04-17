@@ -10,8 +10,11 @@ import {
   NbUserModule,
 } from "@nebular/theme";
 import {
+  EditSubGQL,
   FollowSubGQL,
   FollowSubMutation,
+  HomeFeedDocument,
+  SubFeedDocument,
   SubInformationGQL,
   SubInformationQuery,
   UnfollowSubGQL,
@@ -51,6 +54,7 @@ export class SubComponent {
   );
 
   public editing: boolean = false;
+  private loading = false;
 
   public newDescription: string = "";
 
@@ -61,6 +65,7 @@ export class SubComponent {
     private subInfoQuery: SubInformationGQL,
     private followSubMut: FollowSubGQL,
     private unfollowSubMut: UnfollowSubGQL,
+    private editSubMut: EditSubGQL,
   ) {
     this.route.paramMap
       .pipe(
@@ -119,7 +124,41 @@ export class SubComponent {
   }
 
   editDescription() {
+    const sub = this.sub$.getValue();
+    if (!sub) return;
+
+    this.newDescription = sub.description;
     this.editing = !this.editing;
-    this.newDescription = this.sub$.getValue()!.description;
+  }
+
+  saveDescription() {
+    const sub = this.sub$.getValue();
+    if (!sub) return;
+
+    this.editDescription();
+
+    this.loading = true;
+    this.editSubMut
+      .mutate(
+        {
+          input: {
+            id: sub.id,
+            description: this.newDescription,
+          },
+        },
+        {
+          optimisticResponse: {
+            editSub: {
+              __typename: "Sub",
+              id: sub.id,
+              description: this.newDescription,
+            },
+          },
+        },
+      )
+      .subscribe(async (res) => {
+        this.loading = false;
+        if (res.errors) return;
+      });
   }
 }
