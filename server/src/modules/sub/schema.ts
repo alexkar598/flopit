@@ -49,8 +49,8 @@ export const subValidators = {
     .trim()
     .min(3, "Le nom d'une communauté doit avoir 3 caractères ou plus")
     .regex(
-      /^[a-zA-Z0-9_-]*$/,
-      "Le nom d'une communauté doit comprendre uniquement des lettres non-accentuées, des nombres et les caractères _ et -",
+      /^[a-zA-Z0-9_\-\p{Emoji_Presentation}]*$/u,
+      "Le nom d'une communauté doit comprendre uniquement des lettres non-accentuées, des nombres, des emojis et les caractères _ et -",
     ),
   description: z.string().trim(),
 };

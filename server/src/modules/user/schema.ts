@@ -35,7 +35,7 @@ export const userValidators = {
     .trim()
     .min(3, "Le nom d'utilisateur doit avoir minimalement 3 caractères")
     .regex(
-      /^[a-zA-Z0-9_-]*$/,
-      "Le nom d'utilisateur doit comprendre uniquement des lettres non-accentuées, des nombres et les caractères _ et -",
+      /^[a-zA-Z0-9_\-\p{Emoji_Presentation}]*$/u,
+      "Le nom d'utilisateur doit comprendre uniquement des lettres non-accentuées, des nombres, des emojis et les caractères _ et -",
     ),
 };
