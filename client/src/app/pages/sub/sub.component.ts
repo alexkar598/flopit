@@ -104,9 +104,8 @@ export class SubComponent {
         isFollowing: !sub.isFollowing,
         followers: {
           __typename: "SubFollowersConnection",
-          totalCount: sub.followers.totalCount
-            ? sub.followers.totalCount + (sub.isFollowing ? -1 : 1)
-            : null,
+          totalCount:
+            (sub.followers.totalCount ?? 0) + (sub.isFollowing ? -1 : 1),
         },
       },
     };
