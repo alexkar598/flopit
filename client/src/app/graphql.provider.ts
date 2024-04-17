@@ -73,6 +73,13 @@ export function apolloOptionsFactory(
         return;
       }
 
+      if (code === "VALIDATION_ERROR") {
+        (err.extensions["issues"] as { message: string }[]).forEach(
+          ({ message }) => toastrService.danger(message, err.message),
+        );
+        return;
+      }
+
       toastrService.danger(err.message, "Erreur");
     });
   });

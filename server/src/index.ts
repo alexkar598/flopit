@@ -5,6 +5,7 @@ import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { resolveAuthentication } from "./modules/auth/auth.ts";
 import { schema, writeSchemaToFile } from "./schema.ts";
 import { ZodError } from "zod";
+import { ErrorCode } from "~shared/apierror.ts";
 
 const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
   schema: schema,
@@ -24,6 +25,7 @@ const yoga = createYoga<{ req: IncomingMessage; res: ServerResponse }>({
         if (error.originalError instanceof ZodError) {
           error.message = "Une erreur de validation s'est produite";
           error.extensions.issues = error.originalError.errors;
+          error.extensions.code = "VALIDATION_ERROR" satisfies ErrorCode;
           return error;
         }
         if (error.originalError instanceof PothosValidationError) return error;
