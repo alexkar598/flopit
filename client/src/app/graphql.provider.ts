@@ -105,6 +105,9 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   {
     provide: APOLLO_CACHE,
     useValue: new InMemoryCache({
+      possibleTypes: {
+        BasePost: ["Comment", "TopPost"],
+      },
       typePolicies: {
         Query: {
           fields: {
@@ -114,6 +117,21 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
         Sub: {
           fields: {
             posts: relayStylePagination(["sortOptions"]),
+          },
+        },
+        TopPost: {
+          fields: {
+            children: relayStylePagination(["sortOptions"]),
+          },
+        },
+        Comment: {
+          fields: {
+            children: relayStylePagination(["sortOptions"]),
+          },
+        },
+        BasePost: {
+          fields: {
+            children: relayStylePagination(["sortOptions"]),
           },
         },
       } satisfies StrictTypedTypePolicies,

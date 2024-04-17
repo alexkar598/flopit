@@ -254,8 +254,8 @@ export async function resetDatabase() {
         .toISOString()
         .replace("T", " ")
         .slice(0, -1);
-      const text_content = generate_text(20, 4000);
-      const delta_content = "{}";
+      const text_content = generate_text(20, 1000);
+      const delta_content = `{"ops":[{"insert":"${text_content}"}]}`;
       const top_post_id = parent.top_post_id;
       const parent_id = parent.id;
       const cached_votes = generate_score(layer + 1);

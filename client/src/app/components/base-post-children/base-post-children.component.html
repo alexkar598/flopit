@@ -1,0 +1,47 @@
+<div>
+  @if (comments$ | async; as comments) {
+    @for (comment of comments; track comment.id) {
+      <nb-card>
+        <nb-card-body>
+          <div class="comment">
+            <app-rich-text [delta]="$any(comment.deltaContent)"></app-rich-text>
+          </div>
+        </nb-card-body>
+        <nb-card-footer>
+          <div class="actions">
+            <div class="user">
+              <a class="user-link">
+                <nb-user
+                  name="u/{{ comment.author?.username ?? 'Fantôme' }}"
+                  [picture]="comment.author?.avatarUrl ?? ''"
+                />
+              </a>
+            </div>
+
+            <div class="actions">
+              <app-vote [post]="comment" />
+
+              <button nbButton ghost shape="round" size="large">
+                <nb-icon icon="undo-outline" class="icon-action" />
+              </button>
+            </div>
+          </div>
+
+          <div class="date">
+            <span class="text-hint">
+              {{ comment.createdAt | relativeDate }}
+            </span>
+          </div>
+        </nb-card-footer>
+      </nb-card>
+
+      <div class="children">
+        <app-base-post-children
+          [parent]="comment.children?.edges ?? comment.id"
+        />
+      </div>
+    }
+  } @else {
+    <nb-spinner />
+  }
+</div>
