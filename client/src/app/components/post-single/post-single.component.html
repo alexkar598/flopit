@@ -8,7 +8,7 @@
   </nb-card-header>
 
   <nb-card-body>
-    {{ post.textContent }}
+    <app-rich-text [delta]="$any(post.deltaContent)" />
   </nb-card-body>
 
   <nb-card-footer>

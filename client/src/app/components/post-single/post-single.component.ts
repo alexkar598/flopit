@@ -6,6 +6,7 @@ import {
   NbIconModule,
   NbUserModule,
 } from "@nebular/theme";
+import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
 import { TopPostCardFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
@@ -23,6 +24,7 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
     RelativeDatePipe,
     RouterLink,
     VoteComponent,
+    RichTextComponent,
   ],
   templateUrl: "./post-single.component.html",
   styleUrl: "./post-single.component.scss",
