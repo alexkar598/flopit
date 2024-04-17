@@ -15,7 +15,7 @@ import {
   NbToggleModule,
   NbTooltipModule,
 } from "@nebular/theme";
-import { BehaviorSubject, map, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, filter, map, Observable, Subscription } from "rxjs";
 import { notNull, throwException } from "~/app/util";
 import {
   HomeFeedGQL,
@@ -96,7 +96,10 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
       });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
-        .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
+        .pipe(
+          filter((x) => x.data.subByName?.posts.pageInfo.hasNextPage ?? false),
+          map((x) => x.data.subByName?.posts.pageInfo.endCursor),
+        )
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(
@@ -119,7 +122,10 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
       });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
-        .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
+        .pipe(
+          filter((x) => x.data.homefeed.pageInfo.hasNextPage),
+          map((x) => x.data.homefeed.pageInfo.endCursor),
+        )
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(
