@@ -4,11 +4,12 @@ import crypto from "crypto";
 import { getAPIError } from "../../../util.ts";
 import { compute_hash } from "../../auth/auth.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { userValidators } from "../schema.ts";
 
 const input = builder.inputType("CreateUserInput", {
   fields: (t) => ({
-    email: t.string(),
-    username: t.string(),
+    email: t.string({ validate: { schema: userValidators.email } }),
+    username: t.string({ validate: { schema: userValidators.username } }),
     password: t.string(),
   }),
 });

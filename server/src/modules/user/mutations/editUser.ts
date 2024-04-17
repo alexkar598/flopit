@@ -2,13 +2,19 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
-import { ThemeRef } from "../schema.ts";
+import { ThemeRef, userValidators } from "../schema.ts";
 import { minioUploadFileNullableHelper } from "../../../minio.ts";
 
 const input = builder.inputType("EditUserInput", {
   fields: (t) => ({
-    username: t.string({ required: false }),
-    email: t.string({ required: false }),
+    username: t.string({
+      required: false,
+      validate: { schema: userValidators.username },
+    }),
+    email: t.string({
+      required: false,
+      validate: { schema: userValidators.email },
+    }),
     avatar: t.field({ type: "File", required: false }),
     theme: t.field({ type: ThemeRef, required: false }),
   }),

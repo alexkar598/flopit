@@ -1,13 +1,16 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
-import { subRef } from "../schema.ts";
+import { subRef, subValidators } from "../schema.ts";
 import { minioUploadFileNullableHelper } from "../../../minio.ts";
 
 const input = builder.inputType("EditSubInput", {
   fields: (t) => ({
     id: t.globalID({ for: subRef }),
-    description: t.string({ required: false }),
+    description: t.string({
+      required: false,
+      validate: { schema: subValidators.description },
+    }),
     icon: t.field({ type: "File", required: false }),
     banner: t.field({ type: "File", required: false }),
   }),
