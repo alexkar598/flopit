@@ -13,7 +13,9 @@ import {
   NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
+import { ThemeService } from "~/app/services/theme.service";
 import { UserService } from "~/app/services/user.service";
+import { Theme } from "~/graphql";
 
 @Component({
   selector: "app-header",
@@ -37,6 +39,7 @@ import { UserService } from "~/app/services/user.service";
 export class HeaderComponent {
   constructor(
     public userService: UserService,
+    public themeService: ThemeService,
     public toastr: NbToastrService,
     private router: Router,
   ) {}
@@ -47,6 +50,18 @@ export class HeaderComponent {
       icon: "globe-2-outline",
       data: {
         onClick: () => this.router.navigate(["/f"]),
+      },
+    },
+    {
+      title: "Basculer thème",
+      icon: "color-palette-outline",
+      data: {
+        onClick: () =>
+          this.themeService.changeTheme(
+            this.themeService.currentTheme$.getValue() === Theme.Light
+              ? Theme.Dark
+              : Theme.Light,
+          ),
       },
     },
     {
