@@ -80,6 +80,7 @@ nb-form-field {
 .password-2fields {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 label,
@@ -94,8 +95,6 @@ nb-form-field,
 }
 
 .input-password {
-  margin-top: 1rem;
-  grid-column: 3;
   width: 15rem;
 }
 
@@ -106,4 +105,5 @@ form {
 
 .apply {
   margin-left: auto;
+  width: 15rem;
 }

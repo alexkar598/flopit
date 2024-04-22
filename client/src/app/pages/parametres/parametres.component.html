@@ -12,7 +12,7 @@
         </div>
 
         <h2>Informations</h2>
-        <form #form="ngForm" (ngSubmit)="changer(form)">
+        <form #form="ngForm" (ngSubmit)="changer(form.value)">
           <nb-form-field>
             <div class="parametre">
               <label>Changer le nom d'utilisateur</label>
@@ -20,10 +20,11 @@
                 class="input-param"
                 type="text"
                 nbInput
+                ngModel
                 placeholder="Nom d'utilisateur"
                 id="changer-nom"
                 [defaultValue]="user.username"
-                name="changerNom"
+                name="username"
               />
             </div>
           </nb-form-field>
@@ -31,14 +32,14 @@
           <div class="form-field">
             <div class="parametre">
               <label for="changer-password">Changer le mot de passe</label>
-              <div>
+              <div class="password-2fields">
                 <nb-form-field>
                   <input
                     [type]="showPassword ? 'text' : 'password'"
                     nbInput
                     id="changer-password"
                     ngModel
-                    name="passwordConfirm"
+                    name="password"
                     placeholder="Nouveau mot de passe"
                     class="input-password"
                   />
@@ -90,11 +91,12 @@
             <input
               class="input-param"
               type="file"
+              name="icon"
               accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
             />
           </div>
 
-          <button nbButton status="primary" class="apply">
+          <button nbButton status="primary" class="apply" type="submit">
             Appliquer les modifications
           </button>
         </form>

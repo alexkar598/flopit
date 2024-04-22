@@ -15,6 +15,7 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
 import { FormsModule, NgForm } from "@angular/forms";
+import { EditUserGQL } from "~/graphql";
 
 @Component({
   selector: "app-parametres",
@@ -43,7 +44,20 @@ export class ParametresComponent {
   showConfirmPassword = false;
   selectedItem = "0";
 
-  constructor(public userService: UserService) {}
+  constructor(
+    public userService: UserService,
+    private editUserGql: EditUserGQL,
+  ) {}
 
-  async changer(form: NgForm) {}
+  async changer(values: any) {
+    console.log(values);
+    const { username } = values;
+    this.editUserGql
+      .mutate({
+        input: {
+          username,
+        },
+      })
+      .subscribe();
+  }
 }
