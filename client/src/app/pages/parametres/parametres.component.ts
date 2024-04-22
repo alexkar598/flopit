@@ -12,7 +12,6 @@ import {
   NbUserModule,
 } from "@nebular/theme";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
-import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
 import { FormsModule, NgForm } from "@angular/forms";
@@ -29,7 +28,6 @@ import { FormsModule, NgForm } from "@angular/forms";
     TopPostListComponent,
     NbSelectModule,
     NbTooltipModule,
-    GetImgPipe,
     AsyncPipe,
     NbUserModule,
     NgOptimizedImage,

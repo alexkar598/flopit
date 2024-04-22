@@ -6,7 +6,7 @@
         <div class="utilisateur">
           <nb-user
             [name]="user.username"
-            [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
+            [picture]="user.avatarUrl ?? ''"
             color="#EEE"
           />
         </div>
