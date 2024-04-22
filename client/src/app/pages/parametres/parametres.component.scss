@@ -57,7 +57,6 @@ input[type="file"]::file-selector-button {
   height: 2.5rem;
   margin-top: auto;
   margin-bottom: auto;
-  grid-column: 3;
 }
 
 .utilisateur {
@@ -65,11 +64,22 @@ input[type="file"]::file-selector-button {
   margin: auto;
 }
 
+nb-form-field {
+  width: 100%;
+  max-width: unset !important;
+}
+
 .parametre {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  width: 100%;
+}
+
+.password-2fields {
+  display: flex;
+  flex-direction: column;
 }
 
 label,
@@ -78,11 +88,22 @@ span {
   margin-bottom: auto;
 }
 
-nb-form-field {
+nb-form-field,
+.form-field {
   min-width: 100%;
 }
 
 .input-password {
+  margin-top: 1rem;
   grid-column: 3;
   width: 15rem;
+}
+
+form {
+  width: 100%;
+  display: grid;
+}
+
+.apply {
+  margin-left: auto;
 }
