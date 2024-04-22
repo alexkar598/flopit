@@ -3,7 +3,7 @@ fragment TopPostCard on TopPost {
   title
   sub {
     name
-    iconOid
+    iconUrl
   }
   textContent
   createdAt

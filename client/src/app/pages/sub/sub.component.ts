@@ -1,10 +1,12 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   NbButtonModule,
   NbCardModule,
   NbIconModule,
   NbListModule,
   NbSpinnerModule,
+  NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import {
@@ -15,10 +17,15 @@ import {
   UnfollowSubGQL,
   UnfollowSubMutation,
 } from "~/graphql";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
-import { Observable, map, Subscription } from "rxjs";
-import { GetImgPipe } from "~/app/pipes/get-img.pipe";
+import {
+  map,
+  distinctUntilChanged,
+  switchMap,
+  BehaviorSubject,
+  tap,
+} from "rxjs";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
 @Component({
@@ -30,64 +37,76 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbButtonModule,
     AsyncPipe,
     NbUserModule,
-    GetImgPipe,
     TopPostListComponent,
     NbSpinnerModule,
   ],
   templateUrl: "./sub.component.html",
   styleUrl: "./sub.component.scss",
 })
-export class SubComponent implements OnInit, OnDestroy {
-  private sub$!: Observable<SubInformationQuery["subByName"]>;
-  private subSubscription!: Subscription;
-  public sub?: SubInformationQuery["subByName"];
+export class SubComponent {
+  public sub$ = new BehaviorSubject<SubInformationQuery["subByName"] | null>(
+    null,
+  );
 
   constructor(
+    router: Router,
+    toastrService: NbToastrService,
     public route: ActivatedRoute,
     private subInfoQuery: SubInformationGQL,
     private followSubMut: FollowSubGQL,
     private unfollowSubMut: UnfollowSubGQL,
-  ) {}
-
-  ngOnInit() {
-    this.sub$ = this.subInfoQuery
-      .watch({
-        sub_name: this.route.snapshot.params?.["subName"],
-      })
-      .valueChanges.pipe(map((res) => res.data.subByName));
-
-    this.subSubscription = this.sub$.subscribe((sub) => (this.sub = sub));
-  }
-
-  ngOnDestroy() {
-    this.subSubscription.unsubscribe();
+  ) {
+    this.route.paramMap
+      .pipe(
+        map((x) => x.get("subName")!),
+        distinctUntilChanged(),
+        switchMap(
+          (subName) =>
+            this.subInfoQuery.watch({
+              sub_name: subName,
+            }).valueChanges,
+        ),
+        map((res) => res.data.subByName),
+        tap((sub) => {
+          if (sub == null) {
+            toastrService.danger(
+              "Cette communauté n'a pas pu être trouvée",
+              "Communauté introuvée!",
+            );
+            void router.navigate(["/"]);
+          }
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe(this.sub$);
   }
 
   toggleFollow() {
-    if (!this.sub) return;
+    const sub = this.sub$.getValue();
+    if (!sub) return;
 
     const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
       __typename: "Mutation",
-      [this.sub.is_following ? "unfollowSub" : "followSub"]: {
+      [sub.isFollowing ? "unfollowSub" : "followSub"]: {
         __typename: "Sub",
-        id: this.sub.id,
-        is_following: !this.sub.is_following,
+        id: sub.id,
+        isFollowing: !sub.isFollowing,
         followers: {
           __typename: "SubFollowersConnection",
-          totalCount: this.sub.followers.totalCount
-            ? this.sub.followers.totalCount + (this.sub.is_following ? -1 : 1)
+          totalCount: sub.followers.totalCount
+            ? sub.followers.totalCount + (sub.isFollowing ? -1 : 1)
             : null,
         },
       },
     };
 
-    if (this.sub.is_following)
+    if (sub.isFollowing)
       this.unfollowSubMut
-        .mutate({ input: { subId: this.sub.id } }, { optimisticResponse })
+        .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();
     else
       this.followSubMut
-        .mutate({ input: { subId: this.sub.id } }, { optimisticResponse })
+        .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();
   }
 }

@@ -1,5 +1,6 @@
 fragment UserSelf on User {
+  id
   username
-  avatarOid
+  avatarUrl
   theme
 }

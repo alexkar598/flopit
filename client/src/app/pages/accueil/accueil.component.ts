@@ -10,7 +10,6 @@ import {
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
 @Component({
-  selector: "app-accueil",
   standalone: true,
   imports: [
     NbCardModule,

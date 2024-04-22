@@ -1,7 +1,7 @@
 <div class="container">
   <div class="controls">
     <nb-select
-      (selectedChange)="resetQuery()"
+      (selectedChange)="applyVariables()"
       [(ngModel)]="sortOptions.type"
       status="primary"
     >
@@ -12,7 +12,7 @@
     @if (!subName && (userService.currentUser$ | async)) {
       <nb-toggle
         [(checked)]="personalised"
-        (checkedChange)="resetQuery()"
+        (checkedChange)="applyVariables()"
         nbTooltip="Subs que vous suivez seulement"
         nbTooltipStatus="basic"
       >

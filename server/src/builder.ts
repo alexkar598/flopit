@@ -10,7 +10,14 @@ import {
 } from "graphql-scalars";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
-import { capitalizeFirst, getAPIError } from "./util.ts";
+import {
+  capitalizeFirst,
+  getAPIError,
+  slugify,
+  throwException,
+  unslugify,
+  SlugType,
+} from "./util.ts";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -38,6 +45,10 @@ export const builder = new SchemaBuilder<{
       Input: void;
       Output: void;
     };
+    File: {
+      Input: File;
+      Output: never;
+    };
   };
   Context: {
     req: IncomingMessage;
@@ -56,6 +67,14 @@ export const builder = new SchemaBuilder<{
   },
   relayOptions: {
     cursorType: "ID",
+    encodeGlobalID: (typename, id) => {
+      if (typeof id != "string") throw Error("ID n'est pas un string");
+      //@ts-expect-error
+      const type = SlugType[typename];
+      if (type == null) throw Error("Type inconnu");
+      return slugify(type, id);
+    },
+    decodeGlobalID: unslugify,
   },
   defaultInputFieldRequiredness: true,
 });
@@ -81,6 +100,9 @@ builder.scalarType("OID", {
 
     return x;
   },
+});
+builder.scalarType("File", {
+  serialize: () => throwException(new Error("Not implemented")),
 });
 
 builder.globalConnectionField("totalCount", (t) =>

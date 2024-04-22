@@ -1,6 +1,6 @@
 @use "themes" as *;
-
 @use "@nebular/theme/styles/globals" as *;
+@import "styles/quill";
 
 @include nb-install() {
   @include nb-theme-global();
@@ -12,4 +12,12 @@ body {
 
 .user-picture.initials {
   user-select: none;
+}
+
+.createpost-window.full-screen {
+  width: min(90vw, 60rem);
+
+  nb-card-body {
+    overflow: visible;
+  }
 }
