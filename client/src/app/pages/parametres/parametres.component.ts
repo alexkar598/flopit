@@ -14,7 +14,7 @@ import {
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
-import { FormsModule, NgForm } from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import { EditUserGQL } from "~/graphql";
 
 @Component({
@@ -42,7 +42,6 @@ import { EditUserGQL } from "~/graphql";
 export class ParametresComponent {
   showPassword = false;
   showConfirmPassword = false;
-  selectedItem = "0";
 
   constructor(
     public userService: UserService,
