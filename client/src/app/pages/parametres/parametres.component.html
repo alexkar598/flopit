@@ -110,10 +110,29 @@
       <h2>Compte</h2>
       <div class="parametre">
         <span>Supprimer le compte</span>
-        <button nbButton status="danger" class="input-param">
+        <button
+          nbButton
+          status="danger"
+          class="input-param"
+          (click)="toggleDeletingAccount()"
+        >
           Supprimer le compte
         </button>
       </div>
+      @if (deletingAccount) {
+        <div class="supprimerCompte">
+          <h2>Êtes-vous sûr de vouloir supprimer votre compte?</h2>
+          <button
+            nbButton
+            fullWidth
+            size="giant"
+            status="danger"
+            class="delete-button"
+          >
+            Oui, je souhaite supprimer mon compte
+          </button>
+        </div>
+      }
     </div>
   </nb-card-body>
 </nb-card>

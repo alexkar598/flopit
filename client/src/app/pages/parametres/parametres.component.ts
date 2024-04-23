@@ -42,6 +42,7 @@ import { EditUserGQL } from "~/graphql";
 export class ParametresComponent {
   showPassword = false;
   showConfirmPassword = false;
+  deletingAccount = false;
 
   constructor(
     public userService: UserService,
@@ -58,5 +59,9 @@ export class ParametresComponent {
         },
       })
       .subscribe();
+  }
+
+  toggleDeletingAccount() {
+    this.deletingAccount = !this.deletingAccount;
   }
 }

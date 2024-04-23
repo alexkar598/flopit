@@ -108,3 +108,18 @@ form {
   width: 15rem;
   margin-top: 1rem;
 }
+
+.supprimerCompte {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  padding: 1rem;
+  border: 0.5rem solid nb-theme(color-danger-default);
+  background: nb-theme(color-danger-transparent-default);
+  border-radius: 10px;
+}
+
+.delete-button {
+  margin-left: auto;
+  margin-right: auto;
+}
