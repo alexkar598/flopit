@@ -5,7 +5,7 @@
       @if (userService.currentUser$ | async; as user) {
         <div class="utilisateur">
           <nb-user
-            [name]="user.username"
+            [name]="form.value.username"
             [picture]="user.avatarUrl ?? ''"
             color="#EEE"
           />
