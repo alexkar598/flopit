@@ -26,7 +26,6 @@ import {
   BehaviorSubject,
   tap,
 } from "rxjs";
-import { GetImgPipe } from "~/app/pipes/get-img.pipe";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 
 @Component({
@@ -38,7 +37,6 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbButtonModule,
     AsyncPipe,
     NbUserModule,
-    GetImgPipe,
     TopPostListComponent,
     NbSpinnerModule,
   ],
@@ -89,20 +87,20 @@ export class SubComponent {
 
     const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
       __typename: "Mutation",
-      [sub.is_following ? "unfollowSub" : "followSub"]: {
+      [sub.isFollowing ? "unfollowSub" : "followSub"]: {
         __typename: "Sub",
         id: sub.id,
-        is_following: !sub.is_following,
+        isFollowing: !sub.isFollowing,
         followers: {
           __typename: "SubFollowersConnection",
           totalCount: sub.followers.totalCount
-            ? sub.followers.totalCount + (sub.is_following ? -1 : 1)
+            ? sub.followers.totalCount + (sub.isFollowing ? -1 : 1)
             : null,
         },
       },
     };
 
-    if (sub.is_following)
+    if (sub.isFollowing)
       this.unfollowSubMut
         .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();

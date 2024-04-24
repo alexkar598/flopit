@@ -11,5 +11,5 @@ query FindSubs($filter: SubsFilter!) {
 fragment FindSubsSub on Sub {
   id
   name
-  iconOid
+  iconUrl
 }
