@@ -15,7 +15,8 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
 import { FormsModule } from "@angular/forms";
-import { EditUserGQL } from "~/graphql";
+import { DeleteUserGQL, EditUserGQL } from "~/graphql";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-parametres",
@@ -47,6 +48,7 @@ export class ParametresComponent {
   constructor(
     public userService: UserService,
     private editUserGql: EditUserGQL,
+    private router: Router,
   ) {}
 
   async changer(values: any) {
@@ -63,5 +65,10 @@ export class ParametresComponent {
 
   toggleDeletingAccount() {
     this.deletingAccount = !this.deletingAccount;
+  }
+
+  deleteAccount() {
+    void this.userService.delete();
+    void this.router.navigate(["/"]);
   }
 }

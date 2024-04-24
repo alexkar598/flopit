@@ -3,6 +3,7 @@ import {
   CreateUserGQL,
   CreateUserInput,
   CurrentUserGQL,
+  DeleteUserGQL,
   LoginGQL,
   LogoutGQL,
   UserSelfFragment,
@@ -23,6 +24,7 @@ export class UserService {
     private loginMut: LoginGQL,
     private logoutMut: LogoutGQL,
     private createUserMut: CreateUserGQL,
+    private deleteUserMut: DeleteUserGQL,
     private currentUserGql: CurrentUserGQL,
     private apollo: Apollo,
   ) {
@@ -67,6 +69,17 @@ export class UserService {
         if (result.errors)
           return reject(result.errors?.map((err) => err.message).join("\n"));
         void this.apollo.client.resetStore();
+        resolve();
+      });
+    });
+  }
+
+  delete(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.deleteUserMut.mutate({}).subscribe((result) => {
+        if (result.errors)
+          return reject(result.errors?.map((err) => err.message).join("\n"));
+        void this.logout();
         resolve();
       });
     });
