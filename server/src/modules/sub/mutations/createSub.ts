@@ -2,11 +2,19 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
+import { subValidators } from "../schema.ts";
 
 const input = builder.inputType("CreateSubInput", {
   fields: (t) => ({
-    name: t.string(),
-    description: t.string({ required: false }),
+    name: t.string({
+      validate: {
+        schema: subValidators.name,
+      },
+    }),
+    description: t.string({
+      required: false,
+      validate: { schema: subValidators.description },
+    }),
   }),
 });
 

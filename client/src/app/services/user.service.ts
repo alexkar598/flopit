@@ -48,10 +48,6 @@ export class UserService {
 
   register(input: CreateUserInput): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!input.email || !input.username || !input.password) {
-        return reject("Tous les champs sont obligatoires");
-      }
-
       this.createUserMut.mutate({ input }).subscribe(async (res) => {
         if (res.errors)
           return reject(res.errors.map((err) => err.message).join("\n"));

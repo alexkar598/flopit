@@ -18,6 +18,7 @@ import {
   unslugify,
   SlugType,
 } from "./util.ts";
+import ValidationPlugin from "@pothos/plugin-validation";
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -58,7 +59,7 @@ export const builder = new SchemaBuilder<{
   };
   DefaultInputFieldRequiredness: true;
 }>({
-  plugins: [PrismaPlugin, RelayPlugin],
+  plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin],
   prisma: {
     client: prisma,
     exposeDescriptions: true,
