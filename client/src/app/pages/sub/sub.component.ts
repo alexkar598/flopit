@@ -126,8 +126,8 @@ export class SubComponent {
     const sub = this.sub$.getValue();
     if (!sub) return;
 
-    this.newDescription = sub.description;
     this.editing = !this.editing;
+    if (this.editing) this.newDescription = sub.description;
   }
 
   saveDescription() {
@@ -148,8 +148,7 @@ export class SubComponent {
         {
           optimisticResponse: {
             editSub: {
-              __typename: "Sub",
-              id: sub.id,
+              ...sub,
               description: this.newDescription,
             },
           },

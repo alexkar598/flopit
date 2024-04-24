@@ -88,6 +88,8 @@ textarea {
   border: none;
   outline: none;
   overflow: hidden;
+  background: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color-1);
 }
 
 .edit-button {
@@ -116,4 +118,5 @@ p {
   margin-top: 1rem;
   margin-bottom: 1rem;
   outline: none;
+  white-space: pre;
 }
