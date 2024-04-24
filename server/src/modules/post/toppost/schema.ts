@@ -1,6 +1,7 @@
 import { builder } from "../../../builder.ts";
 import { attachmentRef } from "../../attachment/schema.ts";
 import { basePostRef } from "../basepost/schema.ts";
+import { z } from "zod";
 
 export const topPostRef = builder.prismaNode("Post", {
   variant: "TopPost",
@@ -33,3 +34,10 @@ export const topPostRef = builder.prismaNode("Post", {
     }),
   }),
 });
+
+export const topPostValidators = {
+  title: z
+    .string()
+    .trim()
+    .min(1, "Le titre doit contenir au moins un caractère"),
+};

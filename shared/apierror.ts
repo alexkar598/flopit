@@ -11,11 +11,11 @@ export const APIError = Object.freeze({
   AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
   SUB_NOT_FOUND: "Cette communauté n'a pas été trouvée",
   POST_NOT_FOUND: "Ce message n'a pas été trouvé",
-  INVALID_DELTA: "Le contenu Delta n'est pas valide",
   TITLE_TOO_SHORT: "Le titre doit faire au moins 1 caractère",
   BANNED: "Vous êtes banni de ce sub",
   NOT_SUB_MODERATOR:
     "Vous devez être modérateur de ce sub pour effectuer cette action",
   FILE_UPLOAD_FAIL: "Le téléversement du fichier a échoué",
   INVALID_ID: "Un ID fournit est invalide",
+  VALIDATION_ERROR: "Erreur de validation",
 });
