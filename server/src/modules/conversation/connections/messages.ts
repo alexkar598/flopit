@@ -1,5 +1,8 @@
 import { builder } from "../../../builder.ts";
-import { resolveCursorConnection } from "@pothos/plugin-relay";
+import {
+  resolveCursorConnection,
+  ResolveCursorConnectionArgs,
+} from "@pothos/plugin-relay";
 import { Message, MessageConnection } from "../../message/schema.ts";
 import { getConversationId } from "../util.ts";
 import { redis } from "../../../redis.ts";
@@ -8,11 +11,15 @@ builder.prismaObjectField("Conversation", "messages", (t) =>
   t.field({
     type: MessageConnection,
     args: t.arg.connectionArgs(),
-    // @ts-ignore
     resolve: (parent, args) => {
       return resolveCursorConnection(
         { args, toCursor: (value) => (value as Message).id },
-        async ({ limit, before, after, inverted }) => {
+        async ({
+          limit,
+          before,
+          after,
+          inverted,
+        }: ResolveCursorConnectionArgs) => {
           const conversationId = getConversationId(
             parent.owner_id,
             parent.target_id,

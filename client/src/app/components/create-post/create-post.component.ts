@@ -27,7 +27,7 @@ import {
   HomeFeedDocument,
   SubFeedDocument,
 } from "~/graphql";
-import { getImg, notNull } from "~/app/util";
+import { notNull } from "~/app/util";
 import { Router } from "@angular/router";
 import { QueryRef } from "apollo-angular";
 
@@ -55,8 +55,6 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   public loading = false;
   public subFilterSubject = new BehaviorSubject("");
   public subFilterSub!: Subscription;
-
-  protected readonly getImg = getImg;
 
   constructor(
     private findSubsGQL: FindSubsGQL,
