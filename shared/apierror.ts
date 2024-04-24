@@ -5,7 +5,7 @@ export const APIError = Object.freeze({
   BAD_CREDENTIALS: "Courriel ou mot de passe invalide",
   DUPLICATE_USERNAME: "Ce nom d'utilisateur est déja utilisé",
   DUPLICATE_EMAIL: "Ce courriel est déja utilisé",
-  TRIVIAL_PASSWORD: "Le mot de passe doit avoir au moins 6 caractères",
+  INSECURE_PASSWORD: "Ce mot de passe est insecuritaire",
   DUPLICATE_SUB_NAME: "Une communauté avec ce nom existe déjà",
   AUTHENTICATED_FIELD: "Cette information nécessite une session active",
   AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
