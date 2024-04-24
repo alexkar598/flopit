@@ -2,6 +2,7 @@
 
 .ql-editor.ql-blank::before {
   content: "Insérer du texte ici...";
+  color: rgba(var(--text-basic-color), 0.6);
 }
 
 .quill {
@@ -13,5 +14,19 @@
   .ql-picker-label[data-value="#{$i}"]::before,
   .ql-picker-item[data-value="#{$i}"]::before {
     content: "Titre #{$i}" !important;
+  }
+}
+
+.ql-toolbar {
+  .ql-picker-label {
+    color: var(--button-ghost-basic-text-color);
+  }
+
+  .ql-stroke {
+    stroke: var(--button-ghost-basic-text-color);
+  }
+
+  .ql-fill {
+    fill: var(--button-ghost-basic-text-color);
   }
 }
