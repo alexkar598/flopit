@@ -1,0 +1,17 @@
+fragment FullTopPost on TopPost {
+  id
+  title
+  sub {
+    id
+    name
+  }
+  author {
+    id
+    username
+    avatarUrl
+  }
+  deltaContent
+  createdAt
+  currentVote
+  cachedVotes
+}

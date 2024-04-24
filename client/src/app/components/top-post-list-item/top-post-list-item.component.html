@@ -1,0 +1,26 @@
+<nb-card>
+  <nb-card-header>
+    <a [routerLink]="['/f', post.sub.name, post.id]">
+      <h2>
+        {{ post.title }}
+      </h2>
+    </a>
+  </nb-card-header>
+
+  <nb-card-body>
+    <app-rich-text [delta]="post.deltaContent" />
+  </nb-card-body>
+
+  <nb-card-footer>
+    <app-vote [post]="post" />
+
+    <a class="sub" [routerLink]="['/f', post.sub.name]">
+      <nb-user
+        name="f/{{ post.sub.name }}"
+        [picture]="post.sub.iconUrl ?? ''"
+      />
+    </a>
+
+    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
+  </nb-card-footer>
+</nb-card>
