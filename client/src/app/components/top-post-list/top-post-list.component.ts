@@ -24,22 +24,24 @@ import {
   SubFeedGQL,
   TopPostCardFragment,
 } from "~/graphql";
-import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
+import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { FormsModule } from "@angular/forms";
 import { UserService } from "~/app/services/user.service";
+import { TopPostListItemComponent } from "~/app/components/top-post-list-item/top-post-list-item.component";
 
 @Component({
-  selector: "app-post-list",
+  selector: "app-top-post-list",
   standalone: true,
   imports: [
     NbListModule,
     NbCardModule,
     CommonModule,
-    PostSingleComponent,
+    TopPostComponent,
     NbSelectModule,
     FormsModule,
     NbToggleModule,
     NbTooltipModule,
+    TopPostListItemComponent,
   ],
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
