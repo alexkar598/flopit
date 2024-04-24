@@ -48,6 +48,16 @@
               <p>Publication{{ sub.posts.totalCount !== 1 ? "s" : "" }}</p>
             </div>
           </div>
+
+          @if ((sub$ | async)?.isModerator) {
+            <hr />
+            <nb-actions class="moderator-actions" [fullWidth]="true">
+              <nb-action (click)="openWindow()">
+                <nb-icon icon="people-outline" />
+                Gérer modérateurs
+              </nb-action>
+            </nb-actions>
+          }
         </nb-card-body>
       </nb-card>
     } @else {
