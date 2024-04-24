@@ -76,16 +76,17 @@ export class BasePostChildrenComponent implements OnChanges {
       parentChanges.currentValue !== parentChanges.previousValue
     ) {
       this.reset$.next(null);
-      (typeof this.parent === "string"
-        ? this.postCommentsQuery.watch({ id: this.parent }).valueChanges.pipe(
-            map((res) => res.data.node),
-            filter(isFragment<CommentListFragment>(["TopPost", "Comment"])),
-            takeUntil(this.reset$),
-            takeUntilDestroyed(this.destroyRef),
-            map((node) => node.children.edges),
-          )
-        : of(this.parent)
-      )
+      const parent$ =
+        typeof this.parent === "string"
+          ? this.postCommentsQuery.watch({ id: this.parent }).valueChanges.pipe(
+              map((res) => res.data.node),
+              filter(isFragment<CommentListFragment>(["TopPost", "Comment"])),
+              takeUntil(this.reset$),
+              takeUntilDestroyed(this.destroyRef),
+              map((node) => node.children.edges),
+            )
+          : of(this.parent);
+      parent$
         .pipe(map((res) => res.map((comment) => comment!.node!)))
         .subscribe((val) => this.comments$.next(val));
     }
