@@ -15,7 +15,10 @@
     <app-vote [post]="post" />
 
     <a class="sub" [routerLink]="['/f', post.sub.name]">
-      <nb-user name="f/{{ post.sub.name }}" />
+      <nb-user
+        name="f/{{ post.sub.name }}"
+        [picture]="post.sub.iconUrl ?? ''"
+      />
     </a>
 
     <span class="datetime text-hint">

@@ -1,7 +1,7 @@
 mutation UnfollowSub($input: UnfollowSubInput!) {
   unfollowSub(input: $input) {
     id
-    is_following
+    isFollowing
     followers {
       totalCount
     }

@@ -3,7 +3,7 @@
     @if (userService.currentUser$ | async; as user) {
       <nb-user
         [name]="user.username"
-        [picture]="user.avatarOid ? (user.avatarOid | getImg) : ''"
+        [picture]="user.avatarUrl ?? ''"
         color="#EEE"
         [nbContextMenu]="userMenuItems"
         nbContextMenuTag="header-user-menu"

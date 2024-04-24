@@ -22,7 +22,7 @@ import { HttpRequest, HttpResponse } from "uWebSockets.js";
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
   Connection: {
-    totalCount: number | (() => number | Promise<number>);
+    totalCount?: number | (() => number | Promise<number>);
   };
   Scalars: {
     DateTime: {

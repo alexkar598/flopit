@@ -28,18 +28,23 @@ builder.subscriptionField("watchMessages", (t) =>
 
       let nextId = after ?? "$";
 
-      for (let i = 0; i < (max ?? Number.POSITIVE_INFINITY); i++) {
-        while (true) {
+      const abortController = new AbortController();
+
+      try {
+        for (let i = 0; i < (max ?? Number.POSITIVE_INFINITY); i++) {
           const redisMessage = await redis.xRead(
-            commandOptions({ isolated: true }),
+            commandOptions({ isolated: true, signal: abortController.signal }),
             { key: conversationId, id: nextId },
             {
-              BLOCK: 60 * 1000,
+              BLOCK: 0,
               COUNT: 1,
             },
           );
 
-          if (redisMessage == null) continue;
+          if (redisMessage == null) {
+            i--;
+            continue;
+          }
 
           nextId = redisMessage[0].messages[0].id;
 
@@ -47,8 +52,9 @@ builder.subscriptionField("watchMessages", (t) =>
             id: redisMessage[0].messages[0].id,
             ...redisMessage[0].messages[0].message,
           } as Message;
-          break;
         }
+      } finally {
+        abortController.abort();
       }
     },
     resolve: (payload) => payload,
