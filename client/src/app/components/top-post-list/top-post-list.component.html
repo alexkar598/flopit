@@ -30,7 +30,7 @@
   >
     @for (post of posts$ | async; track post.id) {
       <nb-list-item>
-        <app-post-single [post]="post" />
+        <app-top-post-list-item [post]="post" />
       </nb-list-item>
     }
   </nb-list>

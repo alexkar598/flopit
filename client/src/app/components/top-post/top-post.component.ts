@@ -8,12 +8,12 @@ import {
 } from "@nebular/theme";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
-import { TopPostCardFragment } from "~/graphql";
+import { FullTopPostFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 
 @Component({
-  selector: "app-post-single",
+  selector: "app-top-post",
   standalone: true,
   imports: [
     NbCardModule,
@@ -26,9 +26,9 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
     VoteComponent,
     RichTextComponent,
   ],
-  templateUrl: "./post-single.component.html",
-  styleUrl: "./post-single.component.scss",
+  templateUrl: "./top-post.component.html",
+  styleUrl: "./top-post.component.scss",
 })
-export class PostSingleComponent {
-  @Input({ required: true }) post!: TopPostCardFragment;
+export class TopPostComponent {
+  @Input({ required: true }) post!: FullTopPostFragment;
 }
