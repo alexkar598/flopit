@@ -13,18 +13,18 @@ import {
   switchMap,
   tap,
 } from "rxjs";
-import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
+import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { isFragment } from "~/app/util";
-import { PostByIdGQL, TopPostCardFragment } from "~/graphql";
+import { FullTopPostFragment, PostByIdGQL } from "~/graphql";
 
 @Component({
   standalone: true,
-  imports: [AsyncPipe, PostSingleComponent, NbSpinnerModule, RouterLink],
+  imports: [AsyncPipe, TopPostComponent, NbSpinnerModule, RouterLink],
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",
 })
-export class TopPostComponent {
-  public post$ = new BehaviorSubject<TopPostCardFragment | null>(null);
+export class TopPostPageComponent {
+  public post$ = new BehaviorSubject<FullTopPostFragment | null>(null);
 
   constructor(
     postByIdQuery: PostByIdGQL,
@@ -53,7 +53,7 @@ export class TopPostComponent {
             this.navigateToSub();
           }
         }),
-        filter(isFragment<TopPostCardFragment>("TopPost")),
+        filter(isFragment<FullTopPostFragment>("TopPost")),
         takeUntilDestroyed(),
       )
       .subscribe(this.post$);

@@ -14,12 +14,16 @@
   <nb-card-footer>
     <app-vote [post]="post" />
 
-    <a class="sub" [routerLink]="['/f', post.sub.name]">
-      <nb-user
-        name="f/{{ post.sub.name }}"
-        [picture]="post.sub.iconUrl ?? ''"
-      />
-    </a>
+    <span class="user">
+      @if (post.author) {
+        <nb-user
+          name="u/{{ post.author.username }}"
+          [picture]="post.author.avatarUrl ?? ''"
+        />
+      } @else {
+        <nb-user name="fantôme" />
+      }
+    </span>
 
     <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
   </nb-card-footer>
