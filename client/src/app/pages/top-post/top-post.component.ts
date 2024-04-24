@@ -13,13 +13,20 @@ import {
   switchMap,
   tap,
 } from "rxjs";
+import { BasePostChildrenComponent } from "~/app/components/base-post-children/base-post-children.component";
 import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { isFragment } from "~/app/util";
 import { FullTopPostFragment, PostByIdGQL } from "~/graphql";
 
 @Component({
   standalone: true,
-  imports: [AsyncPipe, TopPostComponent, NbSpinnerModule, RouterLink],
+  imports: [
+    AsyncPipe,
+    TopPostComponent,
+    NbSpinnerModule,
+    RouterLink,
+    BasePostChildrenComponent,
+  ],
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",
 })
@@ -43,7 +50,7 @@ export class TopPostPageComponent {
               id,
             }).valueChanges,
         ),
-        map((res) => res.data.node!),
+        map((res) => res.data.node),
         tap((post) => {
           if (post == null) {
             toastrService.danger(

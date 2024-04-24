@@ -14,18 +14,18 @@ nb-icon {
   margin-right: 1rem;
 }
 
-.commentaire {
+.comment {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.utilisateur {
+.user {
   display: flex;
   margin-right: 1rem;
   text-decoration: none;
 }
 
-.lien-utilisateur {
+.user-link {
   color: var(--text-basic-color);
   text-decoration: none;
   font-weight: bold;
@@ -38,7 +38,7 @@ nb-icon {
   text-align: left;
 }
 
-.icone-action {
+.icon-action {
   margin: auto;
 }
 
@@ -46,4 +46,9 @@ nb-icon {
   text-align: right;
   margin-top: auto;
   margin-bottom: auto;
+}
+
+.children {
+  padding-left: 1.5rem;
+  border-left: solid lightgrey 1px;
 }

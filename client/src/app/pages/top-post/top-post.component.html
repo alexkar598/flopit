@@ -1,5 +1,7 @@
 @if (post$ | async; as post) {
   <app-top-post [post]="post" />
+  <h4>Commentaires:</h4>
+  <app-base-post-children [parent]="post.id" />
 } @else {
   <nb-spinner />
 }
