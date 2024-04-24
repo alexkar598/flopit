@@ -14,6 +14,7 @@ import {
 import {
   ApolloClientOptions,
   ApolloLink,
+  FieldMergeFunction,
   from,
   InMemoryCache,
   split,
@@ -21,7 +22,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { HttpHeaders } from "@angular/common/http";
-import { StrictTypedTypePolicies } from "~/graphql";
+import { Maybe, Node, StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
 import { Router } from "@angular/router";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
@@ -121,6 +122,9 @@ export function apolloOptionsFactory(
   };
 }
 
+type CachedMessageEdge = { node: { __ref: string } };
+const messageFieldPolicyPagination = relayStylePagination(["target"]);
+
 export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
@@ -130,6 +134,45 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
         Query: {
           fields: {
             homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+          },
+        },
+        Conversation: {
+          fields: {
+            messages: {
+              ...messageFieldPolicyPagination,
+              merge(
+                existing: { edges: Maybe<{ node: Node }>[] },
+                incoming: { edges: Maybe<{ node: Node }>[] },
+                args,
+              ) {
+                const merged = (
+                  messageFieldPolicyPagination.merge as FieldMergeFunction
+                )(existing, incoming, args);
+
+                const firstIncomingId = incoming?.edges[0]?.node.id as
+                  | string
+                  | undefined;
+                //Aucun incoming, null op
+                if (firstIncomingId === undefined) return merged;
+
+                let existingLastIndex = existing?.edges.findIndex(
+                  (x) => x && x.node.id > firstIncomingId,
+                );
+                //Aucun incoming, défaut
+                if (existingLastIndex === undefined) return merged;
+
+                if (existingLastIndex === -1) existingLastIndex = 0;
+
+                return {
+                  pageInfo: merged.pageInfo,
+                  edges: [
+                    ...existing.edges.splice(0, existingLastIndex - 1),
+                    ...incoming.edges,
+                    ...existing.edges.splice(existingLastIndex),
+                  ],
+                };
+              },
+            },
           },
         },
         Sub: {

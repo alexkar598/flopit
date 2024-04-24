@@ -1,33 +1,53 @@
 <nb-card>
   <nb-list>
     @for (conversation of conversations$ | async; track conversation.id) {
-      <nb-list-item nbButton (click)="activeConversation$.next(conversation)">
+      <nb-list-item
+        nbButton
+        [routerLink]="['/', 'chat', conversation.target.id]"
+      >
         <nb-user
           [name]="conversation.target.username"
-          [title]="conversation.lastInteraction | relativeDate"
+          [title]="
+            (conversation.lastInteraction | relativeDate | async) ??
+            'maintenant'
+          "
         />
       </nb-list-item>
     }
+    <nb-list-item nbButton (click)="newConversation()">
+      <nb-icon icon="plus-circle-outline" />
+    </nb-list-item>
   </nb-list>
 </nb-card>
 
 @if (activeConversation$ | async; as conversation) {
   <nb-chat
+    #container
     noMessagesPlaceholder="Aucun message pour l'instant"
-    [scrollBottom]="true"
-    [title]="conversation?.target?.username ?? ''"
+    [scrollBottom]="autoScroll"
+    [title]="conversation.target.username"
   >
-    @for (msg of messages$ | async; track msg.id) {
+    @if (loaded) {
+      <nb-chat-message
+        class="placeholder-message"
+        [intersectionObserver]="chatContainer?.scrollable?.nativeElement"
+        intersectionObserverMargin="300px"
+        (visible)="fetchMore != null && fetchMore(false)"
+      />
+    }
+
+    @for (msg of messages$ | async; track msg.id; let first = $first) {
       <nb-chat-message
         type="text"
         [message]="msg.textContent"
         [reply]="conversation.target.id !== msg.author.id"
+        [class.emoji]="isEmojiOnly(msg.textContent)"
       />
     }
 
     <nb-chat-form
       messagePlaceholder="Écrivez un message..."
-      (send)="sendMessage($event.message)"
+      (send)="actionSendMessage$.next($event.message)"
     />
   </nb-chat>
 }

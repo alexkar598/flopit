@@ -10,6 +10,7 @@ import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
 import { TopPostCardFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
 import { VoteComponent } from "~/app/components/vote/vote.component";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "app-post-single",
@@ -23,6 +24,7 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
     RelativeDatePipe,
     RouterLink,
     VoteComponent,
+    AsyncPipe,
   ],
   templateUrl: "./post-single.component.html",
   styleUrl: "./post-single.component.scss",

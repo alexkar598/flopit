@@ -19,3 +19,11 @@ nb-user {
 nb-chat {
   max-height: 32rem;
 }
+
+.emoji {
+  --text-paragraph-font-size: 2rem;
+}
+
+.placeholder-message {
+  --chat-message-avatar-background-color: transparent;
+}

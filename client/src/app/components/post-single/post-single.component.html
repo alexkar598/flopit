@@ -18,6 +18,8 @@
       <nb-user name="f/{{ post.sub.name }}" />
     </a>
 
-    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
+    <span class="datetime text-hint">
+      {{ post.createdAt | relativeDate | async }}
+    </span>
   </nb-card-footer>
 </nb-card>

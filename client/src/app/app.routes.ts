@@ -13,4 +13,5 @@ export const routes: Routes = [
   { path: "f/:subName", component: SubComponent },
   { path: "f/:subName/:topPostId", component: TopPostComponent },
   { path: "chat", component: ChatComponent },
+  { path: "chat/:user", component: ChatComponent },
 ];

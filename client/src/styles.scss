@@ -17,3 +17,7 @@ body {
     overflow: visible;
   }
 }
+
+nb-chat .scrollable {
+  overflow-anchor: auto;
+}

@@ -44,6 +44,11 @@ export class HeaderComponent {
 
   public userMenuItems: NbClickableMenuItem[] = [
     {
+      title: "Chat",
+      icon: "message-circle-outline",
+      link: "chat",
+    },
+    {
       title: "Déconnexion",
       icon: "log-out",
       data: {

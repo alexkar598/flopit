@@ -1,0 +1,23 @@
+<nb-form-field>
+  <span nbPrefix>u/</span>
+  <input
+    type="text"
+    nbInput
+    fullWidth
+    placeholder="Utilisateur..."
+    required
+    ngModel
+    (ngModelChange)="usernameSubject.next($event)"
+  />
+  @if (userId) {
+    <nb-icon icon="checkmark-circle-2" nbSuffix status="success" />
+  } @else if (usernameSubject | async) {
+    <nb-icon icon="close-circle" nbSuffix status="danger" />
+  }
+</nb-form-field>
+
+<nb-chat-form
+  messagePlaceholder="Écrivez un message..."
+  (send)="sendMessage($event.message)"
+  [attr.inert]="!userId ? true : undefined"
+/>
