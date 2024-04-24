@@ -1,0 +1,6 @@
+query BasePostComments($id: ID!) {
+  node(id: $id) {
+    id
+    ...CommentList
+  }
+}

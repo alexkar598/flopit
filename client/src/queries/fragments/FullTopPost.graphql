@@ -1,9 +1,14 @@
-fragment TopPostCard on TopPost {
+fragment FullTopPost on TopPost {
   id
   title
   sub {
+    id
     name
-    iconUrl
+  }
+  author {
+    id
+    username
+    avatarUrl
   }
   deltaContent
   createdAt

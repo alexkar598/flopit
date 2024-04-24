@@ -1,0 +1,47 @@
+:host {
+  width: 100%;
+}
+
+nb-card {
+  max-width: 50rem;
+  --card-divider-width: 0;
+  --card-border-radius: 1rem;
+  --card-margin-bottom: 0;
+}
+
+h2 {
+  line-height: 1;
+  font-size: var(--text-heading-4-font-size);
+}
+
+nb-card-body {
+  --card-padding: 0 1rem;
+}
+
+nb-card-footer {
+  --card-padding: 0.25rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.sub {
+  margin: auto;
+  --user-name-text-font-weight: bold;
+  text-decoration: none;
+}
+
+.datetime {
+  margin: auto 0 auto auto;
+}
+
+$top-list-list-item-lines: 5;
+app-rich-text {
+  display: block;
+  max-height: #{$top-list-list-item-lines}lh;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    black,
+    black #{$top-list-list-item-lines - 3}lh,
+    transparent
+  );
+}

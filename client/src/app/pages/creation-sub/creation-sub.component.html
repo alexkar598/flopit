@@ -1,0 +1,52 @@
+<nb-card>
+  <nb-card-header>
+    <h1>Créer une communauté</h1>
+  </nb-card-header>
+  <nb-card-body>
+    <form #f="ngForm" (ngSubmit)="createSub(f)">
+      <div class="informations">
+        <div>
+          <div class="input">
+            <label for="nom">Nom</label>
+            <nb-form-field>
+              <span nbPrefix>f/</span>
+              <input
+                nbInput
+                required
+                fullWidth
+                maxlength="64"
+                id="nom"
+                ngModel
+                name="name"
+              />
+            </nb-form-field>
+          </div>
+
+          <div class="input">
+            <label for="description">Description</label>
+            <textarea
+              nbInput
+              required
+              maxlength="512"
+              id="description"
+              fullWidth
+              ngModel
+              name="description"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button
+        nbButton
+        status="primary"
+        type="submit"
+        nbSpinnerStatus="primary"
+        [disabled]="loading"
+        [nbSpinner]="loading"
+      >
+        Créer la communauté
+      </button>
+    </form>
+  </nb-card-body>
+</nb-card>
