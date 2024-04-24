@@ -4,6 +4,7 @@ import {
   NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
+  NbDialogService,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
@@ -15,8 +16,9 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
 import { FormsModule } from "@angular/forms";
-import { DeleteUserGQL, EditUserGQL } from "~/graphql";
+import { EditUserGQL } from "~/graphql";
 import { Router } from "@angular/router";
+import { YesNoPopupComponent } from "~/app/components/yes-no-popup/yes-no-popup.component";
 
 @Component({
   selector: "app-parametres",
@@ -48,10 +50,11 @@ export class ParametresComponent {
   constructor(
     public userService: UserService,
     private editUserGql: EditUserGQL,
+    private dialogService: NbDialogService,
     private router: Router,
   ) {}
 
-  async changer(values: any) {
+  async changer(values: { username: string }) {
     console.log(values);
     const { username } = values;
     this.editUserGql
@@ -64,7 +67,12 @@ export class ParametresComponent {
   }
 
   toggleDeletingAccount() {
-    this.deletingAccount = !this.deletingAccount;
+    this.dialogService.open(YesNoPopupComponent, {
+      context: {
+        title: "This is a title passed to the dialog component",
+      },
+    });
+    // this.deletingAccount = !this.deletingAccount;
   }
 
   deleteAccount() {
