@@ -49,10 +49,10 @@
             </div>
           </div>
 
-          @if ((sub$ | async)?.isModerator) {
+          @if (sub.isModerator) {
             <hr />
             <nb-actions class="moderator-actions" [fullWidth]="true">
-              <nb-action (click)="openWindow()">
+              <nb-action (click)="openModeratorsWindow()">
                 <nb-icon icon="people-outline" />
                 Gérer modérateurs
               </nb-action>

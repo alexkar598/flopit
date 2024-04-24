@@ -116,7 +116,7 @@ export class SubComponent {
         .subscribe();
   }
 
-  openWindow() {
+  openModeratorsWindow() {
     const sub = this.sub$.getValue()?.id;
     if (sub == null) return;
 
