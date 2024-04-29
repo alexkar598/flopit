@@ -17,6 +17,9 @@ builder.mutationField("addModerator", (t) =>
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: (_, args) => ({
+      moderator: args.input.sub.id,
+    }),
     resolve: async (
       query,
       _root,

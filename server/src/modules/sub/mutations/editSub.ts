@@ -21,6 +21,7 @@ builder.mutationField("editSub", (t) => {
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: (_, args) => ({ moderator: args.input.id.id }),
     resolve: async (query, _root, { input }) => {
       let icon_oid, banner_oid;
 

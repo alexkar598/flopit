@@ -22,6 +22,14 @@ builder.mutationField("votePost", (t) =>
     type: "Post",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: async (_, args) => {
+      const post = await prisma.post.findUnique({
+        select: { sub_id: true },
+        where: { id: args.input.postId.id },
+      });
+      if (post == null) return false;
+      return { notBanned: post.sub_id };
+    },
     resolve: async (
       query,
       _,

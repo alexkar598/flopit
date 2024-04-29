@@ -4,7 +4,6 @@ import { subRef } from "../../../sub/schema.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
 import { getAPIError } from "../../../../util.ts";
 import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
-import { isBanned } from "../../../sub/util.ts";
 import { VoteValue } from "../../basepost/schema.ts";
 import { z } from "zod";
 
@@ -28,6 +27,7 @@ builder.mutationField("createPost", (t) =>
     type: topPostRef,
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: (_, args) => ({ notBanned: args.input.sub.id }),
     resolve: async (query, _root, { input }, { authenticated_user_id }) => {
       const delta = input.delta_content as z.infer<typeof deltaValidator>;
 
@@ -40,9 +40,6 @@ builder.mutationField("createPost", (t) =>
           .then((sub) => sub?.id);
 
         if (!subId) throw getAPIError("SUB_NOT_FOUND");
-
-        if (await isBanned(authenticated_user_id, subId, tx))
-          throw getAPIError("BANNED");
 
         return tx.post.create({
           ...query,
