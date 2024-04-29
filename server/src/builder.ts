@@ -19,6 +19,19 @@ import {
   SlugType,
 } from "./util.ts";
 import ValidationPlugin from "@pothos/plugin-validation";
+import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
+
+interface Context {
+  req: IncomingMessage;
+  res: ServerResponse;
+  authenticated_user_id: string | null;
+  authenticated_session_id: string | null;
+}
+
+interface AuthenticatedContext extends Context {
+  authenticated_user_id: string;
+  authenticated_session_id: string;
+}
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -51,15 +64,20 @@ export const builder = new SchemaBuilder<{
       Output: never;
     };
   };
-  Context: {
-    req: IncomingMessage;
-    res: ServerResponse;
-    authenticated_user_id: string;
-    authenticated_session_id: string;
-  };
+  Context: Context;
   DefaultInputFieldRequiredness: true;
+  AuthScopes: {
+    authenticated: boolean;
+    moderatorForId: string;
+    moderatorForName: string;
+  };
+  AuthContexts: {
+    authenticated: AuthenticatedContext;
+    moderatorForId: AuthenticatedContext;
+    moderatorForName: AuthenticatedContext;
+  };
 }>({
-  plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin],
+  plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin, ScopeAuthPlugin],
   prisma: {
     client: prisma,
     exposeDescriptions: true,
@@ -78,6 +96,40 @@ export const builder = new SchemaBuilder<{
     decodeGlobalID: unslugify,
   },
   defaultInputFieldRequiredness: true,
+  authScopes: (ctx) => ({
+    authenticated: ctx.authenticated_user_id !== null,
+    async moderatorForId(subId) {
+      if (ctx.authenticated_user_id === null) return false;
+
+      const isMod = !!(await prisma.moderator.findUnique({
+        where: {
+          user_id_sub_id: { user_id: ctx.authenticated_user_id, sub_id: subId },
+        },
+      }));
+      if (!isMod) throw getAPIError("NOT_SUB_MODERATOR");
+      return true;
+    },
+    async moderatorForName(subName) {
+      if (ctx.authenticated_user_id === null) return false;
+
+      const isMod = !!(await prisma.moderator.findFirst({
+        where: {
+          user_id: ctx.authenticated_user_id,
+          Sub: { name: subName },
+        },
+      }));
+      if (!isMod) throw getAPIError("NOT_SUB_MODERATOR");
+      return true;
+    },
+  }),
+  scopeAuthOptions: {
+    unauthorizedError: (_parent, _ctx, info) =>
+      getAPIError(
+        info.operation.operation === "mutation"
+          ? "AUTHENTICATED_MUTATION"
+          : "AUTHENTICATED_FIELD",
+      ),
+  },
 });
 builder.addScalarType("DateTime", DateTimeResolver);
 builder.addScalarType("JSON", JSONObjectResolver);
