@@ -14,7 +14,7 @@ const input = builder.inputType("AddModeratorInput", {
 });
 
 builder.mutationField("addModerator", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
@@ -28,10 +28,7 @@ builder.mutationField("addModerator", (t) =>
           username,
         },
       },
-      { authenticated_user_id },
     ) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       const user_id = user?.id;
 
       if ((user_id == null) === (username == null))

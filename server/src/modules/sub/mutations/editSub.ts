@@ -16,14 +16,12 @@ const input = builder.inputType("EditSubInput", {
   }),
 });
 
-builder.mutationField("editSub", (t) =>
-  t.prismaField({
+builder.mutationField("editSub", (t) => {
+  return t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
-    resolve: async (query, _root, { input }, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
+    resolve: async (query, _root, { input }) => {
       let icon_oid, banner_oid;
 
       try {
@@ -45,5 +43,5 @@ builder.mutationField("editSub", (t) =>
         },
       });
     },
-  }),
-);
+  });
+});

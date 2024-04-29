@@ -23,15 +23,11 @@ const input = builder.inputType("CreatePostInput", {
 });
 
 builder.mutationField("createPost", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: topPostRef,
     nullable: true,
     args: { input: t.arg({ type: input }) },
     resolve: async (query, _root, { input }, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
-      if (input.title.length < 1) throw getAPIError("TITLE_TOO_SHORT");
-
       const delta = input.delta_content as z.infer<typeof deltaValidator>;
 
       return prisma.$transaction(async (tx) => {
