@@ -125,7 +125,7 @@ export const builder = new SchemaBuilder<{
     },
   }),
   scopeAuthOptions: {
-    unauthorizedError: (_parent, _ctx, info) => getAPIError("UNAUTHORIZED"),
+    unauthorizedError: (_parent, _ctx) => getAPIError("UNAUTHORIZED"),
   },
 });
 builder.addScalarType("DateTime", DateTimeResolver);

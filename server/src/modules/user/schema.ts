@@ -1,6 +1,6 @@
 import { $Enums } from "@prisma/client";
 import { builder } from "../../builder.js";
-import { getAPIError, getImg } from "../../util.ts";
+import { getImg } from "../../util.ts";
 import { z } from "zod";
 
 export const ThemeRef = builder.enumType($Enums.Theme, {
