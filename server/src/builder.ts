@@ -97,7 +97,7 @@ export const builder = new SchemaBuilder<{
   },
   defaultInputFieldRequiredness: true,
   authScopes: (ctx) => ({
-    authenticated: ctx.authenticated_user_id !== null,
+    authenticated: () => ctx.authenticated_user_id != null,
     async moderatorForId(subId) {
       if (ctx.authenticated_user_id === null) return false;
 
