@@ -5,7 +5,9 @@ import { z } from "zod";
 
 export const subRef = builder.prismaNode("Sub", {
   id: { field: "id" },
-  select: {},
+  select: {
+    id: true,
+  },
   fields: (t) => ({
     name: t.exposeString("name"),
     description: t.exposeString("description"),
