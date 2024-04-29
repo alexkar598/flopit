@@ -24,6 +24,7 @@ builder.prismaObjectField("User", "bannedFrom", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["BannedFrom"]: helper.getQuery(args, ctx, nestedSelection),
       }),
+      authScopes: { $granted: "self" },
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["BannedFrom"], args, context),
