@@ -56,14 +56,14 @@ export function apolloOptionsFactory(
     return forward(operation);
   });
 
-  const errorLink = onError(({ graphQLErrors }) => {
+  const errorLink = onError(({ graphQLErrors, operation }) => {
     if (graphQLErrors == null) return;
     graphQLErrors.forEach((err) => {
       const code = <ErrorCode>err.extensions?.["code"];
 
-      if (code === "AUTHENTICATED_FIELD") return;
+      if (code === "AUTHENTICATION_REQUIRED") {
+        if (operation.operationName === "query") return;
 
-      if (code === "AUTHENTICATED_MUTATION") {
         const toast = toastrService.info(
           "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
           "Inscrivez-vous!",

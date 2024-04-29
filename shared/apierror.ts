@@ -6,8 +6,7 @@ export const APIError = Object.freeze({
   DUPLICATE_EMAIL: "Ce courriel est déja utilisé",
   INSECURE_PASSWORD: "Ce mot de passe est insecuritaire",
   DUPLICATE_SUB_NAME: "Une communauté avec ce nom existe déjà",
-  AUTHENTICATED_FIELD: "Cette information nécessite une session active",
-  AUTHENTICATED_MUTATION: "Cette opération nécessite une session active",
+  AUTHENTICATION_REQUIRED: "Cette opération nécessite une session active",
   SUB_NOT_FOUND: "Cette communauté n'a pas été trouvée",
   POST_NOT_FOUND: "Ce message n'a pas été trouvé",
   BANNED: "Vous êtes banni de ce sub",
@@ -21,4 +20,5 @@ export const APIError = Object.freeze({
   MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
+  UNAUTHORIZED: "Vous n'êtes pas authorisé à accéder à cette information",
 });

@@ -98,16 +98,22 @@ export const builder = new SchemaBuilder<{
   },
   defaultInputFieldRequiredness: true,
   authScopes: (ctx) => ({
-    authenticated: ctx.authenticated_user_id != null,
+    authenticated: () => {
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
+      return true;
+    },
     async notBanned(subId) {
-      if (ctx.authenticated_user_id == null) return false;
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
 
       const hasBan = await isBanned(ctx.authenticated_user_id, subId);
       if (hasBan) throw getAPIError("BANNED");
       return true;
     },
     async moderator(subId) {
-      if (ctx.authenticated_user_id == null) return false;
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
 
       const isMod = !!(await prisma.moderator.findUnique({
         where: {
@@ -119,12 +125,7 @@ export const builder = new SchemaBuilder<{
     },
   }),
   scopeAuthOptions: {
-    unauthorizedError: (_parent, _ctx, info) =>
-      getAPIError(
-        info.operation.operation === "mutation"
-          ? "AUTHENTICATED_MUTATION"
-          : "AUTHENTICATED_FIELD",
-      ),
+    unauthorizedError: (_parent, _ctx, info) => getAPIError("UNAUTHORIZED"),
   },
 });
 builder.addScalarType("DateTime", DateTimeResolver);
