@@ -10,6 +10,7 @@ import {
 } from "graphql-scalars";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
+import { isBanned } from "./modules/sub/util.ts";
 import {
   capitalizeFirst,
   getAPIError,
@@ -68,10 +69,12 @@ export const builder = new SchemaBuilder<{
   DefaultInputFieldRequiredness: true;
   AuthScopes: {
     authenticated: boolean;
+    notBanned: string;
     moderator: string;
   };
   AuthContexts: {
     authenticated: AuthenticatedContext;
+    notBanned: AuthenticatedContext;
     moderator: AuthenticatedContext;
   };
 }>({
@@ -96,6 +99,13 @@ export const builder = new SchemaBuilder<{
   defaultInputFieldRequiredness: true,
   authScopes: (ctx) => ({
     authenticated: ctx.authenticated_user_id != null,
+    async notBanned(subId) {
+      if (ctx.authenticated_user_id == null) return false;
+
+      const hasBan = await isBanned(ctx.authenticated_user_id, subId);
+      if (hasBan) throw getAPIError("BANNED");
+      return true;
+    },
     async moderator(subId) {
       if (ctx.authenticated_user_id == null) return false;
 
