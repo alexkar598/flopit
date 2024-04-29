@@ -68,13 +68,11 @@ export const builder = new SchemaBuilder<{
   DefaultInputFieldRequiredness: true;
   AuthScopes: {
     authenticated: boolean;
-    moderatorForId: string;
-    moderatorForName: string;
+    moderator: string;
   };
   AuthContexts: {
     authenticated: AuthenticatedContext;
-    moderatorForId: AuthenticatedContext;
-    moderatorForName: AuthenticatedContext;
+    moderator: AuthenticatedContext;
   };
 }>({
   plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin, ScopeAuthPlugin],
@@ -98,24 +96,12 @@ export const builder = new SchemaBuilder<{
   defaultInputFieldRequiredness: true,
   authScopes: (ctx) => ({
     authenticated: ctx.authenticated_user_id != null,
-    async moderatorForId(subId) {
-      if (ctx.authenticated_user_id === null) return false;
+    async moderator(subId) {
+      if (ctx.authenticated_user_id == null) return false;
 
       const isMod = !!(await prisma.moderator.findUnique({
         where: {
           user_id_sub_id: { user_id: ctx.authenticated_user_id, sub_id: subId },
-        },
-      }));
-      if (!isMod) throw getAPIError("NOT_SUB_MODERATOR");
-      return true;
-    },
-    async moderatorForName(subName) {
-      if (ctx.authenticated_user_id === null) return false;
-
-      const isMod = !!(await prisma.moderator.findFirst({
-        where: {
-          user_id: ctx.authenticated_user_id,
-          Sub: { name: subName },
         },
       }));
       if (!isMod) throw getAPIError("NOT_SUB_MODERATOR");

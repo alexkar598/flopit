@@ -27,7 +27,6 @@ import {
   FindSubsSubFragment,
   HomeFeedDocument,
   ResolveSubIdGQL,
-  ResolveUserIdGQL,
   SubFeedDocument,
 } from "~/graphql";
 import { notNull } from "~/app/util";
