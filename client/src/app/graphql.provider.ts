@@ -1,6 +1,4 @@
-import { relayStylePagination } from "@apollo/client/utilities";
-import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpBatchLink } from "apollo-angular/http";
+import { HttpHeaders } from "@angular/common/http";
 import {
   ApplicationConfig,
   inject,
@@ -8,6 +6,7 @@ import {
   makeStateKey,
   TransferState,
 } from "@angular/core";
+import { Router } from "@angular/router";
 import {
   ApolloClientOptions,
   ApolloLink,
@@ -15,11 +14,13 @@ import {
   InMemoryCache,
 } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
+import { relayStylePagination } from "@apollo/client/utilities";
 import { NbToastrService } from "@nebular/theme";
-import { HttpHeaders } from "@angular/common/http";
+import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
+import { HttpBatchLink } from "apollo-angular/http";
+import { Kind, OperationDefinitionNode } from "graphql/language";
 import { StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
-import { Router } from "@angular/router";
 
 const uri = "/graphql";
 
@@ -62,7 +63,13 @@ export function apolloOptionsFactory(
       const code = <ErrorCode>err.extensions?.["code"];
 
       if (code === "AUTHENTICATION_REQUIRED") {
-        if (operation.operationName === "query") return;
+        if (
+          operation.query.definitions.find(
+            (x): x is OperationDefinitionNode =>
+              x.kind === Kind.OPERATION_DEFINITION,
+          )?.operation === "query"
+        )
+          return;
 
         const toast = toastrService.info(
           "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
