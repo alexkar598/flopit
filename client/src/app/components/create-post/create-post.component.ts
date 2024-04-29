@@ -6,6 +6,7 @@ import {
   NbInputModule,
   NbSelectWithAutocompleteModule,
   NbSpinnerModule,
+  NbToastrService,
   NbUserModule,
   NbWindowRef,
 } from "@nebular/theme";
@@ -25,11 +26,14 @@ import {
   FindSubsQueryVariables,
   FindSubsSubFragment,
   HomeFeedDocument,
+  ResolveSubIdGQL,
+  ResolveUserIdGQL,
   SubFeedDocument,
 } from "~/graphql";
 import { notNull } from "~/app/util";
 import { Router } from "@angular/router";
 import { QueryRef } from "apollo-angular";
+import { APIError } from "~shared/apierror";
 
 @Component({
   selector: "app-create-post",
@@ -58,7 +62,9 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   constructor(
     private findSubsGQL: FindSubsGQL,
+    private resolveSubGQL: ResolveSubIdGQL,
     private createPostMut: CreatePostGQL,
+    private toastr: NbToastrService,
     private windowRef: NbWindowRef,
     private router: Router,
   ) {}
@@ -82,24 +88,32 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   submit(f: NgForm) {
     this.loading = true;
 
-    this.createPostMut
-      .mutate(
-        {
-          input: {
-            title: f.value.title,
-            sub_name: f.value.sub,
-            delta_content: { ops: f.value.content?.ops ?? [] },
-          },
-        },
-        {
-          refetchQueries: [SubFeedDocument, HomeFeedDocument],
-        },
-      )
-      .subscribe(async (res) => {
+    this.resolveSubGQL.fetch({ name: f.value.sub }).subscribe((result) => {
+      const sub_id = result.data.subByName?.id;
+      if (sub_id == null) {
+        this.toastr.danger(APIError.SUB_NOT_FOUND, "Erreur");
         this.loading = false;
-        if (res.errors) return;
-        await this.router.navigate(["f", res.data?.createPost?.sub.name]);
-        this.windowRef.close();
-      });
+        return;
+      }
+      this.createPostMut
+        .mutate(
+          {
+            input: {
+              title: f.value.title,
+              sub: sub_id,
+              delta_content: { ops: f.value.content?.ops ?? [] },
+            },
+          },
+          {
+            refetchQueries: [SubFeedDocument, HomeFeedDocument],
+          },
+        )
+        .subscribe(async (res) => {
+          this.loading = false;
+          if (res.errors) return;
+          await this.router.navigate(["f", res.data?.createPost?.sub.name]);
+          this.windowRef.close();
+        });
+    });
   }
 }

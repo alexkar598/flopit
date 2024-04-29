@@ -1,0 +1,5 @@
+query ResolveUserId($username: String!) {
+  userByUsername(username: $username) {
+    id
+  }
+}

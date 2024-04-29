@@ -8,8 +8,7 @@ import { subRef } from "../schema.ts";
 const input = builder.inputType("AddModeratorInput", {
   fields: (t) => ({
     sub: t.globalID({ for: subRef }),
-    user: t.globalID({ for: userRef, required: false }),
-    username: t.string({ required: false }),
+    user: t.globalID({ for: userRef }),
   }),
 });
 
@@ -24,24 +23,17 @@ builder.mutationField("addModerator", (t) =>
       {
         input: {
           sub: { id: sub_id },
-          user,
-          username,
+          user: { id: user_id },
         },
       },
     ) => {
-      const user_id = user?.id;
-
-      if ((user_id == null) === (username == null))
-        throw getAPIError("MUTUALLY_EXCLUSIVE_REQUIRED", "user_id et username");
-
       try {
         const moderator = await prisma.moderator.create({
           select: { Sub: { ...query } },
           data: {
             User: {
               connect: {
-                id: user_id ?? undefined,
-                username: username ?? undefined,
+                id: user_id,
               },
             },
             Sub: {

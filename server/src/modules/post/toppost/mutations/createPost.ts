@@ -1,5 +1,6 @@
 import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
+import { subRef } from "../../../sub/schema.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
 import { getAPIError } from "../../../../util.ts";
 import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
@@ -14,7 +15,7 @@ const input = builder.inputType("CreatePostInput", {
         schema: topPostValidators.title,
       },
     }),
-    sub_name: t.string(),
+    sub: t.globalID({ for: subRef }),
     delta_content: t.field({
       type: "JSON",
       validate: { schema: deltaValidator },
@@ -34,7 +35,7 @@ builder.mutationField("createPost", (t) =>
         const subId = await tx.sub
           .findUnique({
             select: { id: true },
-            where: { name: input.sub_name },
+            where: { id: input.sub.id },
           })
           .then((sub) => sub?.id);
 

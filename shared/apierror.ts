@@ -21,6 +21,4 @@ export const APIError = Object.freeze({
   MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
-  MUTUALLY_EXCLUSIVE_REQUIRED:
-    "Une des propriétés suivantes doivent être présentes: ",
 });
