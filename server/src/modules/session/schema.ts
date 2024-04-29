@@ -5,7 +5,9 @@ export const sessionRef = builder.prismaNode("Session", {
   select: {
     user_id: true,
   },
-  authScopes: ({ user_id }, ctx) => user_id === ctx.authenticated_user_id,
+  grantScopes: ({ user_id }, ctx) =>
+    user_id === ctx.authenticated_user_id ? ["self"] : [],
+  authScopes: { $granted: "self" },
   fields: (t) => ({
     user: t.relation("User"),
     createdAt: t.expose("creation_time", {
