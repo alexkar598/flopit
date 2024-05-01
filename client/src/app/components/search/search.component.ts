@@ -90,7 +90,6 @@ export class SearchComponent {
         this.searchValue$.next("");
         switch (type) {
           case "user":
-            //TODO: link to chat
             void router.navigate(["/chat", id]);
             break;
           case "sub":
