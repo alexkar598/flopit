@@ -14,5 +14,6 @@ export const routes: Routes = [
   { path: "f", component: CreationSubComponent },
   { path: "f/:subName", component: SubComponent },
   { path: "f/:subName/:topPostId", component: TopPostPageComponent },
+  { path: "rechercher/:query/:tab", component: SearchPageComponent },
   { path: "rechercher/:query", component: SearchPageComponent },
 ];
