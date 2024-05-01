@@ -13,14 +13,12 @@ button {
   flex-direction: column;
 }
 
-form {
+app-search {
   margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
   display: flex;
   flex-direction: column;
-}
-
-nb-form-field {
-  margin: auto;
 }
 
 .logo {

@@ -1,0 +1,43 @@
+<nb-form-field>
+  <input
+    nbInput
+    placeholder="Rechercher..."
+    [nbAutocomplete]="auto"
+    [ngModel]="searchValue$.getValue()"
+    (ngModelChange)="searchValue$.next($event)"
+  />
+  <button nbSuffix nbButton ghost>
+    <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
+  </button>
+  <nb-autocomplete #auto (selectedChange)="selectValue$.next($event)">
+    @if (resultsSubs$ | async; as subs) {
+      <nb-option-group title="Communautés">
+        @for (sub of subs; track sub.id) {
+          <nb-option [value]="['sub', sub.name]">
+            <nb-user
+              [name]="'f/' + sub.name"
+              [picture]="sub.iconUrl ?? ''"
+            ></nb-user>
+          </nb-option>
+        }
+      </nb-option-group>
+    }
+    @if (resultsUsers$ | async; as users) {
+      <nb-option-group title="Utilisateurs">
+        @for (user of users; track user.id) {
+          <nb-option [value]="['user', user.id]">
+            <nb-user
+              [name]="'u/' + user.username"
+              [picture]="user.avatarUrl ?? ''"
+            ></nb-user>
+          </nb-option>
+        }
+      </nb-option-group>
+    }
+    @if (resultsLoading$ | async) {
+      <nb-option class="loading-option">
+        <nb-spinner size="small" />
+      </nb-option>
+    }
+  </nb-autocomplete>
+</nb-form-field>
