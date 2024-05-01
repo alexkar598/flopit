@@ -33,4 +33,5 @@ fragment GlobalSearchSub on Sub {
   id
   name
   iconUrl
+  description
 }
