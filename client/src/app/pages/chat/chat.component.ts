@@ -10,15 +10,17 @@ import {
   NbWindowService,
 } from "@nebular/theme";
 import {
-  BehaviorSubject,
   combineLatest,
   EMPTY,
   filter,
+  firstValueFrom,
   map,
   Observable,
   sample,
   shareReplay,
+  skip,
   Subject,
+  switchMap,
   takeUntil,
   tap,
 } from "rxjs";
@@ -32,14 +34,13 @@ import {
   SendMessageGQL,
   WatchMessagesGQL,
 } from "~/graphql";
-import { notNull } from "~/app/util";
+import { notNull, throwException } from "~/app/util";
 import { AsyncPipe } from "@angular/common";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
 import { Apollo } from "apollo-angular";
 import { UserService } from "~/app/services/user.service";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
 import { IntersectionObserverDirective } from "~/app/directives/intersection-observer.directive";
 import { NewConversationComponent } from "~/app/components/new-conversation/new-conversation.component";
 
@@ -52,7 +53,6 @@ import { NewConversationComponent } from "~/app/components/new-conversation/new-
     RelativeDatePipe,
     NbCardModule,
     NbChatModule,
-    PostSingleComponent,
     NbSpinnerModule,
     IntersectionObserverDirective,
     RouterLink,
@@ -148,27 +148,31 @@ export class ChatComponent implements OnInit {
           .subscribe();
       });
 
-    let activeConversationSub = this.activeConversation$
-      .pipe(takeUntilDestroyed(this.destroyRef), filter(notNull))
-      .subscribe((conversation) => {
+    let cursor: string | null = null;
+    let hasPreviousPage = true;
+
+    this.messages$ = this.activeConversation$.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      filter(notNull),
+      tap(() => {
         this.loaded = false;
-
-        const cursor = new BehaviorSubject<string | null>(null);
-        const hasPreviousPage = new BehaviorSubject(true);
-
+        cursor = null;
+        hasPreviousPage = true;
+      }),
+      switchMap((conversation) => {
         const messagesQuery = this.listConversationMessagesGql.watch({
           conversation: conversation.id,
-          cursor: cursor.getValue(),
+          cursor: cursor,
         });
 
         this.fetchMore = async (scroll = true) => {
-          if (!hasPreviousPage.getValue()) return;
+          if (!hasPreviousPage) return;
 
           if (!scroll) this.autoScroll = false;
           await messagesQuery.fetchMore({
             variables: {
               conversation: conversation.id,
-              cursor: cursor.getValue(),
+              cursor: cursor,
             },
           });
           const scrollable = this.chatContainer?.scrollable
@@ -177,7 +181,7 @@ export class ChatComponent implements OnInit {
             const scrollBottom = scrollable.scrollHeight - scrollable.scrollTop;
             setTimeout(() => {
               this.autoScroll = true;
-              //Redéfinie car il se peut que angular ait rerender en détruisant les vieux éléments
+              //Redéfinie, car il se peut qu'Angular ait rerender en détruisant les vieux éléments
               const scrollable = this.chatContainer!.scrollable
                 .nativeElement as HTMLDivElement;
               scrollable.scrollTop = scrollable.scrollHeight - scrollBottom;
@@ -185,46 +189,43 @@ export class ChatComponent implements OnInit {
           }
         };
 
-        this.fetchMore(true).then(() => (this.loaded = true));
+        return messagesQuery.valueChanges;
+      }),
+      map((res) =>
+        res.data.node?.__typename === "Conversation" ? res.data.node : null,
+      ),
+      filter(notNull),
+      tap((conversation) => {
+        cursor = conversation.messages.pageInfo.startCursor ?? null;
+        hasPreviousPage = conversation.messages.pageInfo.hasPreviousPage;
 
-        this.messages$ = messagesQuery.valueChanges.pipe(
-          map((res) => {
-            if (res.data.node?.__typename !== "Conversation") return [];
-
-            if (res.data.node.messages.pageInfo.startCursor)
-              cursor.next(res.data.node.messages.pageInfo.startCursor);
-
-            hasPreviousPage.next(
-              res.data.node.messages.pageInfo.hasPreviousPage,
-            );
-
-            if (!this.loaded)
-              this.watchMessagesSub
-                .subscribe({
-                  target: conversation.target.id,
-                  after: res.data.node.messages.pageInfo.endCursor,
-                })
-                .pipe(
-                  tap(() => console.log("lmao")),
-                  takeUntil(this.activeConversation$),
-                  takeUntilDestroyed(this.destroyRef),
-                )
-                .subscribe((message) => {
-                  console.log(message);
-                  if (!message.data?.watchMessages) return;
-
-                  this.addClientSideMessage(
-                    message.data.watchMessages,
-                    conversation.id,
-                  );
-                });
-
-            return res.data.node.messages.edges
-              .map((edge) => edge?.node)
-              .filter(notNull);
-          }),
-        );
-      });
+        this.watchMessagesSub
+          .subscribe({
+            target: conversation.target.id,
+            after: conversation.messages.pageInfo.endCursor,
+          })
+          .pipe(
+            takeUntil(this.activeConversation$.pipe(skip(1))),
+            takeUntilDestroyed(this.destroyRef),
+            map((message) => message.data?.watchMessages),
+            filter(notNull),
+            tap(async (message) =>
+              this.addClientSideMessage(
+                message,
+                (await firstValueFrom(this.activeConversation$))?.id ??
+                  throwException(
+                    "Il n'y a pas de conversation à laquelle ajouter le message",
+                  ),
+              ),
+            ),
+          )
+          .subscribe();
+      }),
+      tap(() => this.fetchMore!(true).then(() => (this.loaded = true))),
+      map((conversation) =>
+        conversation.messages.edges.map((edge) => edge?.node).filter(notNull),
+      ),
+    );
   }
 
   addClientSideMessage(message: MessageFragment, conversationId: string) {
@@ -247,6 +248,7 @@ export class ChatComponent implements OnInit {
           id: conversationId,
           __typename: "Conversation",
           lastInteraction: new Date().toISOString(),
+          target: gqlResult.node.target,
           messages: {
             __typename: "MessageConnection",
             pageInfo: {
@@ -271,7 +273,7 @@ export class ChatComponent implements OnInit {
     return new RegExp(regex, "u").test(message);
   }
 
-  newConversation() {
+  newConversationWindow() {
     this.windowService.open(NewConversationComponent, {
       title: "Nouvelle conversation",
     });

@@ -10,7 +10,7 @@ import {
   NbWindowRef,
 } from "@nebular/theme";
 import { notNull } from "~/app/util";
-import { debounceTime, filter, Subject, take } from "rxjs";
+import { debounceTime, filter, Subject } from "rxjs";
 import {
   ListConversationsDocument,
   SendMessageGQL,
@@ -52,8 +52,7 @@ export class NewConversationComponent implements OnInit {
       .pipe(filter(notNull), debounceTime(400))
       .subscribe((username) =>
         this.usernameExistsGql
-          .watch({ username })
-          .valueChanges.pipe(take(1))
+          .fetch({ username })
           .subscribe(
             (res) => (this.userId = res.data.userByUsername?.id ?? null),
           ),

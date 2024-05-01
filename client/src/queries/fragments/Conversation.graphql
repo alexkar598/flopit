@@ -4,6 +4,6 @@ fragment Conversation on Conversation {
   target {
     id
     username
-    avatarOid
+    avatarUrl
   }
 }

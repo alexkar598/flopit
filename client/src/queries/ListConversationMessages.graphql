@@ -3,6 +3,9 @@ query ListConversationMessages($conversation: ID!, $cursor: ID) {
     id
     ... on Conversation {
       lastInteraction
+      target {
+        id
+      }
       messages(last: 20, before: $cursor) {
         pageInfo {
           startCursor
