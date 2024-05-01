@@ -46,10 +46,10 @@ import { QueryRef } from "apollo-angular";
     NbUserModule,
     NbSpinnerModule,
   ],
-  templateUrl: "./create-post.component.html",
-  styleUrl: "./create-post.component.scss",
+  templateUrl: "./top-post.component.html",
+  styleUrl: "./top-post.component.scss",
 })
-export class CreatePostComponent implements OnInit, OnDestroy {
+export class TopPostWindowComponent implements OnInit, OnDestroy {
   public subsQuery$!: QueryRef<FindSubsQuery, FindSubsQueryVariables>;
   public subs$!: Observable<FindSubsSubFragment[]>;
   public loading = false;
