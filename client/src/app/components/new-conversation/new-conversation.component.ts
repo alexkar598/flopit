@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import {
   NbAutocompleteModule,
   NbChatModule,
@@ -10,10 +10,11 @@ import {
   NbWindowRef,
 } from "@nebular/theme";
 import { notNull } from "~/app/util";
-import { debounceTime, filter, Subject } from "rxjs";
+import { debounceTime, filter, map, Subject } from "rxjs";
 import {
   ListConversationsDocument,
   SendMessageGQL,
+  UsernameByIdGQL,
   UsernameExistsGQL,
 } from "~/graphql";
 import { AsyncPipe } from "@angular/common";
@@ -37,11 +38,14 @@ import { Router } from "@angular/router";
   styleUrl: "./new-conversation.component.scss",
 })
 export class NewConversationComponent implements OnInit {
-  protected userId: string | null = null;
+  @Input("userId") protected userId: string | null = null;
   protected usernameSubject = new Subject<string>();
+
+  @ViewChild("usernameField") protected usernameField!: ElementRef;
 
   constructor(
     private usernameExistsGql: UsernameExistsGQL,
+    private usernameByIdGql: UsernameByIdGQL,
     private sendMessageMut: SendMessageGQL,
     private windowRef: NbWindowRef,
     private router: Router,
@@ -57,6 +61,19 @@ export class NewConversationComponent implements OnInit {
             (res) => (this.userId = res.data.userByUsername?.id ?? null),
           ),
       );
+
+    if (this.userId != null)
+      this.usernameByIdGql
+        .fetch({ id: this.userId })
+        .pipe(
+          map((res) =>
+            res.data.node?.__typename === "User" ? res.data.node : null,
+          ),
+          filter(notNull),
+        )
+        .subscribe(
+          ({ username }) => (this.usernameField.nativeElement.value = username),
+        );
   }
 
   sendMessage(message: string) {

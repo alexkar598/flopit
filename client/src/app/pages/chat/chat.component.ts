@@ -1,4 +1,11 @@
-import { Component, DestroyRef, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  OnInit,
+  PLATFORM_ID,
+  ViewChild,
+} from "@angular/core";
 import {
   NbCardModule,
   NbChatComponent,
@@ -18,10 +25,8 @@ import {
   Observable,
   sample,
   shareReplay,
-  skip,
   Subject,
   switchMap,
-  takeUntil,
   tap,
 } from "rxjs";
 import {
@@ -35,7 +40,7 @@ import {
   WatchMessagesGQL,
 } from "~/graphql";
 import { notNull, throwException } from "~/app/util";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, isPlatformBrowser } from "@angular/common";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
 import { Apollo } from "apollo-angular";
 import { UserService } from "~/app/services/user.service";
@@ -85,6 +90,7 @@ export class ChatComponent implements OnInit {
     private destroyRef: DestroyRef,
     private route: ActivatedRoute,
     private windowService: NbWindowService,
+    @Inject(PLATFORM_ID) private platformId: string,
   ) {}
 
   ngOnInit(): void {
@@ -122,13 +128,11 @@ export class ChatComponent implements OnInit {
           (x) => x.target.id === user,
         );
 
-        if (existingConversation) {
-          return existingConversation;
-        }
+        if (existingConversation) return existingConversation;
 
-        void this.router.navigate(["chat"]);
+        if (isPlatformBrowser(this.platformId))
+          this.newConversationWindow(user);
         return null;
-        //TODO: lol lmao, good luck aurélie
       }),
       shareReplay(1),
     );
@@ -151,7 +155,7 @@ export class ChatComponent implements OnInit {
     let cursor: string | null = null;
     let hasPreviousPage = true;
 
-    this.messages$ = this.activeConversation$.pipe(
+    const listMessageQuery = this.activeConversation$.pipe(
       takeUntilDestroyed(this.destroyRef),
       filter(notNull),
       tap(() => {
@@ -195,37 +199,40 @@ export class ChatComponent implements OnInit {
         res.data.node?.__typename === "Conversation" ? res.data.node : null,
       ),
       filter(notNull),
-      tap((conversation) => {
-        cursor = conversation.messages.pageInfo.startCursor ?? null;
-        hasPreviousPage = conversation.messages.pageInfo.hasPreviousPage;
+    );
 
-        this.watchMessagesSub
-          .subscribe({
-            target: conversation.target.id,
-            after: conversation.messages.pageInfo.endCursor,
-          })
-          .pipe(
-            takeUntil(this.activeConversation$.pipe(skip(1))),
-            takeUntilDestroyed(this.destroyRef),
-            map((message) => message.data?.watchMessages),
-            filter(notNull),
-            tap(async (message) =>
-              this.addClientSideMessage(
-                message,
-                (await firstValueFrom(this.activeConversation$))?.id ??
-                  throwException(
-                    "Il n'y a pas de conversation à laquelle ajouter le message",
-                  ),
-              ),
-            ),
-          )
-          .subscribe();
-      }),
+    this.messages$ = listMessageQuery.pipe(
       tap(() => this.fetchMore!(true).then(() => (this.loaded = true))),
       map((conversation) =>
         conversation.messages.edges.map((edge) => edge?.node).filter(notNull),
       ),
     );
+
+    listMessageQuery
+      .pipe(
+        tap((conversation) => {
+          cursor = conversation.messages.pageInfo.startCursor ?? null;
+          hasPreviousPage = conversation.messages.pageInfo.hasPreviousPage;
+        }),
+        switchMap((conversation) =>
+          this.watchMessagesSub.subscribe({
+            target: conversation.target.id,
+            after: conversation.messages.pageInfo.endCursor,
+          }),
+        ),
+        map((message) => message.data?.watchMessages),
+        filter(notNull),
+        tap(async (message) =>
+          this.addClientSideMessage(
+            message,
+            (await firstValueFrom(this.activeConversation$))?.id ??
+              throwException(
+                "Il n'y a pas de conversation à laquelle ajouter le message",
+              ),
+          ),
+        ),
+      )
+      .subscribe();
   }
 
   addClientSideMessage(message: MessageFragment, conversationId: string) {
@@ -273,9 +280,10 @@ export class ChatComponent implements OnInit {
     return new RegExp(regex, "u").test(message);
   }
 
-  newConversationWindow() {
+  newConversationWindow(userId?: string) {
     this.windowService.open(NewConversationComponent, {
       title: "Nouvelle conversation",
+      context: { userId },
     });
   }
 }
