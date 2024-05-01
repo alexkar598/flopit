@@ -1,16 +1,17 @@
 <nb-tabset
   fullWidth
   (changeTab)="
-    router.navigate([
+    this.router.navigate([
       '/rechercher',
-      route.snapshot.paramMap.get('query'),
-      $event.tabId
+      this.route.snapshot.paramMap.get('query'),
+      $event.route
     ])
   "
+  routeParam="tab"
 >
   <nb-tab
     tabTitle="Publications"
-    tabId="publications"
+    route="publications"
     [active]="(currentTab$ | async) === 'publications'"
   >
     @if (loadingPosts$ | async) {
@@ -46,7 +47,7 @@
   </nb-tab>
   <nb-tab
     tabTitle="Commentaires"
-    tabId="commentaires"
+    route="commentaires"
     [active]="(currentTab$ | async) === 'commentaires'"
   >
     @if (loadingPosts$ | async) {
@@ -107,7 +108,7 @@
   </nb-tab>
   <nb-tab
     tabTitle="Utilisateurs"
-    tabId="utilisateurs"
+    route="utilisateurs"
     [active]="(currentTab$ | async) === 'utilisateurs'"
   >
     @if (loading$ | async) {
@@ -128,7 +129,7 @@
   </nb-tab>
   <nb-tab
     tabTitle="Communautés"
-    tabId="communautes"
+    route="communautes"
     [active]="(currentTab$ | async) === 'communautes'"
   >
     @if (loading$ | async) {

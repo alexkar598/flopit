@@ -55,8 +55,8 @@ export class SearchPageComponent {
   protected resultsComments$: Observable<SearchPostsCommentFragment[]>;
   protected resultsUsers$: Observable<GlobalSearchUserFragment[]>;
   protected resultsSubs$: Observable<GlobalSearchSubFragment[]>;
-  protected loadingPosts$ = new BehaviorSubject(false);
-  protected loading$ = new BehaviorSubject(false);
+  protected loadingPosts$ = new BehaviorSubject(true);
+  protected loading$ = new BehaviorSubject(true);
   protected currentTab$: Observable<string>;
 
   constructor(
