@@ -85,7 +85,7 @@ export class SearchPageComponent {
     const results$ = route.paramMap.pipe(
       tap(() => this.loading$.next(true)),
       map((x) => x.get("query")!),
-      switchMap((query) => searchGQL.watch({ query }).valueChanges),
+      switchMap((query) => searchGQL.watch({ query, count: 100 }).valueChanges),
       map((x) => x.data),
       tap(() => this.loading$.next(false)),
     );

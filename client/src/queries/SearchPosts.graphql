@@ -1,12 +1,12 @@
 query SearchPosts($query: String!) {
-  topPosts: searchPosts(input: {query: $query, include: [TopPost]}) {
+  topPosts: searchPosts(input: {query: $query, include: [TopPost]}, first: 100) {
     edges {
       node {
         ...SearchPostsTopPost
       }
     }
   }
-  comments: searchPosts(input: {query: $query, include: [Comment]}) {
+  comments: searchPosts(input: {query: $query, include: [Comment]}, first: 100) {
     edges {
       node {
         ...SearchPostsComment
