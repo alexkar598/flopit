@@ -53,7 +53,7 @@ import {
 export class SearchComponent {
   protected searchValue$ = new BehaviorSubject<string>("");
   protected selectValue$ = new Subject<
-    ["user" | "sub" | "post", string] | ""
+    ["user" | "sub" | "post", string | null] | ""
   >();
 
   protected resultsLoading$ = new BehaviorSubject(false);
@@ -93,7 +93,8 @@ export class SearchComponent {
     this.selectValue$
       .pipe(
         filter(
-          (x): x is ["user" | "sub" | "post", string] => x != null && x !== "",
+          (x): x is ["user" | "sub" | "post", string | null] =>
+            x != null && x !== "",
         ),
         withLatestFrom(this.searchValue$.pipe(pairwise())),
       )
@@ -102,9 +103,22 @@ export class SearchComponent {
         switch (type) {
           case "user":
             //TODO: link to chat
-            void router.navigate(["/chat", id]);
+            if (id == null)
+              void router.navigate([
+                "/rechercher",
+                lastSearchValue,
+                "utilisateurs",
+              ]);
+            else void router.navigate(["/chat", id]);
+
             break;
           case "sub":
+            if (id == null)
+              void router.navigate([
+                "/rechercher",
+                lastSearchValue,
+                "communautes",
+              ]);
             void router.navigate(["/f", id]);
             break;
           case "post":

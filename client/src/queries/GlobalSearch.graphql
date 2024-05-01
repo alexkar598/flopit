@@ -1,19 +1,19 @@
-query GlobalSearch($query: String!) {
-  users(filter: {username: $query}, first: 5) {
+query GlobalSearch($query: String!, $count: Int! = 6) {
+  users(filter: {username: $query}, first: $count) {
     edges {
       node {
         ...GlobalSearchUser
       }
     }
   }
-  subsByName: subs(filter: {name: $query}, first: 5) {
+  subsByName: subs(filter: {name: $query}, first: $count) {
     edges {
       node {
         ...GlobalSearchSub
       }
     }
   }
-  subsByDescription: subs(filter: {description: $query}, first: 5) {
+  subsByDescription: subs(filter: {description: $query}, first: $count) {
     edges {
       node {
         ...GlobalSearchSub
