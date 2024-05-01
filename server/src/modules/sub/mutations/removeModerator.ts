@@ -13,10 +13,11 @@ const input = builder.inputType("RemoveModeratorInput", {
 });
 
 builder.mutationField("removeModerator", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: (_, args) => ({ moderator: args.input.sub.id }),
     resolve: async (
       query,
       _root,
@@ -28,8 +29,6 @@ builder.mutationField("removeModerator", (t) =>
       },
       { authenticated_user_id },
     ) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       if (authenticated_user_id === user_id)
         throw getAPIError("CANNOT_REMOVE_SELF");
 

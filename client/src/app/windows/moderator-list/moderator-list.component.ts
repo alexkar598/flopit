@@ -8,6 +8,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
 import {
@@ -29,7 +30,9 @@ import {
   GetModeratorsFragment,
   GetModeratorsGQL,
   RemoveModeratorGQL,
+  ResolveUserIdGQL,
 } from "~/graphql";
+import { APIError } from "~shared/apierror";
 
 @Component({
   selector: "app-moderator-list",
@@ -63,10 +66,12 @@ export class ModeratorListWindowComponent implements OnInit {
   constructor(
     protected userService: UserService,
     private findUsersGQL: FindUsersGQL,
+    private resolveUserGQL: ResolveUserIdGQL,
     private getModeratorsGQL: GetModeratorsGQL,
     private createModeratorGQL: CreateModeratorGQL,
     private removeModeratorGQL: RemoveModeratorGQL,
     private destroyRef: DestroyRef,
+    private toastr: NbToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -130,16 +135,23 @@ export class ModeratorListWindowComponent implements OnInit {
     this.newModeratorSubject$
       .pipe(sample(this.actionCreateNewModerator$))
       .subscribe((username) =>
-        this.createModeratorGQL
-          .mutate(
-            {
-              input: { sub: this.sub, username: username },
-            },
-            { refetchQueries: [this.getModeratorsGQL.document] },
-          )
-          .subscribe(() => {
-            this.newModeratorSubject$.next("");
-          }),
+        this.resolveUserGQL.fetch({ username }).subscribe((result) => {
+          const user_id = result.data.userByUsername?.id;
+          if (user_id == null) {
+            this.toastr.danger(APIError.USER_NOT_FOUND, "Erreur");
+            return;
+          }
+          this.createModeratorGQL
+            .mutate(
+              {
+                input: { sub: this.sub, user: user_id },
+              },
+              { refetchQueries: [this.getModeratorsGQL.document] },
+            )
+            .subscribe(() => {
+              this.newModeratorSubject$.next("");
+            });
+        }),
       );
   }
 }

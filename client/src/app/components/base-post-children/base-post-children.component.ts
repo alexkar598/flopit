@@ -16,7 +16,15 @@ import {
   NbSpinnerModule,
   NbUserModule,
 } from "@nebular/theme";
-import { BehaviorSubject, filter, map, of, Subject, takeUntil } from "rxjs";
+import {
+  BehaviorSubject,
+  filter,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+} from "rxjs";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
@@ -76,7 +84,7 @@ export class BasePostChildrenComponent implements OnChanges {
       parentChanges.currentValue !== parentChanges.previousValue
     ) {
       this.reset$.next(null);
-      const parent$ =
+      const parent$: Observable<ChildrenQueryResult> =
         typeof this.parent === "string"
           ? this.postCommentsQuery.watch({ id: this.parent }).valueChanges.pipe(
               map((res) => res.data.node),
