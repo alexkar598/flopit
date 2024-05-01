@@ -3,7 +3,7 @@ import { prisma } from "../../db.ts";
 
 const filter = builder.inputType("UsersFilter", {
   fields: (t) => ({
-    username: t.string({ required: false }),
+    username: t.string({ required: false, description: "contains" }),
   }),
 });
 
@@ -23,7 +23,7 @@ builder.queryFields((t) => ({
         ...query,
         where: {
           username: {
-            startsWith: filter?.username ?? undefined,
+            contains: filter?.username ?? undefined,
           },
         },
       }),
