@@ -47,6 +47,7 @@ export class ParametresComponent {
   showPassword = false;
   showConfirmPassword = false;
   deletingAccount = false;
+  avatar: File | null = null;
 
   constructor(
     public userService: UserService,
@@ -55,15 +56,30 @@ export class ParametresComponent {
     private router: Router,
   ) {}
 
+  onAvatarChange(input: any) {
+    const file = (input as HTMLInputElement)?.files?.[0];
+    if (!file) return;
+
+    this.avatar = file;
+  }
+
   async changer(values: { username: string }) {
     console.log(values);
     const { username } = values;
     this.editUserGql
-      .mutate({
-        input: {
-          username,
+      .mutate(
+        {
+          input: {
+            username,
+            avatar: this.avatar,
+          },
         },
-      })
+        {
+          context: {
+            useMultipart: true,
+          },
+        },
+      )
       .subscribe();
   }
 

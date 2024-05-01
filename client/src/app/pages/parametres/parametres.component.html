@@ -95,7 +95,7 @@
             <input
               class="input-param"
               type="file"
-              name="icon"
+              (change)="onAvatarChange($event.target)"
               accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
             />
           </div>
