@@ -67,19 +67,12 @@ export class ParametresComponent {
     console.log(values);
     const { username } = values;
     this.editUserGql
-      .mutate(
-        {
-          input: {
-            username,
-            avatar: this.avatar,
-          },
+      .mutate({
+        input: {
+          username,
+          avatar: this.avatar,
         },
-        {
-          context: {
-            useMultipart: true,
-          },
-        },
-      )
+      })
       .subscribe();
   }
 
