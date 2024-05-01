@@ -34,6 +34,14 @@
         }
       </nb-option-group>
     }
+    @if ((searchValue$ | async)?.trim()) {
+      <nb-option-group title="Publications">
+        <nb-option [value]="['post', null]">
+          <nb-icon icon="search-outline" />
+          <span class="paragraph">Rechercher...</span>
+        </nb-option>
+      </nb-option-group>
+    }
     @if (resultsLoading$ | async) {
       <nb-option class="loading-option">
         <nb-spinner size="small" />

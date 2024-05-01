@@ -1,6 +1,7 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
+import { topPostRef } from "../toppost/schema.ts";
 
 export enum VoteValue {
   Down = -1,
@@ -63,3 +64,15 @@ export const basePostRef = builder.prismaInterface("Post", {
   resolveType: (basePost) =>
     basePost.parent_id != null ? "Comment" : "TopPost",
 });
+
+builder.prismaInterfaceField("Post", "topPost", (t) =>
+  t.prismaField({
+    type: topPostRef,
+    select: { top_post_id: true },
+    resolve: (query, { top_post_id }) =>
+      prisma.post.findFirstOrThrow({
+        ...query,
+        where: { parent_id: null, top_post_id },
+      }),
+  }),
+);

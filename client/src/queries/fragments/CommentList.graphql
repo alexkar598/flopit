@@ -2,6 +2,7 @@ fragment CommentListInfo on Comment {
   id
   deltaContent
   author {
+    id
     username
     avatarUrl
   }

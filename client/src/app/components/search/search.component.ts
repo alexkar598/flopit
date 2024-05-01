@@ -3,6 +3,7 @@ import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
+  NbActionsModule,
   NbAutocompleteModule,
   NbButtonModule,
   NbFormFieldModule,
@@ -18,9 +19,11 @@ import {
   map,
   Observable,
   of,
+  pairwise,
   Subject,
   switchMap,
   tap,
+  withLatestFrom,
 } from "rxjs";
 import { notNull } from "~/app/util";
 import {
@@ -42,13 +45,16 @@ import {
     AsyncPipe,
     NbUserModule,
     NbSpinnerModule,
+    NbActionsModule,
   ],
   templateUrl: "./search.component.html",
   styleUrl: "./search.component.scss",
 })
 export class SearchComponent {
   protected searchValue$ = new BehaviorSubject<string>("");
-  protected selectValue$ = new Subject<["user" | "sub", string] | "">();
+  protected selectValue$ = new Subject<
+    ["user" | "sub" | "post", string] | ""
+  >();
 
   protected resultsLoading$ = new BehaviorSubject(false);
   protected resultsUsers$: Observable<GlobalSearchUserFragment[] | null>;
@@ -85,8 +91,13 @@ export class SearchComponent {
     );
 
     this.selectValue$
-      .pipe(filter((x): x is ["user" | "sub", string] => x !== ""))
-      .subscribe(([type, id]) => {
+      .pipe(
+        filter(
+          (x): x is ["user" | "sub" | "post", string] => x != null && x !== "",
+        ),
+        withLatestFrom(this.searchValue$.pipe(pairwise())),
+      )
+      .subscribe(([[type, id], [lastSearchValue]]) => {
         this.searchValue$.next("");
         switch (type) {
           case "user":
@@ -95,6 +106,9 @@ export class SearchComponent {
             break;
           case "sub":
             void router.navigate(["/f", id]);
+            break;
+          case "post":
+            void router.navigate(["/rechercher", lastSearchValue]);
             break;
         }
       });

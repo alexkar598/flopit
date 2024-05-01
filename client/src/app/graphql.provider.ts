@@ -121,6 +121,7 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
             homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
             users: relayStylePagination(["filter"]),
             subs: relayStylePagination(["filter"]),
+            searchPosts: relayStylePagination(["input"]),
           },
         },
         Sub: {

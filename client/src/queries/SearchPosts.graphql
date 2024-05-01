@@ -1,0 +1,58 @@
+query SearchPosts($query: String!) {
+  topPosts: searchPosts(input: {query: $query, include: [TopPost]}) {
+    edges {
+      node {
+        ...SearchPostsTopPost
+      }
+    }
+  }
+  comments: searchPosts(input: {query: $query, include: [Comment]}) {
+    edges {
+      node {
+        ...SearchPostsComment
+      }
+    }
+  }
+}
+
+fragment SearchPostsPost on BasePost {
+  id
+  cachedVotes
+  createdAt
+  sub {
+    id
+    name
+    iconUrl
+  }
+}
+
+fragment SearchPostsTopPost on TopPost {
+  ...SearchPostsPost
+  title
+}
+
+fragment SearchPostsComment on Comment {
+  ...SearchPostsPost
+  author {
+    id
+    username
+    avatarUrl
+  }
+  topPost {
+    id
+    title
+    cachedVotes
+    createdAt
+  }
+  parent {
+    id
+    author {
+      id
+      username
+      avatarUrl
+    }
+    deltaContent
+    cachedVotes
+    createdAt
+  }
+}
