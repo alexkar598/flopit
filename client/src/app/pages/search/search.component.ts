@@ -1,7 +1,14 @@
 import { AsyncPipe } from "@angular/common";
 import { Component } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { map, Observable, shareReplay, switchMap } from "rxjs";
+import {
+  BehaviorSubject,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+  tap,
+} from "rxjs";
 import { isFragment, notNull } from "~/app/util";
 import {
   GlobalSearchGQL,
@@ -15,6 +22,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbIconModule,
+  NbSpinnerModule,
   NbTabsetModule,
   NbUserModule,
 } from "@nebular/theme";
@@ -37,6 +45,7 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
     NbButtonModule,
     NbIconModule,
     VoteComponent,
+    NbSpinnerModule,
   ],
   templateUrl: "./search.component.html",
   styleUrl: "./search.component.scss",
@@ -46,6 +55,8 @@ export class SearchPageComponent {
   protected resultsComments$: Observable<SearchPostsCommentFragment[]>;
   protected resultsUsers$: Observable<GlobalSearchUserFragment[]>;
   protected resultsSubs$: Observable<GlobalSearchSubFragment[]>;
+  protected loadingPosts$ = new BehaviorSubject(false);
+  protected loading$ = new BehaviorSubject(false);
   protected currentTab$: Observable<string>;
 
   constructor(
@@ -55,9 +66,11 @@ export class SearchPageComponent {
     protected router: Router,
   ) {
     const resultsPosts$ = route.paramMap.pipe(
+      tap(() => this.loadingPosts$.next(true)),
       map((x) => x.get("query")!),
       switchMap((query) => searchPostsGQL.watch({ query }).valueChanges),
       map((x) => x.data),
+      tap(() => this.loadingPosts$.next(false)),
     );
     this.resultsTopPosts$ = resultsPosts$.pipe(
       map((x) =>
@@ -70,9 +83,11 @@ export class SearchPageComponent {
       ),
     );
     const results$ = route.paramMap.pipe(
+      tap(() => this.loading$.next(true)),
       map((x) => x.get("query")!),
       switchMap((query) => searchGQL.watch({ query }).valueChanges),
       map((x) => x.data),
+      tap(() => this.loading$.next(false)),
     );
     this.resultsUsers$ = results$.pipe(
       map((x) => x?.users.edges.map((x) => x?.node).filter(notNull)),

@@ -13,6 +13,9 @@
     tabId="publications"
     [active]="(currentTab$ | async) === 'publications'"
   >
+    @if (loadingPosts$ | async) {
+      <nb-spinner message="" />
+    }
     @for (elem of resultsTopPosts$ | async; track elem.id) {
       <nb-card class="post">
         <nb-card-header>
@@ -37,6 +40,8 @@
           <span class="text-hint">{{ elem.createdAt | relativeDate }}</span>
         </nb-card-footer>
       </nb-card>
+    } @empty {
+      Aucun résultat à afficher
     }
   </nb-tab>
   <nb-tab
@@ -44,6 +49,9 @@
     tabId="commentaires"
     [active]="(currentTab$ | async) === 'commentaires'"
   >
+    @if (loadingPosts$ | async) {
+      <nb-spinner message="" />
+    }
     @for (elem of resultsComments$ | async; track elem.id) {
       <nb-card class="comment">
         <nb-card-header>
@@ -93,6 +101,8 @@
           </div>
         </nb-card-body>
       </nb-card>
+    } @empty {
+      Aucun résultat à afficher
     }
   </nb-tab>
   <nb-tab
@@ -100,6 +110,9 @@
     tabId="utilisateurs"
     [active]="(currentTab$ | async) === 'utilisateurs'"
   >
+    @if (loading$ | async) {
+      <nb-spinner message="" />
+    }
     @for (elem of resultsUsers$ | async; track elem.id) {
       <nb-card class="user" [routerLink]="['/chat', elem.id]">
         <nb-card-body>
@@ -109,6 +122,8 @@
           />
         </nb-card-body>
       </nb-card>
+    } @empty {
+      Aucun résultat à afficher
     }
   </nb-tab>
   <nb-tab
@@ -116,6 +131,9 @@
     tabId="communautes"
     [active]="(currentTab$ | async) === 'communautes'"
   >
+    @if (loading$ | async) {
+      <nb-spinner message="" />
+    }
     @for (elem of resultsSubs$ | async; track elem.id) {
       <nb-card class="sub" [routerLink]="['/f', elem.name]">
         <nb-card-body>
@@ -123,6 +141,8 @@
           <p>{{ elem.description }}</p>
         </nb-card-body>
       </nb-card>
+    } @empty {
+      Aucun résultat à afficher
     }
   </nb-tab>
 </nb-tabset>
