@@ -1,1 +1,7 @@
-<p>Here is the text provided via config: "data.text"</p>
+<ng-template #contentTemplate let-data>
+  <p>{{ data.text }}</p>
+</ng-template>
+<div class="boutons">
+  <button nbButton status="danger" (click)="no()">Non</button>
+  <button nbButton status="primary" (click)="yes()">Oui</button>
+</div>

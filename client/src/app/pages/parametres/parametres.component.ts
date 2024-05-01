@@ -4,13 +4,13 @@ import {
   NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
-  NbDialogService,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbSelectModule,
   NbTooltipModule,
   NbUserModule,
+  NbWindowService,
 } from "@nebular/theme";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
@@ -50,7 +50,7 @@ export class ParametresComponent {
   constructor(
     public userService: UserService,
     private editUserGql: EditUserGQL,
-    private dialogService: NbDialogService,
+    private windowService: NbWindowService,
     private router: Router,
   ) {}
 
@@ -67,12 +67,10 @@ export class ParametresComponent {
   }
 
   toggleDeletingAccount() {
-    this.dialogService.open(YesNoPopupComponent, {
-      context: {
-        title: "This is a title passed to the dialog component",
-      },
+    this.windowService.open(YesNoPopupComponent, {
+      title: "Supression du compte",
+      context: { text: "some text to pass into template" },
     });
-    // this.deletingAccount = !this.deletingAccount;
   }
 
   deleteAccount() {
