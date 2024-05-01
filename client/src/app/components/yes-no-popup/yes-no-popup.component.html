@@ -1,7 +1,5 @@
-<ng-template #contentTemplate let-data>
-  <p>{{ data.text }}</p>
-</ng-template>
+<p>Êtes-vous sûr de vouloir supprimer votre compte?</p>
 <div class="boutons">
-  <button nbButton status="danger" (click)="no()">Non</button>
-  <button nbButton status="primary" (click)="yes()">Oui</button>
+  <button nbButton status="basic" (click)="no()">Non</button>
+  <button nbButton status="danger" (click)="yes()">Oui</button>
 </div>

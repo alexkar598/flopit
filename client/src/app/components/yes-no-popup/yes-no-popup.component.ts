@@ -12,10 +12,10 @@ export class YesNoPopupComponent {
   constructor(private ref: NbWindowRef) {}
 
   no() {
-    this.ref.close();
+    this.ref.close(false);
   }
 
   yes() {
-    this.ref.close();
+    this.ref.close(true);
   }
 }

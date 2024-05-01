@@ -19,6 +19,7 @@ import { FormsModule } from "@angular/forms";
 import { EditUserGQL } from "~/graphql";
 import { Router } from "@angular/router";
 import { YesNoPopupComponent } from "~/app/components/yes-no-popup/yes-no-popup.component";
+import { filter } from "rxjs";
 
 @Component({
   selector: "app-parametres",
@@ -67,10 +68,12 @@ export class ParametresComponent {
   }
 
   toggleDeletingAccount() {
-    this.windowService.open(YesNoPopupComponent, {
-      title: "Supression du compte",
-      context: { text: "some text to pass into template" },
+    const windowRef = this.windowService.open(YesNoPopupComponent, {
+      title: "Suppression du compte",
     });
+    windowRef.onClose
+      .pipe(filter((res: boolean) => res))
+      .subscribe((res) => this.deleteAccount());
   }
 
   deleteAccount() {
