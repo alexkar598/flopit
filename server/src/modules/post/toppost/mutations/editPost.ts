@@ -1,5 +1,6 @@
 import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
+import { getAPIError } from "../../../../util.ts";
 import { deltaValidator } from "../../delta.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
 
@@ -26,7 +27,7 @@ builder.mutationField("editTopPost", (t) => {
     nullable: true,
     args: { input: t.arg({ type: input }) },
     authScopes: async (_, args, { authenticated_user_id }) => {
-      const post = await prisma.post.findUniqueOrThrow({
+      const post = await prisma.post.findUnique({
         select: {
           Author: {
             select: {
@@ -38,7 +39,7 @@ builder.mutationField("editTopPost", (t) => {
           id: args.input.id.id,
         },
       });
-
+      if (post == null) throw getAPIError("POST_NOT_FOUND");
       return post.Author?.id === authenticated_user_id;
     },
     resolve: async (query, _root, { input }) => {
