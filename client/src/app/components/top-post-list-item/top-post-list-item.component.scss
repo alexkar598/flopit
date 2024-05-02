@@ -4,7 +4,6 @@
 
 nb-card {
   max-width: 50rem;
-  --card-divider-width: 0;
   --card-border-radius: 1rem;
   --card-margin-bottom: 0;
 }
@@ -12,6 +11,10 @@ nb-card {
 h2 {
   line-height: 1;
   font-size: var(--text-heading-4-font-size);
+}
+
+nb-card-header {
+  --card-divider-width: 0;
 }
 
 nb-card-body {
