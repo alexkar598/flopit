@@ -4,6 +4,7 @@ fragment FullTopPost on TopPost {
   sub {
     id
     name
+    isModerator
   }
   author {
     id
