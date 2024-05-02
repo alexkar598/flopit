@@ -1,5 +1,7 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormsModule, NgForm } from "@angular/forms";
+import { AsyncPipe, NgForOf } from "@angular/common";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import {
   NbAutocompleteModule,
   NbButtonModule,
@@ -10,8 +12,8 @@ import {
   NbUserModule,
   NbWindowRef,
 } from "@nebular/theme";
+import { QueryRef } from "apollo-angular";
 import { QuillEditorComponent } from "ngx-quill";
-import { AsyncPipe, NgForOf } from "@angular/common";
 import {
   BehaviorSubject,
   debounceTime,
@@ -19,8 +21,12 @@ import {
   Observable,
   Subscription,
 } from "rxjs";
+import { isFragment, notNull } from "~/app/util";
 import {
   CreatePostGQL,
+  EditTopPostGQL,
+  EditTopPostInfoFragment,
+  EditTopPostInfoGQL,
   FindSubsGQL,
   FindSubsQuery,
   FindSubsQueryVariables,
@@ -29,9 +35,6 @@ import {
   ResolveSubIdGQL,
   SubFeedDocument,
 } from "~/graphql";
-import { notNull } from "~/app/util";
-import { Router } from "@angular/router";
-import { QueryRef } from "apollo-angular";
 import { APIError } from "~shared/apierror";
 
 @Component({
@@ -48,6 +51,7 @@ import { APIError } from "~shared/apierror";
     NbAutocompleteModule,
     NbUserModule,
     NbSpinnerModule,
+    ReactiveFormsModule,
   ],
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",
@@ -59,13 +63,24 @@ export class TopPostWindowComponent implements OnInit, OnDestroy {
   public subFilterSubject = new BehaviorSubject("");
   public subFilterSub!: Subscription;
 
+  @Input()
+  public edit?: string;
+  protected form = this.formBuilder.nonNullable.group({
+    sub_name: { value: "", disabled: false },
+    title: "",
+    delta_content: { ops: [] },
+  });
+
   constructor(
     private findSubsGQL: FindSubsGQL,
     private resolveSubGQL: ResolveSubIdGQL,
     private createPostMut: CreatePostGQL,
+    private editTopPostMut: EditTopPostGQL,
+    private editTopPostInfoGQL: EditTopPostInfoGQL,
     private toastr: NbToastrService,
     private windowRef: NbWindowRef,
     private router: Router,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit() {
@@ -78,41 +93,83 @@ export class TopPostWindowComponent implements OnInit, OnDestroy {
       .subscribe(
         (name) => void this.subsQuery$.setVariables({ filter: { name } }),
       );
+
+    if (this.edit != null) {
+      this.editTopPostInfoGQL.fetch({ id: this.edit }).subscribe((val) => {
+        if (val.errors) return this.windowRef.close();
+        if (!isFragment<EditTopPostInfoFragment>("TopPost")(val.data.node))
+          return;
+        const data = val.data.node;
+        this.form.reset({
+          title: data.title,
+          delta_content: data.deltaContent as any,
+        });
+      });
+    }
   }
 
   ngOnDestroy(): void {
     this.subFilterSub.unsubscribe();
   }
 
-  submit(f: NgForm) {
+  submit() {
     this.loading = true;
 
-    this.resolveSubGQL.fetch({ name: f.value.sub }).subscribe((result) => {
-      const sub_id = result.data.subByName?.id;
-      if (sub_id == null) {
-        this.toastr.danger(APIError.SUB_NOT_FOUND, "Erreur");
-        this.loading = false;
-        return;
-      }
-      this.createPostMut
-        .mutate(
-          {
-            input: {
-              title: f.value.title,
-              sub: sub_id,
-              delta_content: { ops: f.value.content?.ops ?? [] },
-            },
+    const controls = this.form.controls;
+    if (this.edit) {
+      this.editTopPostMut
+        .mutate({
+          input: {
+            id: this.edit,
+            title: controls.title.dirty ? controls.title.value : undefined,
+            delta_content: this.form.controls.delta_content.dirty
+              ? { ops: controls.delta_content.value.ops ?? [] }
+              : undefined,
           },
-          {
-            refetchQueries: [SubFeedDocument, HomeFeedDocument],
-          },
-        )
+        })
         .subscribe(async (res) => {
           this.loading = false;
           if (res.errors) return;
-          await this.router.navigate(["f", res.data?.createPost?.sub.name]);
           this.windowRef.close();
         });
-    });
+      return;
+    }
+
+    this.resolveSubGQL
+      .fetch({ name: controls.sub_name.value })
+      .subscribe((result) => {
+        const sub_id = result.data.subByName?.id;
+        if (sub_id == null) {
+          this.toastr.danger(APIError.SUB_NOT_FOUND, "Erreur");
+          this.loading = false;
+          return;
+        }
+
+        this.createPostMut
+          .mutate(
+            {
+              input: {
+                title: controls.title.value,
+                sub: sub_id,
+                delta_content: {
+                  ops: controls.delta_content.value?.ops ?? [],
+                },
+              },
+            },
+            {
+              refetchQueries: [SubFeedDocument, HomeFeedDocument],
+            },
+          )
+          .subscribe(async (res) => {
+            this.loading = false;
+            if (res.errors) return;
+            await this.router.navigate([
+              "f",
+              res.data?.createPost?.sub.name,
+              res.data?.createPost?.id,
+            ]);
+            this.windowRef.close();
+          });
+      });
   }
 }

@@ -1,0 +1,19 @@
+mutation EditTopPost($input: EditTopPostInput!) {
+  editTopPost(input: $input) {
+    id
+    title
+    deltaContent
+  }
+}
+
+query EditTopPostInfo($id: ID!) {
+  node(id: $id) {
+    ...EditTopPostInfo
+  }
+}
+
+fragment EditTopPostInfo on TopPost {
+  id
+  title
+  deltaContent
+}
