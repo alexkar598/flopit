@@ -83,6 +83,14 @@ export class TopPostComponent implements OnInit {
               },
             },
           },
+          (isAuthor || isModerator) && {
+            title: "Supprimer",
+            icon: "trash-2-outline",
+            data: {
+              onClick: () =>
+                this.deletePostGQL.mutate({ id: this.post.id }).subscribe(),
+            },
+          },
         ].filter(truthy);
       }),
       shareReplay(1),

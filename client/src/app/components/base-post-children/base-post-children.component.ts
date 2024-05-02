@@ -129,6 +129,16 @@ export class BasePostChildrenComponent implements OnChanges {
                       },
                     },
                   } satisfies NbClickableMenuItem,
+                  (isAuthor || isModerator) && {
+                    title: "Supprimer",
+                    icon: "trash-2-outline",
+                    data: {
+                      onClick: () =>
+                        this.deletePostGQL
+                          .mutate({ id: comment.id })
+                          .subscribe(),
+                    },
+                  },
                 ].filter(truthy),
               };
             }),
