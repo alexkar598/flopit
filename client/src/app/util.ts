@@ -2,6 +2,10 @@ export function notNull<T>(val?: T | null | undefined): val is T {
   return val != null;
 }
 
+export function truthy<T>(val?: T | "" | null | undefined | false): val is T {
+  return Boolean(val);
+}
+
 export function throwException(exception: unknown): never {
   throw exception;
 }

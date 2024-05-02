@@ -14,7 +14,6 @@ h2 {
 }
 
 nb-card-header {
-
   --card-divider-width: 0;
 }
 
@@ -24,16 +23,29 @@ nb-card-body {
 
 nb-card-footer {
   --card-padding: 0.25rem 1rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-.user {
-  margin: auto;
-  --user-name-text-font-weight: bold;
-  text-decoration: none;
-}
+  > * {
+    flex: 1 0 0;
+    min-width: fit-content;
+    text-align: center;
+    justify-content: center;
 
-.datetime {
-  margin: auto 0 auto auto;
+    &:first-child {
+      text-align: left;
+      justify-content: start;
+    }
+
+    &:last-child {
+      text-align: right;
+      justify-content: end;
+    }
+  }
+
+  > div {
+    display: flex;
+    align-items: center;
+  }
 }
