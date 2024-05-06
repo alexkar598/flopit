@@ -1,6 +1,5 @@
 import { relayStylePagination } from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpHeaders } from "@angular/common/http";
 import {
   ApplicationConfig,
   inject,
@@ -9,18 +8,14 @@ import {
   TransferState,
 } from "@angular/core";
 import { Router } from "@angular/router";
-import {
-  ApolloClientOptions,
-  ApolloLink,
-  from,
-  InMemoryCache,
-} from "@apollo/client/core";
+import { ApolloClientOptions, from, InMemoryCache } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { Kind, OperationDefinitionNode } from "graphql/language";
 import { StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { setContext } from "@apollo/client/link/context";
 
 const uri = "/graphql";
 
@@ -34,6 +29,8 @@ export function apolloOptionsFactory(
   router: Router,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
+
+  const basePath = isBrowser ? "" : "http://apiserver:3000";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -46,15 +43,6 @@ export function apolloOptionsFactory(
     // Reset cache after extraction to avoid sharing between requests
     void cache.reset();
   }
-
-  const proxyCookiesLink = new ApolloLink((operation, forward) => {
-    if (cookies)
-      operation.setContext({
-        headers: new HttpHeaders().set("Cookie", cookies),
-      });
-
-    return forward(operation);
-  });
 
   const errorLink = onError(({ graphQLErrors, operation }) => {
     if (graphQLErrors == null) return;
@@ -90,7 +78,16 @@ export function apolloOptionsFactory(
     });
   });
 
-  const link = from([proxyCookiesLink, errorLink, createUploadLink({ uri })]);
+  const link = from([
+    setContext((_, previous) => ({
+      ...previous,
+      headers: { cookie: cookies ?? "token=_" },
+    })),
+    errorLink,
+    createUploadLink({
+      uri: `${basePath}${uri}`,
+    }),
+  ]);
 
   return {
     link,
@@ -113,42 +110,43 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useFactory: () => new InMemoryCache({
-      possibleTypes: {
-        BasePost: ["Comment", "TopPost"],
-      },
-      typePolicies: {
-        Query: {
-          fields: {
-            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
-            users: relayStylePagination(["filter"]),
-            subs: relayStylePagination(["filter"]),
-            searchPosts: relayStylePagination(["input"]),
-          },
+    useFactory: () =>
+      new InMemoryCache({
+        possibleTypes: {
+          BasePost: ["Comment", "TopPost"],
         },
-        Sub: {
-          fields: {
-            moderators: relayStylePagination(),
-            posts: relayStylePagination(["sortOptions"]),
+        typePolicies: {
+          Query: {
+            fields: {
+              homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+              users: relayStylePagination(["filter"]),
+              subs: relayStylePagination(["filter"]),
+              searchPosts: relayStylePagination(["input"]),
+            },
           },
-        },
-        TopPost: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
+          Sub: {
+            fields: {
+              moderators: relayStylePagination(),
+              posts: relayStylePagination(["sortOptions"]),
+            },
           },
-        },
-        Comment: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
+          TopPost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
           },
-        },
-        BasePost: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
+          Comment: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
           },
-        },
-      } satisfies StrictTypedTypePolicies,
-    }),
+          BasePost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+        } satisfies StrictTypedTypePolicies,
+      }),
   },
   {
     provide: APOLLO_OPTIONS,
