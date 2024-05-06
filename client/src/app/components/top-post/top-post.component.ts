@@ -16,7 +16,7 @@ import { UserService } from "~/app/services/user.service";
 import { truthy } from "~/app/util";
 import { TopPostWindowComponent } from "~/app/windows/top-post/top-post.component";
 import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
-import { FullTopPostFragment } from "~/graphql";
+import { DeletePostGQL, FullTopPostFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 
@@ -45,6 +45,7 @@ export class TopPostComponent implements OnInit {
   protected actions$!: Observable<(NbClickableMenuItem & { icon: string })[]>;
 
   constructor(
+    private deletePostGQL: DeletePostGQL,
     private userService: UserService,
     private windowService: NbWindowService,
   ) {}
@@ -54,6 +55,8 @@ export class TopPostComponent implements OnInit {
       map((currentUser) => {
         const isAuthor =
           this.post.author?.id && this.post.author.id === currentUser?.id;
+        const isModerator = this.post.sub.isModerator;
+
         return [
           {
             title: "Répondre",
@@ -78,6 +81,14 @@ export class TopPostComponent implements OnInit {
                   },
                 });
               },
+            },
+          },
+          (isAuthor || isModerator) && {
+            title: "Supprimer",
+            icon: "trash-2-outline",
+            data: {
+              onClick: () =>
+                this.deletePostGQL.mutate({ id: this.post.id }).subscribe(),
             },
           },
         ].filter(truthy);

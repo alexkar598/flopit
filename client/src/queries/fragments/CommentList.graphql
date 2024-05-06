@@ -6,6 +6,10 @@ fragment CommentListInfo on Comment {
     username
     avatarUrl
   }
+  sub {
+    id
+    isModerator
+  }
   cachedVotes
   currentVote
   createdAt

@@ -26,15 +26,18 @@ import {
   of,
   Subject,
   takeUntil,
+  withLatestFrom,
 } from "rxjs";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
+import { UserService } from "~/app/services/user.service";
 import { isFragment, truthy } from "~/app/util";
 import {
   BasePostCommentsGQL,
   CommentListFragment,
   CommentListInfoFragment,
+  DeletePostGQL,
 } from "~/graphql";
 
 type ChildrenQueryResult = ({
@@ -82,7 +85,9 @@ export class BasePostChildrenComponent implements OnChanges {
 
   constructor(
     private postCommentsQuery: BasePostCommentsGQL,
+    private deletePostGQL: DeletePostGQL,
     private destroyRef: DestroyRef,
+    private userService: UserService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -105,8 +110,13 @@ export class BasePostChildrenComponent implements OnChanges {
       parent$
         .pipe(
           map((res) => res.map((comment) => comment!.node!)),
-          map((res) =>
+          withLatestFrom(this.userService.currentUser$),
+          map(([res, currentUser]) =>
             res.map((comment) => {
+              const isAuthor =
+                comment.author?.id && comment.author.id === currentUser?.id;
+              const isModerator = comment.sub.isModerator;
+
               return {
                 ...comment,
                 actions: [
@@ -119,6 +129,16 @@ export class BasePostChildrenComponent implements OnChanges {
                       },
                     },
                   } satisfies NbClickableMenuItem,
+                  (isAuthor || isModerator) && {
+                    title: "Supprimer",
+                    icon: "trash-2-outline",
+                    data: {
+                      onClick: () =>
+                        this.deletePostGQL
+                          .mutate({ id: comment.id })
+                          .subscribe(),
+                    },
+                  },
                 ].filter(truthy),
               };
             }),
