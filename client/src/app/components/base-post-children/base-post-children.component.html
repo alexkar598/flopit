@@ -3,34 +3,47 @@
     @for (comment of comments; track comment.id) {
       <nb-card>
         <nb-card-body>
-          <div class="comment">
-            <app-rich-text [delta]="comment.deltaContent"></app-rich-text>
-          </div>
+          <app-rich-text [delta]="comment.deltaContent" />
         </nb-card-body>
+
         <nb-card-footer>
-          <div class="actions">
-            <div class="user">
-              <a class="user-link">
-                <nb-user
-                  name="u/{{ comment.author?.username ?? 'Fantôme' }}"
-                  [picture]="comment.author?.avatarUrl ?? ''"
-                />
-              </a>
-            </div>
+          <app-vote [post]="comment" />
 
-            <div class="actions">
-              <app-vote [post]="comment" />
+          @if (comment.author) {
+            <nb-user
+              name="u/{{ comment.author.username }}"
+              [picture]="comment.author.avatarUrl ?? ''"
+            />
+          } @else {
+            <nb-user name="fantôme" />
+          }
 
-              <button nbButton ghost shape="round" size="large">
-                <nb-icon icon="undo-outline" class="icon-action" />
+          <div>
+            <span class="datetime text-hint">{{
+              comment.createdAt | relativeDate
+            }}</span>
+
+            @if (comment.actions.length == 1) {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                size="large"
+                (click)="comment.actions[0].data.onClick()"
+              >
+                <nb-icon [icon]="comment.actions[0].icon" class="icon-action" />
               </button>
-            </div>
-          </div>
-
-          <div class="date">
-            <span class="text-hint">
-              {{ comment.createdAt | relativeDate }}
-            </span>
+            } @else {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                size="large"
+                [nbContextMenu]="$any(comment.actions)"
+              >
+                <nb-icon icon="more-horizontal-outline" class="icon-action" />
+              </button>
+            }
           </div>
         </nb-card-footer>
       </nb-card>

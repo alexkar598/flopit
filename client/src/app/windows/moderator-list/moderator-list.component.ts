@@ -51,7 +51,7 @@ import { APIError } from "~shared/apierror";
   templateUrl: "./moderator-list.component.html",
   styleUrl: "./moderator-list.component.scss",
 })
-export class ModeratorListComponent implements OnInit {
+export class ModeratorListWindowComponent implements OnInit {
   @Input({ required: true })
   public sub!: string;
 

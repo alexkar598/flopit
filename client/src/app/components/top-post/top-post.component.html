@@ -14,17 +14,43 @@
   <nb-card-footer>
     <app-vote [post]="post" />
 
-    <span class="user">
-      @if (post.author) {
-        <nb-user
-          name="u/{{ post.author.username }}"
-          [picture]="post.author.avatarUrl ?? ''"
-        />
-      } @else {
-        <nb-user name="fantôme" />
-      }
-    </span>
+    @if (post.author) {
+      <nb-user
+        name="u/{{ post.author.username }}"
+        [picture]="post.author.avatarUrl ?? ''"
+      />
+    } @else {
+      <nb-user name="fantôme" />
+    }
 
-    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
+    <div>
+      <span class="datetime text-hint">{{
+        post.createdAt | relativeDate
+      }}</span>
+
+      @if (actions$ | async; as actions) {
+        @if (actions.length == 1) {
+          <button
+            nbButton
+            ghost
+            shape="round"
+            size="large"
+            (click)="actions[0].data.onClick()"
+          >
+            <nb-icon [icon]="actions[0].icon" class="icon-action" />
+          </button>
+        } @else {
+          <button
+            nbButton
+            ghost
+            shape="round"
+            size="large"
+            [nbContextMenu]="actions"
+          >
+            <nb-icon icon="more-horizontal-outline" class="icon-action" />
+          </button>
+        }
+      }
+    </div>
   </nb-card-footer>
 </nb-card>

@@ -12,6 +12,8 @@ import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
   NbCardModule,
+  NbClickableMenuItem,
+  NbContextMenuModule,
   NbIconModule,
   NbSpinnerModule,
   NbUserModule,
@@ -28,7 +30,7 @@ import {
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
-import { isFragment } from "~/app/util";
+import { isFragment, truthy } from "~/app/util";
 import {
   BasePostCommentsGQL,
   CommentListFragment,
@@ -58,6 +60,7 @@ type ChildrenQueryResult = ({
     AsyncPipe,
     NbSpinnerModule,
     VoteComponent,
+    NbContextMenuModule,
   ],
   templateUrl: "./base-post-children.component.html",
   styleUrl: "./base-post-children.component.scss",
@@ -67,7 +70,12 @@ export class BasePostChildrenComponent implements OnChanges {
   public parent!: string | ChildrenQueryResult;
 
   public comments$ = new BehaviorSubject<
-    NonNullable<NonNullable<ChildrenQueryResult[0]>["node"]>[] | null
+    | NonNullable<
+        NonNullable<ChildrenQueryResult[0]>["node"] & {
+          actions: (NbClickableMenuItem & { icon: string })[];
+        }
+      >[]
+    | null
   >(null);
 
   private reset$ = new Subject<null>();
@@ -95,7 +103,27 @@ export class BasePostChildrenComponent implements OnChanges {
             )
           : of(this.parent);
       parent$
-        .pipe(map((res) => res.map((comment) => comment!.node!)))
+        .pipe(
+          map((res) => res.map((comment) => comment!.node!)),
+          map((res) =>
+            res.map((comment) => {
+              return {
+                ...comment,
+                actions: [
+                  {
+                    title: "Répondre",
+                    icon: "undo-outline",
+                    data: {
+                      onClick: () => {
+                        //TODO responses
+                      },
+                    },
+                  } satisfies NbClickableMenuItem,
+                ].filter(truthy),
+              };
+            }),
+          ),
+        )
         .subscribe((val) => this.comments$.next(val));
     }
   }

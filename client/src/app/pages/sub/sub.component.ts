@@ -11,7 +11,7 @@ import {
   NbUserModule,
   NbWindowService,
 } from "@nebular/theme";
-import { ModeratorListComponent } from "~/app/components/moderator-list/moderator-list.component";
+import { ModeratorListWindowComponent } from "~/app/windows/moderator-list/moderator-list.component";
 import {
   FollowSubGQL,
   FollowSubMutation,
@@ -43,7 +43,6 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     TopPostListComponent,
     NbSpinnerModule,
     NbActionsModule,
-    ModeratorListComponent,
   ],
   templateUrl: "./sub.component.html",
   styleUrl: "./sub.component.scss",
@@ -120,7 +119,7 @@ export class SubComponent {
     const sub = this.sub$.getValue()?.id;
     if (sub == null) return;
 
-    this.windowService.open(ModeratorListComponent, {
+    this.windowService.open(ModeratorListWindowComponent, {
       title: "Gérer modérateurs",
       windowClass: "moderators-window",
       closeOnEsc: false,
