@@ -1,0 +1,70 @@
+fragment CommentListInfo on Comment {
+  id
+  deltaContent
+  author {
+    id
+    username
+    avatarUrl
+  }
+  sub {
+    id
+    isModerator
+  }
+  cachedVotes
+  currentVote
+  createdAt
+}
+
+
+# 7 niveaux de commentaires
+fragment CommentList on BasePost {
+  children {
+    edges {
+      node {
+        ...CommentListInfo
+        children {
+          edges {
+            node {
+              ...CommentListInfo
+              children {
+                edges {
+                  node {
+                    ...CommentListInfo
+                    children {
+                      edges {
+                        node {
+                          ...CommentListInfo
+                          children {
+                            edges {
+                              node {
+                                ...CommentListInfo
+                                children {
+                                  edges {
+                                    node {
+                                      ...CommentListInfo
+                                      children {
+                                        edges {
+                                          node {
+                                            ...CommentListInfo
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

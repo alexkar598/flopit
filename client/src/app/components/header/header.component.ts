@@ -13,6 +13,7 @@ import {
   NbToastrService,
   NbUserModule,
 } from "@nebular/theme";
+import { SearchComponent } from "~/app/components/search/search.component";
 import { ThemeService } from "~/app/services/theme.service";
 import { UserService } from "~/app/services/user.service";
 import { Theme } from "~/graphql";
@@ -31,6 +32,7 @@ import { Theme } from "~/graphql";
     NbUserModule,
     RouterLink,
     NbContextMenuModule,
+    SearchComponent,
   ],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.css",

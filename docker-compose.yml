@@ -34,7 +34,7 @@ services:
     extra_hosts:
       - "apiserver:127.0.0.1"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "wget localhost:3000/health -O - && wget localhost:4200 -O -"]
+      test: [ "CMD", "sh", "-c", "wget 127.0.0.1:3000/health -O - && wget 127.0.0.1:4200 -O -"]
       timeout: "10s"
       interval: "1m30s"
       retries: 3

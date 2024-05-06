@@ -190,18 +190,24 @@ export async function resetDatabase() {
 
   console.log("Création des posts (post)");
   await prisma.post.createMany({
-    data: topPosts.map((topPost) => ({
-      sub_id: faker.helpers.arrayElement(subs),
-      author_id: faker.helpers.maybe(() => faker.helpers.arrayElement(users), {
-        probability: 90,
-      }),
-      created_at: faker.date.past({ years: 10 }),
-      text_content: generate_text(20, 4000),
-      delta_content: {},
-      top_post_id: topPost,
-      parent_id: null,
-      cached_votes: generate_score(0),
-    })),
+    data: topPosts.map((topPost) => {
+      const text = generate_text(20, 4000);
+      return {
+        sub_id: faker.helpers.arrayElement(subs),
+        author_id: faker.helpers.maybe(
+          () => faker.helpers.arrayElement(users),
+          {
+            probability: 90,
+          },
+        ),
+        created_at: faker.date.past({ years: 10 }),
+        text_content: text,
+        delta_content: { ops: [{ insert: text }] },
+        top_post_id: topPost,
+        parent_id: null,
+        cached_votes: generate_score(0),
+      };
+    }),
   });
   console.log("Posts (post) créés!");
 
@@ -248,8 +254,8 @@ export async function resetDatabase() {
         .toISOString()
         .replace("T", " ")
         .slice(0, -1);
-      const text_content = generate_text(20, 4000);
-      const delta_content = "{}";
+      const text_content = generate_text(20, 1000);
+      const delta_content = `{"ops":[{"insert":"${text_content}"}]}`;
       const top_post_id = parent.top_post_id;
       const parent_id = parent.id;
       const cached_votes = generate_score(layer + 1);

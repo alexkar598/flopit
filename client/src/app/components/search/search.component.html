@@ -1,0 +1,63 @@
+<nb-form-field>
+  <input
+    nbInput
+    placeholder="Rechercher..."
+    [nbAutocomplete]="auto"
+    [ngModel]="searchValue$.getValue()"
+    (ngModelChange)="searchValue$.next($event)"
+  />
+  <button nbSuffix nbButton ghost>
+    <nb-icon icon="search-outline" [attr.aria-label]="'Rechercher'" />
+  </button>
+  <nb-autocomplete #auto (selectedChange)="selectValue$.next($event)">
+    @if (resultsSubs$ | async; as subs) {
+      <nb-option-group title="Communautés">
+        @for (sub of subs.slice(0, 5); track sub.id) {
+          <nb-option [value]="['sub', sub.name]">
+            <nb-user
+              [name]="'f/' + sub.name"
+              [picture]="sub.iconUrl ?? ''"
+            ></nb-user>
+          </nb-option>
+        }
+        @if (subs.length > 5) {
+          <nb-option [value]="['sub', null]">
+            <nb-icon icon="search-outline" />
+            <span class="paragraph">Plus...</span>
+          </nb-option>
+        }
+      </nb-option-group>
+    }
+    @if (resultsUsers$ | async; as users) {
+      <nb-option-group title="Utilisateurs">
+        @for (user of users.slice(0, 5); track user.id) {
+          <nb-option [value]="['user', user.id]">
+            <nb-user
+              [name]="'u/' + user.username"
+              [picture]="user.avatarUrl ?? ''"
+            ></nb-user>
+          </nb-option>
+        }
+        @if (users.length > 5) {
+          <nb-option [value]="['user', null]">
+            <nb-icon icon="search-outline" />
+            <span class="paragraph">Plus...</span>
+          </nb-option>
+        }
+      </nb-option-group>
+    }
+    @if ((searchValue$ | async)?.trim()) {
+      <nb-option-group title="Publications">
+        <nb-option [value]="['post', null]">
+          <nb-icon icon="search-outline" />
+          <span class="paragraph">Rechercher...</span>
+        </nb-option>
+      </nb-option-group>
+    }
+    @if (resultsLoading$ | async) {
+      <nb-option class="loading-option">
+        <nb-spinner message="" size="small" />
+      </nb-option>
+    }
+  </nb-autocomplete>
+</nb-form-field>

@@ -1,0 +1,55 @@
+<nb-list
+  nbInfiniteList
+  listenWindowScroll
+  [threshold]="500"
+  (bottomThreshold)="actionLoadMore$.next()"
+>
+  @for (moderator of moderators$ | async; track moderator.id) {
+    <nb-list-item
+      *ngIf="moderator.id !== (userService.currentUser$ | async)?.id"
+    >
+      <span class="username">{{ moderator.username }}</span>
+      <button
+        nbButton
+        ghost
+        status="danger"
+        (click)="actionRemoveModerator$.next(moderator.id)"
+      >
+        <nb-icon icon="trash-2-outline" />
+      </button>
+    </nb-list-item>
+  }
+</nb-list>
+@if ((moderators$ | async)?.length === 1) {
+  Aucun modérateurs
+}
+
+<hr />
+
+<div class="user-field">
+  <input
+    type="text"
+    nbInput
+    fullWidth
+    (ngModelChange)="newModeratorSubject$.next($event)"
+    [ngModel]="newModeratorSubject$ | async"
+    placeholder="Recherche utilisateurs"
+    [nbAutocomplete]="autoSub"
+    ngModel
+    name="sub"
+    required
+  />
+  <button nbButton (click)="actionCreateNewModerator$.next()">
+    <nb-icon icon="plus-circle-outline" />
+  </button>
+  <nb-autocomplete #autoSub>
+    @for (user of moderatorSuggestions$ | async; track user.id) {
+      <nb-option [value]="user.username">
+        <nb-user
+          [picture]="user.avatarUrl ?? ''"
+          [name]="'u/' + user.username"
+        />
+      </nb-option>
+    }
+  </nb-autocomplete>
+</div>

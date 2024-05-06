@@ -15,7 +15,7 @@ import {
   NbToggleModule,
   NbTooltipModule,
 } from "@nebular/theme";
-import { BehaviorSubject, map, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, filter, map, Observable, Subscription } from "rxjs";
 import { notNull, throwException } from "~/app/util";
 import {
   HomeFeedGQL,
@@ -24,22 +24,24 @@ import {
   SubFeedGQL,
   TopPostCardFragment,
 } from "~/graphql";
-import { PostSingleComponent } from "~/app/components/post-single/post-single.component";
+import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { FormsModule } from "@angular/forms";
 import { UserService } from "~/app/services/user.service";
+import { TopPostListItemComponent } from "~/app/components/top-post-list-item/top-post-list-item.component";
 
 @Component({
-  selector: "app-post-list",
+  selector: "app-top-post-list",
   standalone: true,
   imports: [
     NbListModule,
     NbCardModule,
     CommonModule,
-    PostSingleComponent,
+    TopPostComponent,
     NbSelectModule,
     FormsModule,
     NbToggleModule,
     NbTooltipModule,
+    TopPostListItemComponent,
   ],
   templateUrl: "./top-post-list.component.html",
   styleUrl: "./top-post-list.component.scss",
@@ -95,7 +97,10 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
       });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
-        .pipe(map((x) => x.data.subByName?.posts.pageInfo.endCursor))
+        .pipe(
+          filter((x) => x.data.subByName?.posts.pageInfo.hasNextPage ?? false),
+          map((x) => x.data.subByName?.posts.pageInfo.endCursor),
+        )
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(
@@ -118,7 +123,10 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
       });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
-        .pipe(map((x) => x.data.homefeed.pageInfo.endCursor))
+        .pipe(
+          filter((x) => x.data.homefeed.pageInfo.hasNextPage),
+          map((x) => x.data.homefeed.pageInfo.endCursor),
+        )
         .subscribe(endCursor);
       this.posts$ = sub$.pipe(
         map(

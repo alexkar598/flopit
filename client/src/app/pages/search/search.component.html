@@ -1,0 +1,149 @@
+<nb-tabset
+  fullWidth
+  (changeTab)="
+    this.router.navigate([
+      '/rechercher',
+      this.route.snapshot.paramMap.get('query'),
+      $event.route
+    ])
+  "
+  routeParam="tab"
+>
+  <nb-tab
+    tabTitle="Publications"
+    route="publications"
+    [active]="(currentTab$ | async) === 'publications'"
+  >
+    @if (loadingPosts$ | async) {
+      <nb-spinner message="" />
+    }
+    @for (elem of resultsTopPosts$ | async; track elem.id) {
+      <nb-card class="post">
+        <nb-card-header>
+          <a [routerLink]="['/f', elem.sub.name, elem.id]">
+            <h5>
+              {{ elem.title }}
+            </h5>
+          </a>
+        </nb-card-header>
+
+        <nb-card-body>
+          <app-rich-text [delta]="elem.deltaContent" />
+        </nb-card-body>
+
+        <nb-card-footer>
+          <span class="text-hint">{{ elem.cachedVotes }}</span>
+          <nb-user
+            [name]="elem.sub.name"
+            [picture]="elem.sub.iconUrl ?? ''"
+            [routerLink]="['/f', elem.sub.name]"
+          ></nb-user>
+          <span class="text-hint">{{ elem.createdAt | relativeDate }}</span>
+        </nb-card-footer>
+      </nb-card>
+    } @empty {
+      Aucun résultat à afficher
+    }
+  </nb-tab>
+  <nb-tab
+    tabTitle="Commentaires"
+    route="commentaires"
+    [active]="(currentTab$ | async) === 'commentaires'"
+  >
+    @if (loadingPosts$ | async) {
+      <nb-spinner message="" />
+    }
+    @for (elem of resultsComments$ | async; track elem.id) {
+      <nb-card class="comment">
+        <nb-card-header>
+          <div class="caption">
+            <span class="text-hint">{{ elem.topPost.cachedVotes }}</span>
+            <a>
+              <nb-user
+                [name]="'f/' + elem.sub.name"
+                [picture]="elem.sub.iconUrl ?? ''"
+                [routerLink]="['/f', elem.sub.name]"
+                size="small"
+              />
+            </a>
+          </div>
+          <a [routerLink]="['/f', elem.sub.name, elem.topPost.id]">
+            <h5>
+              {{ elem.topPost.title }}
+            </h5>
+          </a>
+        </nb-card-header>
+        <nb-card-body>
+          <div class="parent">
+            <app-rich-text [delta]="elem.parent.deltaContent"></app-rich-text>
+            <div class="info caption">
+              <span class="text-hint">{{ elem.parent.cachedVotes }}</span>
+              <nb-user
+                name="u/{{ elem.parent.author?.username ?? 'Fantôme' }}"
+                [picture]="elem.parent.author?.avatarUrl ?? ''"
+                size="small"
+              />
+              <span class="text-hint">{{
+                elem.parent.createdAt | relativeDate
+              }}</span>
+            </div>
+          </div>
+          <div class="child">
+            <app-rich-text [delta]="elem.deltaContent"></app-rich-text>
+            <div class="info caption">
+              <span class="text-hint">{{ elem.cachedVotes }}</span>
+              <nb-user
+                name="u/{{ elem.author?.username ?? 'Fantôme' }}"
+                [picture]="elem.author?.avatarUrl ?? ''"
+                size="small"
+              />
+              <span class="text-hint">{{ elem.createdAt | relativeDate }}</span>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    } @empty {
+      Aucun résultat à afficher
+    }
+  </nb-tab>
+  <nb-tab
+    tabTitle="Utilisateurs"
+    route="utilisateurs"
+    [active]="(currentTab$ | async) === 'utilisateurs'"
+  >
+    @if (loading$ | async) {
+      <nb-spinner message="" />
+    }
+    @for (elem of resultsUsers$ | async; track elem.id) {
+      <nb-card class="user" [routerLink]="['/chat', elem.id]">
+        <nb-card-body>
+          <nb-user
+            [picture]="elem.avatarUrl ?? ''"
+            [name]="'u/' + elem.username"
+          />
+        </nb-card-body>
+      </nb-card>
+    } @empty {
+      Aucun résultat à afficher
+    }
+  </nb-tab>
+  <nb-tab
+    tabTitle="Communautés"
+    route="communautes"
+    [active]="(currentTab$ | async) === 'communautes'"
+  >
+    @if (loading$ | async) {
+      <nb-spinner message="" />
+    }
+    @for (elem of resultsSubs$ | async; track elem.id) {
+      <nb-card class="sub" [routerLink]="['/f', elem.name]">
+        <nb-card-body>
+          <nb-user [picture]="elem.iconUrl ?? ''" [name]="'f/' + elem.name" />
+          <p>{{ elem.description }}</p>
+        </nb-card-body>
+      </nb-card>
+    } @empty {
+      Aucun résultat à afficher
+    }
+  </nb-tab>
+</nb-tabset>
