@@ -99,20 +99,21 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+    useFactory: () =>
+      new InMemoryCache({
+        typePolicies: {
+          Query: {
+            fields: {
+              homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+            },
           },
-        },
-        Sub: {
-          fields: {
-            posts: relayStylePagination(["sortOptions"]),
+          Sub: {
+            fields: {
+              posts: relayStylePagination(["sortOptions"]),
+            },
           },
-        },
-      } satisfies StrictTypedTypePolicies,
-    }),
+        } satisfies StrictTypedTypePolicies,
+      }),
   },
   {
     provide: APOLLO_OPTIONS,

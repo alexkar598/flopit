@@ -31,64 +31,64 @@
             </div>
           </nb-form-field>
 
-          <div class="form-field">
-            <div class="parametre">
-              <label for="changer-password">Changer le mot de passe</label>
-              <div class="password-2fields">
-                <nb-form-field>
-                  <input
-                    [type]="showPassword ? 'text' : 'password'"
-                    nbInput
-                    id="changer-password"
-                    ngModel
-                    name="password"
-                    placeholder="Nouveau mot de passe"
-                    class="input-password"
-                    autocomplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    nbSuffix
-                    nbButton
-                    ghost
-                    (click)="showPassword = !showPassword"
-                  >
-                    <nb-icon
-                      [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"
-                      pack="eva"
-                    />
-                  </button>
-                </nb-form-field>
+          <!--          <div class="form-field">-->
+          <!--            <div class="parametre">-->
+          <!--              <label for="changer-password">Changer le mot de passe</label>-->
+          <!--              <div class="password-2fields">-->
+          <!--                <nb-form-field>-->
+          <!--                  <input-->
+          <!--                    [type]="showPassword ? 'text' : 'password'"-->
+          <!--                    nbInput-->
+          <!--                    id="changer-password"-->
+          <!--                    ngModel-->
+          <!--                    name="password"-->
+          <!--                    placeholder="Nouveau mot de passe"-->
+          <!--                    class="input-password"-->
+          <!--                    autocomplete="new-password"-->
+          <!--                  />-->
+          <!--                  <button-->
+          <!--                    type="button"-->
+          <!--                    nbSuffix-->
+          <!--                    nbButton-->
+          <!--                    ghost-->
+          <!--                    (click)="showPassword = !showPassword"-->
+          <!--                  >-->
+          <!--                    <nb-icon-->
+          <!--                      [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"-->
+          <!--                      pack="eva"-->
+          <!--                    />-->
+          <!--                  </button>-->
+          <!--                </nb-form-field>-->
 
-                <nb-form-field>
-                  <input
-                    [type]="showConfirmPassword ? 'text' : 'password'"
-                    nbInput
-                    id="mot-passe-confirmation"
-                    ngModel
-                    name="passwordConfirm"
-                    placeholder="Confirmer le nouveau mot de passe"
-                    class="input-password"
-                    autocomplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    nbSuffix
-                    nbButton
-                    ghost
-                    (click)="showConfirmPassword = !showConfirmPassword"
-                  >
-                    <nb-icon
-                      [icon]="
-                        showConfirmPassword ? 'eye-off-outline' : 'eye-outline'
-                      "
-                      pack="eva"
-                    />
-                  </button>
-                </nb-form-field>
-              </div>
-            </div>
-          </div>
+          <!--                <nb-form-field>-->
+          <!--                  <input-->
+          <!--                    [type]="showConfirmPassword ? 'text' : 'password'"-->
+          <!--                    nbInput-->
+          <!--                    id="mot-passe-confirmation"-->
+          <!--                    ngModel-->
+          <!--                    name="passwordConfirm"-->
+          <!--                    placeholder="Confirmer le nouveau mot de passe"-->
+          <!--                    class="input-password"-->
+          <!--                    autocomplete="new-password"-->
+          <!--                  />-->
+          <!--                  <button-->
+          <!--                    type="button"-->
+          <!--                    nbSuffix-->
+          <!--                    nbButton-->
+          <!--                    ghost-->
+          <!--                    (click)="showConfirmPassword = !showConfirmPassword"-->
+          <!--                  >-->
+          <!--                    <nb-icon-->
+          <!--                      [icon]="-->
+          <!--                        showConfirmPassword ? 'eye-off-outline' : 'eye-outline'-->
+          <!--                      "-->
+          <!--                      pack="eva"-->
+          <!--                    />-->
+          <!--                  </button>-->
+          <!--                </nb-form-field>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
 
           <div class="parametre">
             <span>Changer l'icône</span>

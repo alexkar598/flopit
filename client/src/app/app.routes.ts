@@ -6,13 +6,19 @@ import { SubComponent } from "./pages/sub/sub.component";
 import { AccueilComponent } from "./pages/accueil/accueil.component";
 import { ParametresComponent } from "~/app/pages/parametres/parametres.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
+import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 
 export const routes: Routes = [
   { path: "", component: AccueilComponent },
   { path: "connexion", component: ConnexionComponent },
   { path: "inscription", component: CreationCompteComponent },
-  { path: "parametres", component: ParametresComponent },
   { path: "f", component: CreationSubComponent },
   { path: "f/:subName", component: SubComponent },
   { path: "f/:subName/:topPostId", component: TopPostComponent },
+  {
+    path: "",
+    canActivate: [authenticatedPageGuard],
+    runGuardsAndResolvers: "always",
+    children: [{ path: "parametres", component: ParametresComponent }],
+  },
 ];

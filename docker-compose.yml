@@ -31,6 +31,8 @@ services:
     links:
       - mariadb
       - minio
+    extra_hosts:
+      - "apiserver:127.0.0.1"
     healthcheck:
       test: [ "CMD", "sh", "-c", "wget localhost:3000/health -O - && wget localhost:4200 -O -"]
       timeout: "10s"
