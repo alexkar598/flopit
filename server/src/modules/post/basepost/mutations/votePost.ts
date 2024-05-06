@@ -18,10 +18,18 @@ const input = builder.inputType("VotePostInput", {
 });
 
 builder.mutationField("votePost", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Post",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    authScopes: async (_, args) => {
+      const post = await prisma.post.findUnique({
+        select: { sub_id: true },
+        where: { id: args.input.postId.id },
+      });
+      if (post == null) return false;
+      return { notBanned: post.sub_id };
+    },
     resolve: async (
       query,
       _,
@@ -33,9 +41,6 @@ builder.mutationField("votePost", (t) =>
       },
       { authenticated_user_id },
     ) => {
-      if (authenticated_user_id == null)
-        throw getAPIError("AUTHENTICATED_MUTATION");
-
       return prisma.$transaction(async (tx) => {
         const current_value =
           (
