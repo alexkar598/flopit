@@ -85,7 +85,7 @@ export class SearchComponent {
         const subsByDescription = x.subsByDescription.edges
           .map((x) => x?.node)
           .filter(notNull);
-        return subsByName.concat(subsByDescription);
+        return [...new Set(subsByName.concat(subsByDescription))].slice(0, 5);
       }),
       map((x) => (x && x.length > 0 ? x : null)),
     );
@@ -102,7 +102,6 @@ export class SearchComponent {
         this.searchValue$.next("");
         switch (type) {
           case "user":
-            //TODO: link to chat
             if (id == null)
               void router.navigate([
                 "/rechercher",
@@ -110,7 +109,6 @@ export class SearchComponent {
                 "utilisateurs",
               ]);
             else void router.navigate(["/chat", id]);
-
             break;
           case "sub":
             if (id == null)

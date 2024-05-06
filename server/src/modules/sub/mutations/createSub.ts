@@ -19,7 +19,7 @@ const input = builder.inputType("CreateSubInput", {
 });
 
 builder.mutationField("createSub", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
@@ -29,8 +29,6 @@ builder.mutationField("createSub", (t) =>
       { input: { name, description } },
       { authenticated_user_id },
     ) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       try {
         const moderator = await prisma.moderator.create({
           select: { Sub: { ...query } },

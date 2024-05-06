@@ -40,15 +40,12 @@ export const basePostRef = builder.prismaInterface("Post", {
       nullable: true,
       type: voteValueRef,
       resolve: async ({ id: post_id }, _args, { authenticated_user_id }) => {
-        if (authenticated_user_id == null)
-          throw getAPIError("AUTHENTICATED_FIELD");
-
         return (
           (
             await prisma.vote.findUnique({
               where: {
                 user_id_post_id: {
-                  user_id: authenticated_user_id,
+                  user_id: authenticated_user_id!,
                   post_id,
                 },
               },
