@@ -3,8 +3,7 @@ import { Message, messageRef } from "../schema.ts";
 import { userRef } from "../../user/schema.ts";
 import { getAPIError } from "../../../util.ts";
 import { getConversationId } from "../../conversation/util.ts";
-import { redis } from "../../../redis.ts";
-import { commandOptions } from "redis";
+import { createRedisClient } from "../../../redis.ts";
 
 builder.subscriptionField("watchMessages", (t) =>
   t.field({
@@ -28,12 +27,11 @@ builder.subscriptionField("watchMessages", (t) =>
 
       let nextId = after ?? "$";
 
-      const abortController = new AbortController();
+      const redis = await createRedisClient();
 
       try {
         for (let i = 0; i < (max ?? Number.POSITIVE_INFINITY); i++) {
           const redisMessage = await redis.xRead(
-            commandOptions({ isolated: true, signal: abortController.signal }),
             { key: conversationId, id: nextId },
             {
               BLOCK: 0,
@@ -54,7 +52,7 @@ builder.subscriptionField("watchMessages", (t) =>
           } as Message;
         }
       } finally {
-        abortController.abort();
+        void redis.disconnect();
       }
     },
     resolve: (payload) => payload,
