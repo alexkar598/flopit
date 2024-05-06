@@ -5,7 +5,6 @@
 nb-card {
   max-width: 50rem;
   --card-divider-width: 0;
-  --card-border-radius: 1rem;
   --card-margin-bottom: 0;
 }
 
@@ -27,7 +26,6 @@ nb-card-footer {
 .sub {
   margin: auto;
   --user-name-text-font-weight: bold;
-  text-decoration: none;
 }
 
 .datetime {
