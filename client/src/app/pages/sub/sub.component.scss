@@ -73,3 +73,13 @@ nb-card-body {
 .barre-infos-loading {
   height: 20rem;
 }
+
+.moderator-actions {
+  nb-icon {
+    margin-right: 0.5rem;
+  }
+
+  nb-action {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,21 @@
+query GetModerators($sub: ID!, $cursor: ID) {
+  node(id: $sub) {
+    ...GetModerators
+  }
+}
+
+fragment GetModerators on Sub {
+  id
+  moderators(after: $cursor) {
+    edges {
+      node {
+        id
+        username
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

@@ -40,6 +40,23 @@ export const subRef = builder.prismaNode("Sub", {
         );
       },
     }),
+    isModerator: t.boolean({
+      select: {
+        id: true,
+      },
+      nullable: true,
+      resolve: async ({ id: sub_id }, _args, { authenticated_user_id }) => {
+        if (authenticated_user_id == null)
+          throw getAPIError("AUTHENTICATED_FIELD");
+        return (
+          (await prisma.moderator.findUnique({
+            where: {
+              user_id_sub_id: { sub_id, user_id: authenticated_user_id },
+            },
+          })) != null
+        );
+      },
+    }),
   }),
 });
 

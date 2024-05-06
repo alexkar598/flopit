@@ -144,6 +144,8 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
         Query: {
           fields: {
             homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+            users: relayStylePagination(["filter"]),
+            subs: relayStylePagination(["filter"]),
           },
         },
         Conversation: {
@@ -187,6 +189,7 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
         },
         Sub: {
           fields: {
+            moderators: relayStylePagination(),
             posts: relayStylePagination(["sortOptions"]),
           },
         },

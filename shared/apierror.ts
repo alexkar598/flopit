@@ -22,4 +22,11 @@ export const APIError = Object.freeze({
   CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
   BLOCKED: "Cet utilisateur vous a bloqué",
   VALIDATION_ERROR: "Erreur de validation",
+  USER_NOT_FOUND: "Cet utilisateur n'existe pas",
+  ALREADY_MODERATOR: "Cet utilisateur est déja un modérateur",
+  MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
+  CANNOT_REMOVE_SELF:
+    "Vous ne pouvez pas retirer votre propre statut de modérateur",
+  MUTUALLY_EXCLUSIVE_REQUIRED:
+    "Une des deux propriétés suivantes doivent être présentes: ",
 });
