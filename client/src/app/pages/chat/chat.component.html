@@ -36,7 +36,7 @@
       />
     }
 
-    @for (msg of messages$ | async; track msg.id; let first = $first) {
+    @for (msg of messages$ | async; track msg.id) {
       <nb-chat-message
         type="text"
         [message]="msg.textContent"

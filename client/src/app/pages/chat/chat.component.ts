@@ -18,6 +18,7 @@ import {
 } from "@nebular/theme";
 import {
   combineLatest,
+  distinctUntilKeyChanged,
   EMPTY,
   filter,
   firstValueFrom,
@@ -158,6 +159,7 @@ export class ChatComponent implements OnInit {
     const listMessageQuery = this.activeConversation$.pipe(
       takeUntilDestroyed(this.destroyRef),
       filter(notNull),
+      distinctUntilKeyChanged("id"),
       tap(() => {
         this.loaded = false;
         cursor = null;
@@ -193,16 +195,21 @@ export class ChatComponent implements OnInit {
           }
         };
 
+        this.fetchMore(true).then(() => (this.loaded = true));
+
         return messagesQuery.valueChanges;
       }),
       map((res) =>
         res.data.node?.__typename === "Conversation" ? res.data.node : null,
       ),
       filter(notNull),
+      tap((conversation) => {
+        cursor = conversation.messages.pageInfo.startCursor ?? null;
+        hasPreviousPage = conversation.messages.pageInfo.hasPreviousPage;
+      }),
     );
 
     this.messages$ = listMessageQuery.pipe(
-      tap(() => this.fetchMore!(true).then(() => (this.loaded = true))),
       map((conversation) =>
         conversation.messages.edges.map((edge) => edge?.node).filter(notNull),
       ),
@@ -210,10 +217,7 @@ export class ChatComponent implements OnInit {
 
     listMessageQuery
       .pipe(
-        tap((conversation) => {
-          cursor = conversation.messages.pageInfo.startCursor ?? null;
-          hasPreviousPage = conversation.messages.pageInfo.hasPreviousPage;
-        }),
+        distinctUntilKeyChanged("id"),
         switchMap((conversation) =>
           this.watchMessagesSub.subscribe({
             target: conversation.target.id,
