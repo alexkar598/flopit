@@ -24,16 +24,19 @@ messageRef.implement({
       type: "DateTime",
       resolve: (message) => new Date(parseInt(message.id.split("-")[0])),
     }),
-    author: t.field({
+    author: t.prismaField({
       type: userRef,
-      resolve: (messsage) =>
+      nullable: true,
+      resolve: (query, message) =>
         prisma.user.findUnique({
-          where: { id: messsage.author_id },
+          ...query,
+          where: { id: message.author_id },
         }),
     }),
-    target: t.field({
+    target: t.prismaField({
       type: userRef,
-      resolve: (messsage) =>
+      nullable: true,
+      resolve: (query, messsage) =>
         prisma.user.findUnique({
           where: { id: messsage.target_id },
         }),

@@ -13,9 +13,9 @@ import {
   capitalizeFirst,
   getAPIError,
   slugify,
+  SlugType,
   throwException,
   unslugify,
-  SlugType,
 } from "./util.ts";
 import { HttpRequest, HttpResponse } from "uWebSockets.js";
 
@@ -52,7 +52,7 @@ export const builder = new SchemaBuilder<{
   };
   Context: {
     req: HttpRequest;
-    res: HttpResponse;
+    res?: HttpResponse;
     authenticated_user_id: string;
     authenticated_session_id: string;
   };
