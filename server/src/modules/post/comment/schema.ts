@@ -9,8 +9,6 @@ export const commentRef = builder.prismaNode("Post", {
     parent_id: true,
   },
   fields: (t) => ({
-    parent: t.relation("Parent", {
-      nullable: true,
-    }),
+    parent: t.relation("Parent"),
   }),
 });

@@ -2,6 +2,7 @@ fragment TopPostCard on TopPost {
   id
   title
   sub {
+    id
     name
     iconUrl
   }

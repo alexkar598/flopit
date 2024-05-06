@@ -17,3 +17,7 @@ body {
     overflow: visible;
   }
 }
+
+a:has(nb-user) {
+  text-decoration: none !important;
+}
