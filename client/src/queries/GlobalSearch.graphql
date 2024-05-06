@@ -1,0 +1,36 @@
+query GlobalSearch($query: String!) {
+  users(filter: {username: $query}, first: 5) {
+    edges {
+      node {
+        ...GlobalSearchUser
+      }
+    }
+  }
+  subsByName: subs(filter: {name: $query}, first: 5) {
+    edges {
+      node {
+        ...GlobalSearchSub
+      }
+    }
+  }
+  subsByDescription: subs(filter: {description: $query}, first: 5) {
+    edges {
+      node {
+        ...GlobalSearchSub
+      }
+    }
+  }
+}
+
+
+fragment GlobalSearchUser on User {
+  id
+  username
+  avatarUrl
+}
+
+fragment GlobalSearchSub on Sub {
+  id
+  name
+  iconUrl
+}
