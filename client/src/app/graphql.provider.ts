@@ -128,6 +128,7 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
             fields: {
               moderators: relayStylePagination(),
               posts: relayStylePagination(["sortOptions"]),
+              banned: relayStylePagination(["filter"]),
             },
           },
           TopPost: {

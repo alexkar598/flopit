@@ -12,6 +12,7 @@ const filter = builder.inputType("BannedFilter", {
 const helper = prismaConnectionHelpers(builder, "Ban", {
   cursor: "id",
   select: (nestedSelection) => ({
+    id: true,
     expiry: true,
     reason: true,
     ["User"]: nestedSelection({
@@ -60,6 +61,7 @@ builder.prismaObjectField("Sub", "banned", (t) =>
     {},
     {
       fields: (t) => ({
+        id: t.exposeID("id"),
         expiry: t.expose("expiry", {
           type: "DateTime",
         }),

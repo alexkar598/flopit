@@ -62,4 +62,8 @@ export const subValidators = {
       "Le nom d'une communauté doit comprendre uniquement des lettres non-accentuées, des nombres, des emojis et les caractères _ et -",
     ),
   description: z.string().trim(),
+  banReason: z
+    .string()
+    .trim()
+    .min(3, "La raison du ban doit avoir 3 caractères ou plus"),
 };
