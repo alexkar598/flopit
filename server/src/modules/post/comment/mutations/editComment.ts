@@ -2,7 +2,6 @@ import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
 import { getAPIError } from "../../../../util.ts";
 import { deltaValidator } from "../../delta.ts";
-import { topPostRef } from "../../toppost/schema.ts";
 import { commentRef } from "../schema.ts";
 
 const input = builder.inputType("EditCommentInput", {
