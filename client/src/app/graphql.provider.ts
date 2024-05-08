@@ -1,6 +1,5 @@
 import { relayStylePagination } from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpBatchLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
@@ -8,18 +7,15 @@ import {
   makeStateKey,
   TransferState,
 } from "@angular/core";
-import {
-  ApolloClientOptions,
-  ApolloLink,
-  from,
-  InMemoryCache,
-} from "@apollo/client/core";
+import { Router } from "@angular/router";
+import { ApolloClientOptions, from, InMemoryCache } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
-import { HttpHeaders } from "@angular/common/http";
+import { Kind, OperationDefinitionNode } from "graphql/language";
 import { StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
-import { Router } from "@angular/router";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { setContext } from "@apollo/client/link/context";
 
 const uri = "/graphql";
 
@@ -27,13 +23,14 @@ const APOLLO_CACHE = new InjectionToken<InMemoryCache>("apollo-cache");
 const STATE_KEY = makeStateKey<any>("apollo.state");
 
 export function apolloOptionsFactory(
-  httpBatchLink: HttpBatchLink,
   cache: InMemoryCache,
   transferState: TransferState,
   toastrService: NbToastrService,
   router: Router,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
+
+  const basePath = isBrowser ? "" : "http://apiserver:3000";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -47,23 +44,20 @@ export function apolloOptionsFactory(
     void cache.reset();
   }
 
-  const proxyCookiesLink = new ApolloLink((operation, forward) => {
-    if (cookies)
-      operation.setContext({
-        headers: new HttpHeaders().set("Cookie", cookies),
-      });
-
-    return forward(operation);
-  });
-
-  const errorLink = onError(({ graphQLErrors }) => {
+  const errorLink = onError(({ graphQLErrors, operation }) => {
     if (graphQLErrors == null) return;
     graphQLErrors.forEach((err) => {
       const code = <ErrorCode>err.extensions?.["code"];
 
-      if (code === "AUTHENTICATED_FIELD") return;
+      if (code === "AUTHENTICATION_REQUIRED") {
+        if (
+          operation.query.definitions.find(
+            (x): x is OperationDefinitionNode =>
+              x.kind === Kind.OPERATION_DEFINITION,
+          )?.operation === "query"
+        )
+          return;
 
-      if (code === "AUTHENTICATED_MUTATION") {
         const toast = toastrService.info(
           "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
           "Inscrivez-vous!",
@@ -73,14 +67,26 @@ export function apolloOptionsFactory(
         return;
       }
 
+      if (code === "VALIDATION_ERROR") {
+        (err.extensions["issues"] as { message: string }[]).forEach(
+          ({ message }) => toastrService.danger(message, err.message),
+        );
+        return;
+      }
+
       toastrService.danger(err.message, "Erreur");
     });
   });
 
   const link = from([
-    proxyCookiesLink,
+    setContext((_, previous) => ({
+      ...previous,
+      headers: { cookie: cookies ?? "token=_" },
+    })),
     errorLink,
-    httpBatchLink.create({ uri, batchInterval: 8 }),
+    createUploadLink({
+      uri: `${basePath}${uri}`,
+    }),
   ]);
 
   return {
@@ -104,24 +110,47 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
-          },
+    useFactory: () =>
+      new InMemoryCache({
+        possibleTypes: {
+          BasePost: ["Comment", "TopPost"],
         },
-        Sub: {
-          fields: {
-            posts: relayStylePagination(["sortOptions"]),
+        typePolicies: {
+          Query: {
+            fields: {
+              homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+              users: relayStylePagination(["filter"]),
+              subs: relayStylePagination(["filter"]),
+              searchPosts: relayStylePagination(["input"]),
+            },
           },
-        },
-      } satisfies StrictTypedTypePolicies,
-    }),
+          Sub: {
+            fields: {
+              moderators: relayStylePagination(),
+              posts: relayStylePagination(["sortOptions"]),
+            },
+          },
+          TopPost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          Comment: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          BasePost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+        } satisfies StrictTypedTypePolicies,
+      }),
   },
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpBatchLink, APOLLO_CACHE, TransferState, NbToastrService, Router],
+    deps: [APOLLO_CACHE, TransferState, NbToastrService, Router],
   },
 ];

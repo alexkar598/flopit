@@ -1,0 +1,56 @@
+nb-card {
+  max-width: 50rem;
+  --card-border-radius: 1rem;
+}
+
+h2 {
+  line-height: 1;
+  font-size: var(--text-heading-4-font-size);
+}
+
+nb-card-header {
+  --card-divider-width: 0;
+}
+
+nb-card-body {
+  --card-padding: 0 1rem;
+}
+
+nb-card-footer {
+  --card-padding: 0.25rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > * {
+    flex: 1 0 0;
+    min-width: fit-content;
+    text-align: center;
+    justify-content: center;
+
+    &:first-child {
+      text-align: left;
+      justify-content: start;
+    }
+
+    &:last-child {
+      text-align: right;
+      justify-content: end;
+    }
+  }
+
+  > div {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.comment {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.children {
+  padding-left: 1.5rem;
+  border-left: solid lightgrey 1px;
+}

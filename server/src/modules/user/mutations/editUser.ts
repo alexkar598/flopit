@@ -2,26 +2,30 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
-import { ThemeRef } from "../schema.ts";
+import { ThemeRef, userValidators } from "../schema.ts";
 import { minioUploadFileNullableHelper } from "../../../minio.ts";
 
 const input = builder.inputType("EditUserInput", {
   fields: (t) => ({
-    username: t.string({ required: false }),
-    email: t.string({ required: false }),
+    username: t.string({
+      required: false,
+      validate: { schema: userValidators.username },
+    }),
+    email: t.string({
+      required: false,
+      validate: { schema: userValidators.email },
+    }),
     avatar: t.field({ type: "File", required: false }),
     theme: t.field({ type: ThemeRef, required: false }),
   }),
 });
 
 builder.mutationField("editUser", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "User",
     nullable: true,
     args: { input: t.arg({ type: input }) },
     resolve: async (query, _root, { input }, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       let avatar_oid;
 
       try {

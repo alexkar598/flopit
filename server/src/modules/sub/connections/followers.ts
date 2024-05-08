@@ -22,14 +22,22 @@ builder.prismaObjectField("Sub", "followers", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["Followers"]: helper.getQuery(args, ctx, nestedSelection),
       }),
-      resolve: (parent, args, context) =>
-        frozenWithTotalCount(
-          helper.resolve(parent["Followers"], args, context),
+      resolve: async (parent, args, context) => {
+        const user_id = context.authenticated_user_id;
+        const isMod =
+          user_id != null &&
+          !!(await prisma.moderator.findUnique({
+            where: { user_id_sub_id: { sub_id: parent.id, user_id } },
+          }));
+
+        return frozenWithTotalCount(
+          helper.resolve(isMod ? parent["Followers"] : [], args, context),
           () =>
             prisma.follow.count({
               where: { sub_id: parent.id },
             }),
-        ),
+        );
+      },
     },
     {},
     {},

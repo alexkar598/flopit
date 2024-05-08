@@ -24,6 +24,9 @@ builder.prismaObjectField("Sub", "banned", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["Bans"]: helper.getQuery(args, ctx, nestedSelection),
       }),
+      authScopes: ({ id }) => ({
+        moderator: id,
+      }),
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["Bans"], args, context),

@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
-import { CreatePostComponent } from "~/app/components/create-post/create-post.component";
 import {
   NbButtonModule,
   NbIconModule,
   NbTooltipModule,
   NbWindowService,
 } from "@nebular/theme";
+import { TopPostWindowComponent } from "~/app/windows/top-post/top-post.component";
 import { UserService } from "~/app/services/user.service";
 import { AsyncPipe } from "@angular/common";
 
@@ -23,7 +23,7 @@ export class ButtonNewPostComponent {
   ) {}
 
   ecrirePost() {
-    this.windowService.open(CreatePostComponent, {
+    this.windowService.open(TopPostWindowComponent, {
       title: "Nouvelle publication",
       windowClass: "createpost-window",
       closeOnEsc: false,

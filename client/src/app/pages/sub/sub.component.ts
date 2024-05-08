@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
+  NbActionsModule,
   NbButtonModule,
   NbCardModule,
   NbIconModule,
@@ -8,7 +9,9 @@ import {
   NbSpinnerModule,
   NbToastrService,
   NbUserModule,
+  NbWindowService,
 } from "@nebular/theme";
+import { ModeratorListWindowComponent } from "~/app/windows/moderator-list/moderator-list.component";
 import {
   EditSubGQL,
   FollowSubGQL,
@@ -44,6 +47,7 @@ import { FormsModule } from "@angular/forms";
     TopPostListComponent,
     NbSpinnerModule,
     FormsModule,
+    NbActionsModule,
   ],
   templateUrl: "./sub.component.html",
   styleUrl: "./sub.component.scss",
@@ -61,6 +65,7 @@ export class SubComponent {
   constructor(
     router: Router,
     toastrService: NbToastrService,
+    protected windowService: NbWindowService,
     public route: ActivatedRoute,
     private subInfoQuery: SubInformationGQL,
     private followSubMut: FollowSubGQL,
@@ -158,5 +163,17 @@ export class SubComponent {
         this.loading = false;
         if (res.errors) return;
       });
+  }
+
+  openModeratorsWindow() {
+    const sub = this.sub$.getValue()?.id;
+    if (sub == null) return;
+
+    this.windowService.open(ModeratorListWindowComponent, {
+      title: "Gérer modérateurs",
+      windowClass: "moderators-window",
+      closeOnEsc: false,
+      context: { sub },
+    });
   }
 }

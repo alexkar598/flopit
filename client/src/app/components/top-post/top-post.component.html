@@ -1,0 +1,56 @@
+<nb-card>
+  <nb-card-header>
+    <a [routerLink]="['/f', post.sub.name, post.id]">
+      <h2>
+        {{ post.title }}
+      </h2>
+    </a>
+  </nb-card-header>
+
+  <nb-card-body>
+    <app-rich-text [delta]="post.deltaContent" />
+  </nb-card-body>
+
+  <nb-card-footer>
+    <app-vote [post]="post" />
+
+    @if (post.author) {
+      <nb-user
+        name="u/{{ post.author.username }}"
+        [picture]="post.author.avatarUrl ?? ''"
+      />
+    } @else {
+      <nb-user name="fantôme" />
+    }
+
+    <div>
+      <span class="datetime text-hint">{{
+        post.createdAt | relativeDate
+      }}</span>
+
+      @if (actions$ | async; as actions) {
+        @if (actions.length == 1) {
+          <button
+            nbButton
+            ghost
+            shape="round"
+            size="large"
+            (click)="actions[0].data.onClick()"
+          >
+            <nb-icon [icon]="actions[0].icon" class="icon-action" />
+          </button>
+        } @else {
+          <button
+            nbButton
+            ghost
+            shape="round"
+            size="large"
+            [nbContextMenu]="actions"
+          >
+            <nb-icon icon="more-horizontal-outline" class="icon-action" />
+          </button>
+        }
+      }
+    </div>
+  </nb-card-footer>
+</nb-card>

@@ -22,6 +22,7 @@ builder.prismaObjectField("User", "following", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["FollowedSubs"]: helper.getQuery(args, ctx, nestedSelection),
       }),
+      authScopes: { $granted: "self" },
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["FollowedSubs"], args, context),

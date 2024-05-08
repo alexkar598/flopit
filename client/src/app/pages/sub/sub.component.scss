@@ -119,4 +119,14 @@ p {
   margin-bottom: 1rem;
   outline: none;
   white-space: pre;
+
+.moderator-actions {
+  nb-icon {
+    margin-right: 0.5rem;
+  }
+
+  nb-action {
+    cursor: pointer;
+  }
+
 }

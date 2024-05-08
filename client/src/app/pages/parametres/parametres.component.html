@@ -1,0 +1,138 @@
+<nb-card>
+  <nb-card-header> <h1>Paramètres</h1> </nb-card-header>
+  <nb-card-body>
+    <div>
+      @if (userService.currentUser$ | async; as user) {
+        <div class="utilisateur">
+          <nb-user
+            [name]="form.value.username"
+            [picture]="user.avatarUrl ?? ''"
+            color="#EEE"
+          />
+        </div>
+
+        <h2>Informations</h2>
+        <form #form="ngForm" (ngSubmit)="changer(form.value)">
+          <nb-form-field>
+            <div class="parametre">
+              <label>Changer le nom d'utilisateur</label>
+              <input
+                class="input-param"
+                type="text"
+                nbInput
+                [ngModel]="user.username"
+                maxlength="64"
+                placeholder="Nom d'utilisateur"
+                name="username"
+                autocomplete="new-password"
+              />
+            </div>
+          </nb-form-field>
+
+          <!--          <div class="form-field">-->
+          <!--            <div class="parametre">-->
+          <!--              <label for="changer-password">Changer le mot de passe</label>-->
+          <!--              <div class="password-2fields">-->
+          <!--                <nb-form-field>-->
+          <!--                  <input-->
+          <!--                    [type]="showPassword ? 'text' : 'password'"-->
+          <!--                    nbInput-->
+          <!--                    id="changer-password"-->
+          <!--                    ngModel-->
+          <!--                    name="password"-->
+          <!--                    placeholder="Nouveau mot de passe"-->
+          <!--                    class="input-password"-->
+          <!--                    autocomplete="new-password"-->
+          <!--                  />-->
+          <!--                  <button-->
+          <!--                    type="button"-->
+          <!--                    nbSuffix-->
+          <!--                    nbButton-->
+          <!--                    ghost-->
+          <!--                    (click)="showPassword = !showPassword"-->
+          <!--                  >-->
+          <!--                    <nb-icon-->
+          <!--                      [icon]="showPassword ? 'eye-off-outline' : 'eye-outline'"-->
+          <!--                      pack="eva"-->
+          <!--                    />-->
+          <!--                  </button>-->
+          <!--                </nb-form-field>-->
+
+          <!--                <nb-form-field>-->
+          <!--                  <input-->
+          <!--                    [type]="showConfirmPassword ? 'text' : 'password'"-->
+          <!--                    nbInput-->
+          <!--                    id="mot-passe-confirmation"-->
+          <!--                    ngModel-->
+          <!--                    name="passwordConfirm"-->
+          <!--                    placeholder="Confirmer le nouveau mot de passe"-->
+          <!--                    class="input-password"-->
+          <!--                    autocomplete="new-password"-->
+          <!--                  />-->
+          <!--                  <button-->
+          <!--                    type="button"-->
+          <!--                    nbSuffix-->
+          <!--                    nbButton-->
+          <!--                    ghost-->
+          <!--                    (click)="showConfirmPassword = !showConfirmPassword"-->
+          <!--                  >-->
+          <!--                    <nb-icon-->
+          <!--                      [icon]="-->
+          <!--                        showConfirmPassword ? 'eye-off-outline' : 'eye-outline'-->
+          <!--                      "-->
+          <!--                      pack="eva"-->
+          <!--                    />-->
+          <!--                  </button>-->
+          <!--                </nb-form-field>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
+
+          <div class="parametre">
+            <span>Changer l'icône</span>
+            <input
+              class="input-param"
+              type="file"
+              (change)="onAvatarChange($event.target)"
+              accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+            />
+          </div>
+
+          <button nbButton status="primary" class="apply" type="submit">
+            Appliquer les modifications
+          </button>
+        </form>
+
+        <div>
+          <h2>Compte</h2>
+          <div class="parametre">
+            <span>Supprimer le compte</span>
+            <button
+              nbButton
+              status="danger"
+              class="input-param"
+              (click)="toggleDeletingAccount()"
+            >
+              Supprimer le compte
+            </button>
+          </div>
+          @if (deletingAccount) {
+            <div class="supprimerCompte">
+              <h2>Êtes-vous sûr de vouloir supprimer votre compte?</h2>
+              <button
+                nbButton
+                fullWidth
+                size="giant"
+                status="danger"
+                class="delete-button"
+                (click)="deleteAccount()"
+              >
+                Oui, je souhaite supprimer mon compte
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
