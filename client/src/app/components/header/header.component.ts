@@ -67,6 +67,15 @@ export class HeaderComponent {
       },
     },
     {
+      title: "Paramètres",
+      icon: "settings-2-outline",
+      data: {
+        onClick: (async () => {
+          await this.router.navigate(["/parametres"]);
+        }).bind(this),
+      },
+    },
+    {
       title: "Déconnexion",
       icon: "log-out",
       data: {

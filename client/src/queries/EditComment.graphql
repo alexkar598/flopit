@@ -1,0 +1,17 @@
+mutation EditComment($input: EditCommentInput!) {
+  editComment(input: $input) {
+    id
+    deltaContent
+  }
+}
+
+query EditCommentInfo($id: ID!) {
+  node(id: $id) {
+    ...EditCommentInfo
+  }
+}
+
+fragment EditCommentInfo on Comment {
+  id
+  deltaContent
+}

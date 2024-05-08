@@ -1,0 +1,15 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <quill-editor class="quill" formControlName="delta_content" format="object" />
+
+  <div class="submit-wrapper">
+    <button
+      nbButton
+      status="primary"
+      class="submit"
+      [disabled]="loading"
+      [nbSpinner]="loading"
+    >
+      {{ this.edit ? "Modifier" : "Publier" }}
+    </button>
+  </div>
+</form>

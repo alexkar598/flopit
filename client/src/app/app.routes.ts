@@ -5,8 +5,10 @@ import { TopPostPageComponent } from "~/app/pages/top-post/top-post.component";
 import { ConnexionComponent } from "./pages/connexion/connexion.component";
 import { SubComponent } from "./pages/sub/sub.component";
 import { AccueilComponent } from "./pages/accueil/accueil.component";
+import { ParametresComponent } from "~/app/pages/parametres/parametres.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
 import { NotFoundComponent } from "~/app/pages/not-found/not-found.component";
+import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 
 export const routes: Routes = [
   { path: "", component: AccueilComponent },
@@ -18,4 +20,10 @@ export const routes: Routes = [
   { path: "rechercher/:query/:tab", component: SearchPageComponent },
   { path: "rechercher/:query", component: SearchPageComponent },
   { path: "**", component: NotFoundComponent },
+  {
+    path: "",
+    canActivate: [authenticatedPageGuard],
+    runGuardsAndResolvers: "always",
+    children: [{ path: "parametres", component: ParametresComponent }],
+  },
 ];

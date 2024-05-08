@@ -14,6 +14,7 @@ import { map, Observable, shareReplay } from "rxjs";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { UserService } from "~/app/services/user.service";
 import { truthy } from "~/app/util";
+import { CommentWindowComponent } from "~/app/windows/comment/comment.component";
 import { TopPostWindowComponent } from "~/app/windows/top-post/top-post.component";
 import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
 import { DeletePostGQL, FullTopPostFragment } from "~/graphql";
@@ -63,7 +64,14 @@ export class TopPostComponent implements OnInit {
             icon: "undo-outline",
             data: {
               onClick: () => {
-                //TODO responses
+                this.windowService.open(CommentWindowComponent, {
+                  title: "Publier commentaire",
+                  windowClass: "createcomment-window",
+                  closeOnEsc: false,
+                  context: {
+                    parent: this.post.id,
+                  },
+                });
               },
             },
           } satisfies NbClickableMenuItem,

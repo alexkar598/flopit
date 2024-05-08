@@ -10,6 +10,10 @@ body {
   overflow-y: scroll;
 }
 
+.user-picture.initials {
+  user-select: none;
+}
+
 .createpost-window.full-screen {
   width: min(90vw, 60rem);
 
