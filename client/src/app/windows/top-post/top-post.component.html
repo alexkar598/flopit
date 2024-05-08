@@ -1,0 +1,46 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <input
+    nbInput
+    fullWidth
+    placeholder="Titre de la publication"
+    type="text"
+    fieldSize="giant"
+    name="title"
+    formControlName="title"
+  />
+
+  @if (!edit) {
+    <div class="sub-field">
+      <input
+        type="text"
+        nbInput
+        fullWidth
+        placeholder="Recherche subs"
+        [nbAutocomplete]="autoSub"
+        name="sub"
+        formControlName="sub_name"
+      />
+      <nb-autocomplete #autoSub>
+        @for (sub of subs$ | async; track sub.id) {
+          <nb-option [value]="sub.name">
+            <nb-user [picture]="sub.iconUrl ?? ''" [name]="'f/' + sub.name" />
+          </nb-option>
+        }
+      </nb-autocomplete>
+    </div>
+  }
+
+  <quill-editor class="quill" formControlName="delta_content" format="object" />
+
+  <div class="submit-wrapper">
+    <button
+      nbButton
+      status="primary"
+      class="submit"
+      [disabled]="loading"
+      [nbSpinner]="loading"
+    >
+      {{ this.edit ? "Modifier" : "Publier" }}
+    </button>
+  </div>
+</form>

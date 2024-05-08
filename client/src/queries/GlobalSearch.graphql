@@ -1,0 +1,37 @@
+query GlobalSearch($query: String!, $count: Int! = 6) {
+  users(filter: {username: $query}, first: $count) {
+    edges {
+      node {
+        ...GlobalSearchUser
+      }
+    }
+  }
+  subsByName: subs(filter: {name: $query}, first: $count) {
+    edges {
+      node {
+        ...GlobalSearchSub
+      }
+    }
+  }
+  subsByDescription: subs(filter: {description: $query}, first: $count) {
+    edges {
+      node {
+        ...GlobalSearchSub
+      }
+    }
+  }
+}
+
+
+fragment GlobalSearchUser on User {
+  id
+  username
+  avatarUrl
+}
+
+fragment GlobalSearchSub on Sub {
+  id
+  name
+  iconUrl
+  description
+}

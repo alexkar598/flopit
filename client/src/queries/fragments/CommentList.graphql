@@ -2,8 +2,13 @@ fragment CommentListInfo on Comment {
   id
   deltaContent
   author {
+    id
     username
     avatarUrl
+  }
+  sub {
+    id
+    isModerator
   }
   cachedVotes
   currentVote

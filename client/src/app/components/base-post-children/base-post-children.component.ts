@@ -12,19 +12,34 @@ import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
   NbButtonModule,
   NbCardModule,
+  NbClickableMenuItem,
+  NbContextMenuModule,
   NbIconModule,
   NbSpinnerModule,
   NbUserModule,
+  NbWindowService,
 } from "@nebular/theme";
-import { BehaviorSubject, filter, map, of, Subject, takeUntil } from "rxjs";
+import {
+  BehaviorSubject,
+  filter,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+  withLatestFrom,
+} from "rxjs";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
-import { isFragment } from "~/app/util";
+import { UserService } from "~/app/services/user.service";
+import { isFragment, truthy } from "~/app/util";
+import { CommentWindowComponent } from "~/app/windows/comment/comment.component";
 import {
   BasePostCommentsGQL,
   CommentListFragment,
   CommentListInfoFragment,
+  DeletePostGQL,
 } from "~/graphql";
 
 type ChildrenQueryResult = ({
@@ -50,6 +65,7 @@ type ChildrenQueryResult = ({
     AsyncPipe,
     NbSpinnerModule,
     VoteComponent,
+    NbContextMenuModule,
   ],
   templateUrl: "./base-post-children.component.html",
   styleUrl: "./base-post-children.component.scss",
@@ -59,14 +75,22 @@ export class BasePostChildrenComponent implements OnChanges {
   public parent!: string | ChildrenQueryResult;
 
   public comments$ = new BehaviorSubject<
-    NonNullable<NonNullable<ChildrenQueryResult[0]>["node"]>[] | null
+    | NonNullable<
+        NonNullable<ChildrenQueryResult[0]>["node"] & {
+          actions: (NbClickableMenuItem & { icon: string })[];
+        }
+      >[]
+    | null
   >(null);
 
   private reset$ = new Subject<null>();
 
   constructor(
     private postCommentsQuery: BasePostCommentsGQL,
+    private deletePostGQL: DeletePostGQL,
     private destroyRef: DestroyRef,
+    private userService: UserService,
+    private windowService: NbWindowService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,7 +100,7 @@ export class BasePostChildrenComponent implements OnChanges {
       parentChanges.currentValue !== parentChanges.previousValue
     ) {
       this.reset$.next(null);
-      const parent$ =
+      const parent$: Observable<ChildrenQueryResult> =
         typeof this.parent === "string"
           ? this.postCommentsQuery.watch({ id: this.parent }).valueChanges.pipe(
               map((res) => res.data.node),
@@ -87,7 +111,63 @@ export class BasePostChildrenComponent implements OnChanges {
             )
           : of(this.parent);
       parent$
-        .pipe(map((res) => res.map((comment) => comment!.node!)))
+        .pipe(
+          map((res) => res.map((comment) => comment!.node!)),
+          withLatestFrom(this.userService.currentUser$),
+          map(([res, currentUser]) =>
+            res.map((comment) => {
+              const isAuthor =
+                comment.author?.id && comment.author.id === currentUser?.id;
+              const isModerator = comment.sub.isModerator;
+
+              return {
+                ...comment,
+                actions: [
+                  {
+                    title: "Répondre",
+                    icon: "undo-outline",
+                    data: {
+                      onClick: () =>
+                        this.windowService.open(CommentWindowComponent, {
+                          title: "Publier commentaire",
+                          windowClass: "createcomment-window",
+                          closeOnEsc: false,
+                          context: {
+                            parent: comment.id,
+                          },
+                        }),
+                    },
+                  } satisfies NbClickableMenuItem,
+                  isAuthor && {
+                    title: "Modifier",
+                    icon: "edit-outline",
+                    data: {
+                      onClick: () =>
+                        this.windowService.open(CommentWindowComponent, {
+                          title: "Modifier commentaire",
+                          windowClass: "editcomment-window",
+                          closeOnEsc: false,
+                          context: {
+                            edit: comment.id,
+                          },
+                        }),
+                    },
+                  },
+                  (isAuthor || isModerator) && {
+                    title: "Supprimer",
+                    icon: "trash-2-outline",
+                    data: {
+                      onClick: () =>
+                        this.deletePostGQL
+                          .mutate({ id: comment.id })
+                          .subscribe(),
+                    },
+                  },
+                ].filter(truthy),
+              };
+            }),
+          ),
+        )
         .subscribe((val) => this.comments$.next(val));
     }
   }

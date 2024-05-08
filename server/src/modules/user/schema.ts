@@ -8,10 +8,14 @@ export const ThemeRef = builder.enumType($Enums.Theme, {
 });
 export const userRef = builder.prismaNode("User", {
   id: { field: "id" },
-  select: {},
+  select: { id: true },
+  grantScopes: ({ id }, ctx) =>
+    id === ctx.authenticated_user_id ? ["self"] : [],
   fields: (t) => ({
     username: t.exposeString("username"),
-    email: t.exposeString("email"),
+    email: t.exposeString("email", {
+      authScopes: { $granted: "self" },
+    }),
     avatarUrl: t.string({
       select: {
         avatar_oid: true,
@@ -21,6 +25,7 @@ export const userRef = builder.prismaNode("User", {
     }),
     theme: t.expose("theme", {
       type: ThemeRef,
+      authScopes: { $granted: "self" },
     }),
   }),
 });

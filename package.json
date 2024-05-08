@@ -17,8 +17,8 @@
 	},
 	"devDependencies": {
 		"prettier": "^3.2.5"
-    },
-  "dependencies": {
-    "patch-package": "^8.0.0"
+	},
+	"dependencies": {
+		"patch-package": "^8.0.0"
 	}
 }

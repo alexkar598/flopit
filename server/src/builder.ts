@@ -9,16 +9,29 @@ import {
   VoidResolver,
 } from "graphql-scalars";
 import { prisma } from "./db.ts";
+import { HttpRequest, HttpResponse } from "uWebSockets.js";
+import { isBanned } from "./modules/sub/util.ts";
 import {
   capitalizeFirst,
   getAPIError,
   slugify,
   throwException,
   unslugify,
-  SlugType,
 } from "./util.ts";
-import { HttpRequest, HttpResponse } from "uWebSockets.js";
 import ValidationPlugin from "@pothos/plugin-validation";
+import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
+
+interface Context {
+  req: HttpRequest;
+  res?: HttpResponse;
+  authenticated_user_id: string | null;
+  authenticated_session_id: string | null;
+}
+
+interface AuthenticatedContext extends Context {
+  authenticated_user_id: string;
+  authenticated_session_id: string;
+}
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
@@ -51,15 +64,20 @@ export const builder = new SchemaBuilder<{
       Output: never;
     };
   };
-  Context: {
-    req: HttpRequest;
-    res: HttpResponse;
-    authenticated_user_id: string;
-    authenticated_session_id: string;
-  };
+  Context: Context;
   DefaultInputFieldRequiredness: true;
+  AuthScopes: {
+    authenticated: boolean;
+    notBanned: string;
+    moderator: string;
+  };
+  AuthContexts: {
+    authenticated: AuthenticatedContext;
+    notBanned: AuthenticatedContext;
+    moderator: AuthenticatedContext;
+  };
 }>({
-  plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin],
+  plugins: [PrismaPlugin, RelayPlugin, ValidationPlugin, ScopeAuthPlugin],
   prisma: {
     client: prisma,
     exposeDescriptions: true,
@@ -78,6 +96,36 @@ export const builder = new SchemaBuilder<{
     decodeGlobalID: unslugify,
   },
   defaultInputFieldRequiredness: true,
+  authScopes: (ctx) => ({
+    authenticated: () => {
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
+      return true;
+    },
+    async notBanned(subId) {
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
+
+      const hasBan = await isBanned(ctx.authenticated_user_id, subId);
+      if (hasBan) throw getAPIError("BANNED");
+      return true;
+    },
+    async moderator(subId) {
+      if (ctx.authenticated_user_id == null)
+        throw getAPIError("AUTHENTICATION_REQUIRED");
+
+      const isMod = !!(await prisma.moderator.findUnique({
+        where: {
+          user_id_sub_id: { user_id: ctx.authenticated_user_id, sub_id: subId },
+        },
+      }));
+      if (!isMod) throw getAPIError("NOT_SUB_MODERATOR");
+      return true;
+    },
+  }),
+  scopeAuthOptions: {
+    unauthorizedError: (_parent, _ctx) => getAPIError("UNAUTHORIZED"),
+  },
 });
 builder.addScalarType("DateTime", DateTimeResolver);
 builder.addScalarType("JSON", JSONObjectResolver);

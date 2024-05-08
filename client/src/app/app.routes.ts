@@ -5,7 +5,9 @@ import { ConnexionComponent } from "./pages/connexion/connexion.component";
 import { SubComponent } from "./pages/sub/sub.component";
 import { AccueilComponent } from "./pages/accueil/accueil.component";
 import { ChatComponent } from "~/app/pages/chat/chat.component";
+import { ParametresComponent } from "~/app/pages/parametres/parametres.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
+import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 
 export const routes: Routes = [
   { path: "", component: AccueilComponent },
@@ -14,6 +16,16 @@ export const routes: Routes = [
   { path: "f", component: CreationSubComponent },
   { path: "f/:subName", component: SubComponent },
   { path: "f/:subName/:topPostId", component: TopPostPageComponent },
-  { path: "chat", component: ChatComponent },
-  { path: "chat/:user", component: ChatComponent },
+  { path: "rechercher/:query/:tab", component: SearchPageComponent },
+  { path: "rechercher/:query", component: SearchPageComponent },
+  {
+    path: "",
+    canActivate: [authenticatedPageGuard],
+    runGuardsAndResolvers: "always",
+    children: [
+      { path: "parametres", component: ParametresComponent },
+      { path: "chat", component: ChatComponent },
+      { path: "chat/:user", component: ChatComponent },
+    ]
+  },
 ];

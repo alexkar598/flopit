@@ -1,0 +1,5 @@
+mutation RemoveModerator($sub: ID!, $user: ID!) {
+  removeModerator(input: {sub: $sub, user: $user}) {
+    id
+  }
+}

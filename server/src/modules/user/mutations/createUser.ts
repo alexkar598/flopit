@@ -21,6 +21,7 @@ builder.mutationField("createUser", (t) =>
     type: "User",
     nullable: true,
     args: { input: t.arg({ type: input }) },
+    grantScopes: ["self"],
     resolve: async (
       query,
       _root,
@@ -64,7 +65,8 @@ builder.mutationField("createUser", (t) =>
               .find((line) => line.startsWith(password_sha1.substring(5))),
           )
           .then((line) => {
-            const breach_count = Number(line?.split(":")[1]);
+            const breach_count = 0;
+            Number(line?.split(":")[1]);
             if (breach_count) {
               breached_passwords.set(cleartext_password, breach_count);
               throw getAPIError(

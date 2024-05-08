@@ -3,7 +3,6 @@ import {
   relayStylePagination,
 } from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
-import { HttpLink } from "apollo-angular/http";
 import {
   ApplicationConfig,
   inject,
@@ -19,12 +18,15 @@ import {
   InMemoryCache,
   split,
 } from "@apollo/client/core";
+import { Router } from "@angular/router";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
+import { Kind, OperationDefinitionNode } from "graphql/language";
 import { HttpHeaders } from "@angular/common/http";
 import { Maybe, Node, StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
-import { Router } from "@angular/router";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { setContext } from "@apollo/client/link/context";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 
@@ -34,13 +36,14 @@ const APOLLO_CACHE = new InjectionToken<InMemoryCache>("apollo-cache");
 const STATE_KEY = makeStateKey<any>("apollo.state");
 
 export function apolloOptionsFactory(
-  httpLink: HttpLink,
   cache: InMemoryCache,
   transferState: TransferState,
   toastrService: NbToastrService,
   router: Router,
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
+
+  const basePath = isBrowser ? "" : "http://apiserver:3000";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -54,23 +57,20 @@ export function apolloOptionsFactory(
     void cache.reset();
   }
 
-  const proxyCookiesLink = new ApolloLink((operation, forward) => {
-    if (cookies)
-      operation.setContext({
-        headers: new HttpHeaders().set("Cookie", cookies),
-      });
-
-    return forward(operation);
-  });
-
-  const errorLink = onError(({ graphQLErrors }) => {
+  const errorLink = onError(({ graphQLErrors, operation }) => {
     if (graphQLErrors == null) return;
     graphQLErrors.forEach((err) => {
       const code = <ErrorCode>err.extensions?.["code"];
 
-      if (code === "AUTHENTICATED_FIELD") return;
+      if (code === "AUTHENTICATION_REQUIRED") {
+        if (
+          operation.query.definitions.find(
+            (x): x is OperationDefinitionNode =>
+              x.kind === Kind.OPERATION_DEFINITION,
+          )?.operation === "query"
+        )
+          return;
 
-      if (code === "AUTHENTICATED_MUTATION") {
         const toast = toastrService.info(
           "Connectez-vous ou créez-vous un compte pour intéragir sur FlopIt",
           "Inscrivez-vous!",
@@ -91,13 +91,18 @@ export function apolloOptionsFactory(
     });
   });
 
-  const http = httpLink.create({ uri });
+  const http = createUploadLink({
+      uri: `${basePath}${uri}`,
+    });
 
   let ws: GraphQLWsLink | undefined;
   if (isBrowser) ws = new GraphQLWsLink(createClient({ url: uri }));
 
   const link = from([
-    proxyCookiesLink,
+    setContext((_, previous) => ({
+      ...previous,
+      headers: { cookie: cookies ?? "token=_" },
+    })),
     errorLink,
     split(
       ({ query }) => {
@@ -136,81 +141,86 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
   {
     provide: APOLLO_CACHE,
-    useValue: new InMemoryCache({
-      possibleTypes: {
-        BasePost: ["Comment", "TopPost"],
-      },
-      typePolicies: {
-        Query: {
-          fields: {
-            homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
-          },
+    useFactory: () =>
+      new InMemoryCache({
+        possibleTypes: {
+          BasePost: ["Comment", "TopPost"],
         },
-        Conversation: {
-          fields: {
-            messages: {
-              ...messageFieldPolicyPagination,
-              merge(
-                existing: { edges: Maybe<{ node: Node }>[] },
-                incoming: { edges: Maybe<{ node: Node }>[] },
-                args,
-              ) {
-                const merged = (
-                  messageFieldPolicyPagination.merge as FieldMergeFunction
-                )(existing, incoming, args);
+        typePolicies: {
+          Query: {
+            fields: {
+              homefeed: relayStylePagination(["sortOptions", "ignoreFollows"]),
+              users: relayStylePagination(["filter"]),
+              subs: relayStylePagination(["filter"]),
+              searchPosts: relayStylePagination(["input"]),
+            },
+          },
+          Sub: {
+            fields: {
+              moderators: relayStylePagination(),
+              posts: relayStylePagination(["sortOptions"]),
+            },
+          },
+          TopPost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          Comment: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          BasePost: {
+            fields: {
+              children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          Conversation: {
+            fields: {
+              messages: {
+                ...messageFieldPolicyPagination,
+                merge(
+                  existing: { edges: Maybe<{ node: Node }>[] },
+                  incoming: { edges: Maybe<{ node: Node }>[] },
+                  args,
+                ) {
+                  const merged = (
+                    messageFieldPolicyPagination.merge as FieldMergeFunction
+                  )(existing, incoming, args);
 
-                const firstIncomingId = incoming?.edges[0]?.node.id as
-                  | string
-                  | undefined;
-                //Aucun incoming, null op
-                if (firstIncomingId === undefined) return merged;
+                  const firstIncomingId = incoming?.edges[0]?.node.id as
+                    | string
+                    | undefined;
+                  //Aucun incoming, null op
+                  if (firstIncomingId === undefined) return merged;
 
-                let existingLastIndex = existing?.edges.findIndex(
-                  (x) => x && x.node.id > firstIncomingId,
-                );
-                //Aucun incoming, défaut
-                if (existingLastIndex === undefined) return merged;
+                  let existingLastIndex = existing?.edges.findIndex(
+                    (x) => x && x.node.id > firstIncomingId,
+                  );
+                  //Aucun incoming, défaut
+                  if (existingLastIndex === undefined) return merged;
 
-                if (existingLastIndex === -1) existingLastIndex = 0;
+                  if (existingLastIndex === -1) existingLastIndex = 0;
 
-                return {
-                  pageInfo: merged.pageInfo,
-                  edges: [
-                    ...existing.edges.splice(0, existingLastIndex - 1),
-                    ...incoming.edges,
-                    ...existing.edges.splice(existingLastIndex),
-                  ],
-                };
+                  return {
+                    pageInfo: merged.pageInfo,
+                    edges: [
+                      ...existing.edges.splice(0, existingLastIndex - 1),
+                      ...incoming.edges,
+                      ...existing.edges.splice(existingLastIndex),
+                    ],
+                  };
+                },
               },
             },
           },
-        },
-        Sub: {
-          fields: {
-            posts: relayStylePagination(["sortOptions"]),
-          },
-        },
-        TopPost: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
-          },
-        },
-        Comment: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
-          },
-        },
-        BasePost: {
-          fields: {
-            children: relayStylePagination(["sortOptions"]),
-          },
-        },
-      } satisfies StrictTypedTypePolicies,
-    }),
+        } satisfies StrictTypedTypePolicies,
+      }),
   },
   {
     provide: APOLLO_OPTIONS,
     useFactory: apolloOptionsFactory,
-    deps: [HttpLink, APOLLO_CACHE, TransferState, NbToastrService, Router],
+    deps: [APOLLO_CACHE, TransferState, NbToastrService, Router],
   },
 ];

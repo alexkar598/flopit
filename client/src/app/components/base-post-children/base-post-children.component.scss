@@ -1,51 +1,53 @@
 nb-card {
   max-width: 50rem;
-  border-radius: 15px;
+  --card-border-radius: 1rem;
+}
+
+h2 {
+  line-height: 1;
+  font-size: var(--text-heading-4-font-size);
+}
+
+nb-card-header {
+  --card-divider-width: 0;
+}
+
+nb-card-body {
   --card-padding: 0 1rem;
 }
 
 nb-card-footer {
-  display: grid;
-  grid-template-columns: auto auto;
-}
+  --card-padding: 0.25rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-nb-icon {
-  margin-top: 1rem;
-  margin-right: 1rem;
+  > * {
+    flex: 1 0 0;
+    min-width: fit-content;
+    text-align: center;
+    justify-content: center;
+
+    &:first-child {
+      text-align: left;
+      justify-content: start;
+    }
+
+    &:last-child {
+      text-align: right;
+      justify-content: end;
+    }
+  }
+
+  > div {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .comment {
   margin-top: 1rem;
   margin-bottom: 1rem;
-}
-
-.user {
-  display: flex;
-  margin-right: 1rem;
-  text-decoration: none;
-}
-
-.user-link {
-  color: var(--text-basic-color);
-  text-decoration: none;
-  font-weight: bold;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-.actions {
-  display: flex;
-  text-align: left;
-}
-
-.icon-action {
-  margin: auto;
-}
-
-.date {
-  text-align: right;
-  margin-top: auto;
-  margin-bottom: auto;
 }
 
 .children {

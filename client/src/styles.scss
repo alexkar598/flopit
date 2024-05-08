@@ -10,12 +10,20 @@ body {
   overflow-y: scroll;
 }
 
+.user-picture.initials {
+  user-select: none;
+}
+
 .createpost-window.full-screen {
   width: min(90vw, 60rem);
 
   nb-card-body {
     overflow: visible;
   }
+}
+
+a:has(nb-user) {
+  text-decoration: none !important;
 }
 
 nb-chat .scrollable {
