@@ -3,12 +3,14 @@ import {
   CreateUserGQL,
   CreateUserInput,
   CurrentUserGQL,
+  DeleteUserGQL,
   LoginGQL,
   LogoutGQL,
   UserSelfFragment,
 } from "~/graphql";
 import { BehaviorSubject } from "rxjs";
 import { Apollo } from "apollo-angular";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
@@ -16,15 +18,17 @@ import { Apollo } from "apollo-angular";
 export class UserService {
   private currentUserSubject$ = new BehaviorSubject<
     UserSelfFragment | null | undefined
-  >(null);
+  >(undefined);
   public currentUser$ = this.currentUserSubject$.asObservable();
 
   constructor(
     private loginMut: LoginGQL,
     private logoutMut: LogoutGQL,
     private createUserMut: CreateUserGQL,
+    private deleteUserMut: DeleteUserGQL,
     private currentUserGql: CurrentUserGQL,
     private apollo: Apollo,
+    private router: Router,
   ) {
     this.currentUserGql.watch().valueChanges.subscribe((result) => {
       this.currentUserSubject$.next(result.data.currentUser);
@@ -48,10 +52,6 @@ export class UserService {
 
   register(input: CreateUserInput): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!input.email || !input.username || !input.password) {
-        return reject("Tous les champs sont obligatoires");
-      }
-
       this.createUserMut.mutate({ input }).subscribe(async (res) => {
         if (res.errors)
           return reject(res.errors.map((err) => err.message).join("\n"));
@@ -66,7 +66,20 @@ export class UserService {
       this.logoutMut.mutate({}).subscribe((result) => {
         if (result.errors)
           return reject(result.errors?.map((err) => err.message).join("\n"));
-        void this.apollo.client.resetStore();
+        void this.apollo.client
+          .resetStore()
+          .then(() => this.router.navigate([]));
+        resolve();
+      });
+    });
+  }
+
+  delete(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.deleteUserMut.mutate({}).subscribe((result) => {
+        if (result.errors)
+          return reject(result.errors?.map((err) => err.message).join("\n"));
+        void this.logout();
         resolve();
       });
     });

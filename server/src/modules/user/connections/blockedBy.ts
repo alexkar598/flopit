@@ -22,6 +22,7 @@ builder.prismaObjectField("User", "blockedBy", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["BlockedBy"]: helper.getQuery(args, ctx, nestedSelection),
       }),
+      authScopes: { $granted: "self" },
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["BlockedBy"], args, context),

@@ -1,0 +1,10 @@
+.boutons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+button {
+  width: 10rem;
+  margin-right: auto;
+  margin-left: auto;
+}

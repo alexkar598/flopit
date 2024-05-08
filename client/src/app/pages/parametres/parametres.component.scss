@@ -1,0 +1,125 @@
+@use "../../../themes" as *;
+
+nb-card {
+  max-width: 50rem;
+  --card-divider-width: 0;
+  --card-border-radius: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+nb-card-header {
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.4rem;
+}
+
+input[type="file"] {
+  background-color: nb-theme(color-basic-default);
+  color: nb-theme(color-basic-800);
+  font-family: nb-theme(text-button-font-family);
+  font-weight: nb-theme(text-button-font-weight);
+  font-size: nb-theme(text-button-small-font-size);
+  padding: 0.6875rem 1.125rem;
+  border: 0;
+  border-radius: nb-theme(border-radius);
+  transition:
+    0.25s outline-width,
+    0.25s background-color;
+  cursor: pointer;
+}
+
+input[type="file"]:hover {
+  background-color: nb-theme(color-basic-hover);
+}
+
+input[type="file"]:active {
+  background-color: nb-theme(color-basic-active);
+  outline: 0.37rem solid nb-theme(outline-color);
+}
+
+input[type="file"]::file-selector-button {
+  text-transform: uppercase;
+  color: nb-theme(color-basic-800);
+  font-family: nb-theme(text-button-font-family);
+  font-weight: nb-theme(text-button-font-weight);
+  padding: 0;
+  margin-right: 1rem;
+  font-size: nb-theme(text-button-medium-font-size);
+  border: 0;
+  background-color: transparent;
+}
+
+.input-param {
+  width: 15rem;
+  height: 2.5rem;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.utilisateur {
+  width: fit-content;
+  margin: auto;
+}
+
+nb-form-field {
+  width: 100%;
+  max-width: unset !important;
+}
+
+.parametre {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.password-2fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label,
+span {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+nb-form-field,
+.form-field {
+  min-width: 100%;
+}
+
+.input-password {
+  width: 15rem;
+}
+
+form {
+  width: 100%;
+  display: grid;
+}
+
+.apply {
+  margin-left: auto;
+  width: 15rem;
+  margin-top: 1rem;
+}
+
+.supprimerCompte {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  padding: 1rem;
+  border: 0.5rem solid nb-theme(color-danger-default);
+  background: nb-theme(color-danger-transparent-default);
+  border-radius: 10px;
+}
+
+.delete-button {
+  margin-left: auto;
+  margin-right: auto;
+}

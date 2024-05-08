@@ -2,16 +2,24 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
+import { subValidators } from "../schema.ts";
 
 const input = builder.inputType("CreateSubInput", {
   fields: (t) => ({
-    name: t.string(),
-    description: t.string({ required: false }),
+    name: t.string({
+      validate: {
+        schema: subValidators.name,
+      },
+    }),
+    description: t.string({
+      required: false,
+      validate: { schema: subValidators.description },
+    }),
   }),
 });
 
 builder.mutationField("createSub", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
@@ -21,8 +29,6 @@ builder.mutationField("createSub", (t) =>
       { input: { name, description } },
       { authenticated_user_id },
     ) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       try {
         const moderator = await prisma.moderator.create({
           select: { Sub: { ...query } },

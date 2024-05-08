@@ -1,5 +1,5 @@
 <div class="page">
-  <app-post-list [subName]="(route.paramMap | async)!.get('subName')!" />
+  <app-top-post-list [subName]="(route.paramMap | async)!.get('subName')!" />
 
   <div class="sidebar">
     @if (sub$ | async; as sub) {
@@ -48,6 +48,16 @@
               <p>Publication{{ sub.posts.totalCount !== 1 ? "s" : "" }}</p>
             </div>
           </div>
+
+          @if (sub.isModerator) {
+            <hr />
+            <nb-actions class="moderator-actions" [fullWidth]="true">
+              <nb-action (click)="openModeratorsWindow()">
+                <nb-icon icon="people-outline" />
+                Gérer modérateurs
+              </nb-action>
+            </nb-actions>
+          }
         </nb-card-body>
       </nb-card>
     } @else {

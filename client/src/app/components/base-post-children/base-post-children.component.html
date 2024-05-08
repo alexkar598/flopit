@@ -1,0 +1,60 @@
+<div>
+  @if (comments$ | async; as comments) {
+    @for (comment of comments; track comment.id) {
+      <nb-card>
+        <nb-card-body>
+          <app-rich-text [delta]="comment.deltaContent" />
+        </nb-card-body>
+
+        <nb-card-footer>
+          <app-vote [post]="comment" />
+
+          @if (comment.author) {
+            <nb-user
+              name="u/{{ comment.author.username }}"
+              [picture]="comment.author.avatarUrl ?? ''"
+            />
+          } @else {
+            <nb-user name="fantôme" />
+          }
+
+          <div>
+            <span class="datetime text-hint">{{
+              comment.createdAt | relativeDate
+            }}</span>
+
+            @if (comment.actions.length == 1) {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                size="large"
+                (click)="comment.actions[0].data.onClick()"
+              >
+                <nb-icon [icon]="comment.actions[0].icon" class="icon-action" />
+              </button>
+            } @else {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                size="large"
+                [nbContextMenu]="$any(comment.actions)"
+              >
+                <nb-icon icon="more-horizontal-outline" class="icon-action" />
+              </button>
+            }
+          </div>
+        </nb-card-footer>
+      </nb-card>
+
+      <div class="children">
+        <app-base-post-children
+          [parent]="comment.children?.edges ?? comment.id"
+        />
+      </div>
+    }
+  } @else {
+    <nb-spinner message="" />
+  }
+</div>

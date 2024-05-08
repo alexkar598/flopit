@@ -22,6 +22,7 @@ builder.prismaObjectField("User", "moderatorOf", (t) =>
       select: (args, ctx, nestedSelection) => ({
         ["ModeratedSubs"]: helper.getQuery(args, ctx, nestedSelection),
       }),
+      authScopes: { $granted: "self" },
       resolve: (parent, args, context) =>
         frozenWithTotalCount(
           helper.resolve(parent["ModeratedSubs"], args, context),

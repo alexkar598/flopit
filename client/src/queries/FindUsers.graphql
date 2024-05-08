@@ -1,0 +1,15 @@
+query FindUsers($filter: UsersFilter) {
+  users(filter: $filter) {
+    edges {
+      node {
+        ...FindUsers
+      }
+    }
+  }
+}
+
+fragment FindUsers on User {
+  id
+  username
+  avatarUrl
+}

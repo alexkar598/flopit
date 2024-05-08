@@ -13,7 +13,7 @@ const input = builder.inputType("FollowSubInput", {
 });
 
 builder.mutationField("followSub", (t) =>
-  t.prismaField({
+  t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
@@ -27,9 +27,6 @@ builder.mutationField("followSub", (t) =>
       },
       { authenticated_user_id },
     ) => {
-      if (authenticated_user_id == null)
-        throw getAPIError("AUTHENTICATED_MUTATION");
-
       return prisma.$transaction(async (tx) => {
         try {
           await tx.follow.create({

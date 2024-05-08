@@ -67,9 +67,6 @@ export class CreationCompteComponent implements OnInit, OnDestroy {
 
     try {
       await this.userService.register({ email, username, password });
-    } catch (e) {
-      if (typeof e === "string") this.toastr.danger(e, "Erreur");
-      else throw e;
     } finally {
       this.loading = false;
     }

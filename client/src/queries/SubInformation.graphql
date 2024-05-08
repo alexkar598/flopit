@@ -12,5 +12,6 @@ query SubInformation($sub_name: String!) {
       totalCount
     }
     isFollowing
+    isModerator
   }
 }

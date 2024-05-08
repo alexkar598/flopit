@@ -1,26 +1,28 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
-import { subRef } from "../schema.ts";
+import { subRef, subValidators } from "../schema.ts";
 import { minioUploadFileNullableHelper } from "../../../minio.ts";
 
 const input = builder.inputType("EditSubInput", {
   fields: (t) => ({
     id: t.globalID({ for: subRef }),
-    description: t.string({ required: false }),
+    description: t.string({
+      required: false,
+      validate: { schema: subValidators.description },
+    }),
     icon: t.field({ type: "File", required: false }),
     banner: t.field({ type: "File", required: false }),
   }),
 });
 
-builder.mutationField("editSub", (t) =>
-  t.prismaField({
+builder.mutationField("editSub", (t) => {
+  return t.withAuth({ authenticated: true }).prismaField({
     type: "Sub",
     nullable: true,
     args: { input: t.arg({ type: input }) },
-    resolve: async (query, _root, { input }, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
+    authScopes: (_, args) => ({ moderator: args.input.id.id }),
+    resolve: async (query, _root, { input }) => {
       let icon_oid, banner_oid;
 
       try {
@@ -42,5 +44,5 @@ builder.mutationField("editSub", (t) =>
         },
       });
     },
-  }),
-);
+  });
+});

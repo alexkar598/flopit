@@ -1,3 +1,22 @@
 @forward "@nebular/theme/styles/theming";
 @use "@nebular/theme/styles/theming" as *;
 @use "@nebular/theme/styles/themes/default";
+@use "@nebular/theme/styles/themes/dark";
+
+$nb-themes: nb-register-theme(
+  (
+    context-menu-text-align: left,
+    card-border-radius: 1rem,
+  ),
+  default,
+  default
+);
+
+$nb-themes: nb-register-theme(
+  (
+    context-menu-text-align: left,
+    card-border-radius: 1rem,
+  ),
+  dark,
+  dark
+);

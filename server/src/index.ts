@@ -6,6 +6,8 @@ import { schema, writeSchemaToFile } from "./schema.ts";
 import { App, HttpRequest, HttpResponse } from "uWebSockets.js";
 import { makeBehavior } from "graphql-ws/lib/use/uWebSockets";
 import { execute, ExecutionArgs, subscribe } from "graphql";
+import { ZodError } from "zod";
+import { ErrorCode } from "~shared/apierror.ts";
 
 const yoga = createYoga<{
   req: HttpRequest;
@@ -29,6 +31,12 @@ const yoga = createYoga<{
   maskedErrors: {
     maskError: (error, message, isDev) => {
       if (error instanceof GraphQLError) {
+        if (error.originalError instanceof ZodError) {
+          error.message = "Une erreur de validation s'est produite";
+          error.extensions.issues = error.originalError.errors;
+          error.extensions.code = "VALIDATION_ERROR" satisfies ErrorCode;
+          return error;
+        }
         if (error.originalError instanceof PothosValidationError) return error;
       }
 

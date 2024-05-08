@@ -1,0 +1,14 @@
+mutation DeletePost($id: ID!) {
+  deletePost(input: {id: $id}) {
+    id
+    deltaContent
+    textContent
+    author {
+      id
+    }
+    ... on TopPost{
+      id
+      title
+    }
+  }
+}
