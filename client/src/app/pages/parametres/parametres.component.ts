@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 
 import {
   NbButtonGroupModule,
@@ -64,16 +64,25 @@ export class ParametresComponent {
   }
 
   async changer(values: { username: string }) {
-    console.log(values);
     const { username } = values;
-    this.editUserGql
-      .mutate({
-        input: {
-          username,
-          avatar: this.avatar,
-        },
-      })
-      .subscribe();
+    if (this.avatar) {
+      this.editUserGql
+        .mutate({
+          input: {
+            username,
+            avatar: this.avatar,
+          },
+        })
+        .subscribe();
+    } else {
+      this.editUserGql
+        .mutate({
+          input: {
+            username,
+          },
+        })
+        .subscribe();
+    }
   }
 
   toggleDeletingAccount() {

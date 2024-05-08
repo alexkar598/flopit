@@ -20,11 +20,9 @@
                 class="input-param"
                 type="text"
                 nbInput
-                ngModel
+                [ngModel]="user.username"
                 maxlength="64"
                 placeholder="Nom d'utilisateur"
-                id="changer-nom"
-                [defaultValue]="user.username"
                 name="username"
                 autocomplete="new-password"
               />
