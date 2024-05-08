@@ -8,6 +8,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbSelectModule,
+  NbToastrService,
   NbTooltipModule,
   NbUserModule,
   NbWindowService,
@@ -54,6 +55,7 @@ export class ParametresComponent {
     private editUserGql: EditUserGQL,
     private windowService: NbWindowService,
     private router: Router,
+    private toastr: NbToastrService,
   ) {}
 
   onAvatarChange(input: any) {
@@ -65,7 +67,9 @@ export class ParametresComponent {
 
   async changer(values: { username: string }) {
     const { username } = values;
+
     if (this.avatar) {
+      // If selected image, update all
       this.editUserGql
         .mutate({
           input: {
@@ -75,6 +79,7 @@ export class ParametresComponent {
         })
         .subscribe();
     } else {
+      // If no image, update only username
       this.editUserGql
         .mutate({
           input: {
@@ -96,6 +101,7 @@ export class ParametresComponent {
 
   deleteAccount() {
     void this.userService.delete();
+    this.toastr.success("Le compte a été supprimé avec succès", "Succès");
     void this.router.navigate(["/"]);
   }
 }
