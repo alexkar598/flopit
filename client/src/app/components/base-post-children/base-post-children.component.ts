@@ -17,6 +17,7 @@ import {
   NbIconModule,
   NbSpinnerModule,
   NbUserModule,
+  NbWindowService,
 } from "@nebular/theme";
 import {
   BehaviorSubject,
@@ -33,6 +34,7 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
 import { UserService } from "~/app/services/user.service";
 import { isFragment, truthy } from "~/app/util";
+import { CommentWindowComponent } from "~/app/windows/comment/comment.component";
 import {
   BasePostCommentsGQL,
   CommentListFragment,
@@ -88,6 +90,7 @@ export class BasePostChildrenComponent implements OnChanges {
     private deletePostGQL: DeletePostGQL,
     private destroyRef: DestroyRef,
     private userService: UserService,
+    private windowService: NbWindowService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -124,11 +127,32 @@ export class BasePostChildrenComponent implements OnChanges {
                     title: "Répondre",
                     icon: "undo-outline",
                     data: {
-                      onClick: () => {
-                        //TODO responses
-                      },
+                      onClick: () =>
+                        this.windowService.open(CommentWindowComponent, {
+                          title: "Publier commentaire",
+                          windowClass: "createcomment-window",
+                          closeOnEsc: false,
+                          context: {
+                            parent: comment.id,
+                          },
+                        }),
                     },
                   } satisfies NbClickableMenuItem,
+                  isAuthor && {
+                    title: "Modifier",
+                    icon: "edit-outline",
+                    data: {
+                      onClick: () =>
+                        this.windowService.open(CommentWindowComponent, {
+                          title: "Modifier commentaire",
+                          windowClass: "editcomment-window",
+                          closeOnEsc: false,
+                          context: {
+                            edit: comment.id,
+                          },
+                        }),
+                    },
+                  },
                   (isAuthor || isModerator) && {
                     title: "Supprimer",
                     icon: "trash-2-outline",
