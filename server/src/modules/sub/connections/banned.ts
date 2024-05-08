@@ -3,6 +3,12 @@ import { builder, frozenWithTotalCount } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { userRef } from "../../user/schema.ts";
 
+const filter = builder.inputType("BannedFilter", {
+  fields: (t) => ({
+    username: t.string({ required: false, description: "contains" }),
+  }),
+});
+
 const helper = prismaConnectionHelpers(builder, "Ban", {
   cursor: "id",
   select: (nestedSelection) => ({
@@ -14,6 +20,18 @@ const helper = prismaConnectionHelpers(builder, "Ban", {
       },
     }),
   }),
+  args: (t) => ({
+    filter: t.field({ type: filter, defaultValue: {} }),
+  }),
+  query: ({ filter }) => ({
+    where: {
+      User: {
+        username: {
+          contains: filter.username ?? undefined,
+        },
+      },
+    },
+  }),
   resolveNode: (parent) => parent["User"],
 });
 
@@ -21,6 +39,9 @@ builder.prismaObjectField("Sub", "banned", (t) =>
   t.connection(
     {
       type: userRef,
+      args: {
+        filter: t.arg({ type: filter, defaultValue: {} }),
+      },
       select: (args, ctx, nestedSelection) => ({
         ["Bans"]: helper.getQuery(args, ctx, nestedSelection),
       }),
