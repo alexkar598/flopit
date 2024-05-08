@@ -19,11 +19,11 @@ export const routes: Routes = [
   { path: "f/:subName/:topPostId", component: TopPostPageComponent },
   { path: "rechercher/:query/:tab", component: SearchPageComponent },
   { path: "rechercher/:query", component: SearchPageComponent },
-  { path: "**", component: NotFoundComponent },
   {
     path: "",
     canActivate: [authenticatedPageGuard],
     runGuardsAndResolvers: "always",
     children: [{ path: "parametres", component: ParametresComponent }],
   },
+  { path: "**", component: NotFoundComponent },
 ];
