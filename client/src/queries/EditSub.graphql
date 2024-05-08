@@ -1,0 +1,8 @@
+mutation EditSub($input: EditSubInput!) {
+  editSub(input: $input) {
+    id
+    bannerUrl
+    iconUrl
+    description
+  }
+}

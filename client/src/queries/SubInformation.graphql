@@ -5,6 +5,7 @@ query SubInformation($sub_name: String!) {
     description
     iconUrl
     bannerUrl
+    isModerator
     followers {
       totalCount
     }

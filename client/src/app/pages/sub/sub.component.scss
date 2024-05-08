@@ -74,6 +74,52 @@ nb-card-body {
   height: 20rem;
 }
 
+.edit-description {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+textarea {
+  min-width: 100%;
+  max-width: 100%;
+  font: inherit;
+  resize: none;
+  padding: 0;
+  border: none;
+  outline: none;
+  overflow: hidden;
+  background: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color-1);
+}
+
+.edit-button {
+  margin-left: 1rem;
+}
+
+.grow-wrap {
+  display: grid;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.grow-wrap::after {
+  content: attr(data-replicated-value) " ";
+  white-space: pre-wrap;
+  visibility: hidden;
+  overflow-wrap: anywhere;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
+  white-space: pre;
+
 .moderator-actions {
   nb-icon {
     margin-right: 0.5rem;
@@ -82,4 +128,5 @@ nb-card-body {
   nb-action {
     cursor: pointer;
   }
+
 }
