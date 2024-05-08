@@ -31,6 +31,7 @@ nb-card-body {
   position: sticky;
   top: 8rem;
   --card-border-radius: 0.5rem;
+  max-width: 40rem;
 }
 
 .nom-sub {
@@ -118,7 +119,8 @@ p {
   margin-top: 1rem;
   margin-bottom: 1rem;
   outline: none;
-  white-space: pre;
+  //white-space: pre;
+}
 
 .moderator-actions {
   nb-icon {
@@ -130,3 +132,4 @@ p {
   }
 
 }
+
