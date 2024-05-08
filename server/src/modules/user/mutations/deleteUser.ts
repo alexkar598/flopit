@@ -7,7 +7,7 @@ builder.mutationField("deleteUser", (t) =>
     type: "User",
     nullable: true,
     resolve: (query, _root, _args, { authenticated_user_id, res }) => {
-      clearCookie(res);
+      if (res) clearCookie(res);
       return prisma.user.delete({
         ...query,
         where: {
