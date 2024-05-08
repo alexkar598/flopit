@@ -6,6 +6,7 @@ import { ConnexionComponent } from "./pages/connexion/connexion.component";
 import { SubComponent } from "./pages/sub/sub.component";
 import { AccueilComponent } from "./pages/accueil/accueil.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
+import { NotFoundComponent } from "~/app/pages/not-found/not-found.component";
 
 export const routes: Routes = [
   { path: "", component: AccueilComponent },
@@ -16,4 +17,5 @@ export const routes: Routes = [
   { path: "f/:subName/:topPostId", component: TopPostPageComponent },
   { path: "rechercher/:query/:tab", component: SearchPageComponent },
   { path: "rechercher/:query", component: SearchPageComponent },
+  { path: "**", component: NotFoundComponent },
 ];
