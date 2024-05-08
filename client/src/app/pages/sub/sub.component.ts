@@ -59,6 +59,8 @@ export class SubComponent {
 
   public editing: boolean = false;
   private loading = false;
+  icon: File | null = null;
+  banner: File | null = null;
 
   public newDescription: string = "";
 
@@ -147,6 +149,8 @@ export class SubComponent {
         {
           input: {
             id: sub.id,
+            banner : this.banner,
+            icon: this.icon,
             description: this.newDescription,
           },
         },
@@ -175,5 +179,19 @@ export class SubComponent {
       closeOnEsc: false,
       context: { sub },
     });
+  }
+
+  onIconChange(input: any) {
+    const file = (input as HTMLInputElement)?.files?.[0];
+    if (!file) return;
+
+    this.icon = file;
+  }
+
+  onBannerChange(input: any) {
+    const file = (input as HTMLInputElement)?.files?.[0];
+    if (!file) return;
+
+    this.banner = file;
   }
 }
