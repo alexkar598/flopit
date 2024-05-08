@@ -41,6 +41,7 @@ import {
   CommentListInfoFragment,
   DeletePostGQL,
 } from "~/graphql";
+import { RouterLink } from "@angular/router";
 
 type ChildrenQueryResult = ({
   node:
@@ -66,6 +67,7 @@ type ChildrenQueryResult = ({
     NbSpinnerModule,
     VoteComponent,
     NbContextMenuModule,
+    RouterLink,
   ],
   templateUrl: "./base-post-children.component.html",
   styleUrl: "./base-post-children.component.scss",
@@ -77,7 +79,9 @@ export class BasePostChildrenComponent implements OnChanges {
   public comments$ = new BehaviorSubject<
     | NonNullable<
         NonNullable<ChildrenQueryResult[0]>["node"] & {
-          actions: (NbClickableMenuItem & { icon: string })[];
+          actions: (Extract<NbClickableMenuItem, { data: object }> & {
+            icon: string;
+          })[];
         }
       >[]
     | null

@@ -43,7 +43,9 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
 export class TopPostComponent implements OnInit {
   @Input({ required: true }) post!: FullTopPostFragment;
 
-  protected actions$!: Observable<(NbClickableMenuItem & { icon: string })[]>;
+  protected actions$!: Observable<
+    (Extract<NbClickableMenuItem, { data: object }> & { icon: string })[]
+  >;
 
   constructor(
     private deletePostGQL: DeletePostGQL,

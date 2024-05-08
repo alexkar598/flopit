@@ -128,7 +128,6 @@ export class ChatComponent implements OnInit {
         const existingConversation = conversations.find(
           (x) => x.target.id === user,
         );
-
         if (existingConversation) return existingConversation;
 
         if (isPlatformBrowser(this.platformId))

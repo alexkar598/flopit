@@ -40,7 +40,7 @@
       <nb-chat-message
         type="text"
         [message]="msg.textContent"
-        [reply]="conversation.target.id !== msg.author.id"
+        [reply]="conversation.target.id !== msg.author?.id"
         [class.emoji]="isEmojiOnly(msg.textContent)"
       />
     }
