@@ -4,5 +4,6 @@ mutation EditUser($input: EditUserInput!) {
     username,
     email,
     theme
+    avatarUrl
   }
 }

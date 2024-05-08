@@ -94,7 +94,6 @@ export class TopPostListComponent implements OnInit, OnChanges, OnDestroy {
       });
       const feedQuery = this.subFeedQuery.watch(getVariables(), {
         fetchPolicy: "cache-and-network",
-        nextFetchPolicy: "cache-first",
       });
       const sub$ = feedQuery.valueChanges;
       this.cursorSubscription = sub$
