@@ -53,6 +53,27 @@
                   [(ngModel)]="newDescription"
                 ></textarea>
               </div>
+              <div class="stats-item">
+                <div class="stats">
+                  <p class="stats-data">Bannière</p>
+                  <input
+                    class="input-param"
+                    type="file"
+                    accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+                    (change)="onBannerChange($event.target)"
+                  />
+                </div>
+
+                <div class="stats">
+                  <p class="stats-data">Icône</p>
+                  <input
+                    class="input-param"
+                    type="file"
+                    accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+                    (change)="onIconChange($event.target)"
+                  />
+                </div>
+              </div>
             } @else {
               <p>{{ sub.description }}</p>
             }
