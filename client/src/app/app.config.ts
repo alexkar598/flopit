@@ -1,6 +1,7 @@
 import { ApplicationConfig, importProvidersFrom } from "@angular/core";
 import { provideRouter, withRouterConfig } from "@angular/router";
 import {
+  NbDatepickerModule,
   NbMenuModule,
   NbThemeModule,
   NbToastrModule,
@@ -35,12 +36,13 @@ export const appConfig: ApplicationConfig = {
       NbToastrModule.forRoot({
         destroyByClick: true,
         preventDuplicates: true,
-        duration: 1500,
+        duration: 5000,
       }),
       NbMenuModule.forRoot(),
       NbWindowModule.forRoot({
         buttons: { maximize: false, fullScreen: false, minimize: false },
       }),
+      NbDatepickerModule.forRoot(),
       QuillModule.forRoot(quillConfig),
       BrowserAnimationsModule,
     ),

@@ -17,9 +17,10 @@ import { truthy } from "~/app/util";
 import { CommentWindowComponent } from "~/app/windows/comment/comment.component";
 import { TopPostWindowComponent } from "~/app/windows/top-post/top-post.component";
 import { RelativeDatePipe } from "../../pipes/relative-date.pipe";
-import { DeletePostGQL, FullTopPostFragment } from "~/graphql";
+import { FullTopPostFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
 import { VoteComponent } from "~/app/components/vote/vote.component";
+import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component";
 
 @Component({
   selector: "app-top-post",
@@ -46,7 +47,6 @@ export class TopPostComponent implements OnInit {
   protected actions$!: Observable<(NbClickableMenuItem & { icon: string })[]>;
 
   constructor(
-    private deletePostGQL: DeletePostGQL,
     private userService: UserService,
     private windowService: NbWindowService,
   ) {}
@@ -95,8 +95,16 @@ export class TopPostComponent implements OnInit {
             title: "Supprimer",
             icon: "trash-2-outline",
             data: {
-              onClick: () =>
-                this.deletePostGQL.mutate({ id: this.post.id }).subscribe(),
+              onClick: () => {
+                this.windowService.open(DeletePostWindowComponent, {
+                  title: "Supprimer publication",
+                  windowClass: "deletepost-window",
+                  closeOnEsc: false,
+                  context: {
+                    post: this.post.id,
+                  },
+                });
+              },
             },
           },
         ].filter(truthy);

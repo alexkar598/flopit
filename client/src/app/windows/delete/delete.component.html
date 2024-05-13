@@ -1,0 +1,40 @@
+@if (form) {
+  <form [formGroup]="form" (ngSubmit)="confirmClick$.next()">
+    @if (!form.controls.ban.disabled) {
+      <div class="oneline">
+        <label for="deletewindow-ban">Bannir utilisateur?</label>
+        <nb-toggle
+          id="deletewindow-ban"
+          formControlName="ban"
+          type="checkbox"
+        />
+      </div>
+      @if (form.controls.ban.value) {
+        <div>
+          <label for="deletewindow-expiry">Expiration</label>
+          <input
+            nbInput
+            type="datetime-local"
+            id="deletewindow-expiry"
+            formControlName="expiry"
+            [nbDatepicker]="datePicker"
+            fullWidth
+          />
+          <nb-date-timepicker #datePicker />
+        </div>
+        <div>
+          <label for="deletewindow-reason">Raison</label>
+          <input
+            nbInput
+            id="deletewindow-reason"
+            formControlName="reason"
+            fullWidth
+          />
+        </div>
+      }
+    }
+    <button nbButton status="danger">Supprimer</button>
+  </form>
+} @else {
+  <nb-spinner message="" />
+}

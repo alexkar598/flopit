@@ -39,8 +39,8 @@ import {
   BasePostCommentsGQL,
   CommentListFragment,
   CommentListInfoFragment,
-  DeletePostGQL,
 } from "~/graphql";
+import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component";
 
 type ChildrenQueryResult = ({
   node:
@@ -87,7 +87,6 @@ export class BasePostChildrenComponent implements OnChanges {
 
   constructor(
     private postCommentsQuery: BasePostCommentsGQL,
-    private deletePostGQL: DeletePostGQL,
     private destroyRef: DestroyRef,
     private userService: UserService,
     private windowService: NbWindowService,
@@ -157,10 +156,16 @@ export class BasePostChildrenComponent implements OnChanges {
                     title: "Supprimer",
                     icon: "trash-2-outline",
                     data: {
-                      onClick: () =>
-                        this.deletePostGQL
-                          .mutate({ id: comment.id })
-                          .subscribe(),
+                      onClick: () => {
+                        this.windowService.open(DeletePostWindowComponent, {
+                          title: "Supprimer publication",
+                          windowClass: "deletepost-window",
+                          closeOnEsc: false,
+                          context: {
+                            post: comment.id,
+                          },
+                        });
+                      },
                     },
                   },
                 ].filter(truthy),
