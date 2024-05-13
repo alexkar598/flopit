@@ -14,15 +14,18 @@ import { graphqlProvider } from "./graphql.provider";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { QuillConfig, QuillModule } from "ngx-quill";
 
-const quillConfig: QuillConfig = {
+export const quillConfig: QuillConfig = {
   modules: {
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      ["link"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ header: [1, 2, 3, false] }],
-      ["clean"],
-    ],
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["blockquote", "code-block"],
+        ["link", "image"],
+        ["clean"],
+      ],
+    },
   },
 };
 

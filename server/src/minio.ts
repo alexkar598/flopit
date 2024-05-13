@@ -11,7 +11,7 @@ export const minioClient = new Client({
 });
 
 export async function minioUploadFile(
-  file: File,
+  file: Blob,
   bucket = "images",
 ): Promise<string> {
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -27,7 +27,7 @@ export async function minioUploadFile(
 }
 
 export async function minioUploadFileNullableHelper(
-  file: File | null | undefined,
+  file: Blob | null | undefined,
   bucket: string | undefined = undefined,
 ) {
   return file != null ? await minioUploadFile(file, bucket) : file;

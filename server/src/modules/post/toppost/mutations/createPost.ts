@@ -2,10 +2,11 @@ import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
 import { subRef } from "../../../sub/schema.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
-import { getAPIError } from "../../../../util.ts";
+import { getAPIError, getImg } from "../../../../util.ts";
 import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
 import { VoteValue } from "../../basepost/schema.ts";
 import { z } from "zod";
+import { minioUploadFile } from "../../../../minio.ts";
 
 const input = builder.inputType("CreatePostInput", {
   fields: (t) => ({
@@ -40,6 +41,18 @@ builder.mutationField("createPost", (t) =>
           .then((sub) => sub?.id);
 
         if (!subId) throw getAPIError("SUB_NOT_FOUND");
+
+        // upload images to S3
+        await Promise.all(
+          delta.ops
+            .map((op) => op.insert)
+            .filter((ins): ins is { image: string } => typeof ins === "object")
+            .map(async (ins) => {
+              const blob = await fetch(ins.image).then((res) => res.blob());
+              const oid = await minioUploadFile(blob);
+              ins.image = getImg(oid, { width: 1280 });
+            }),
+        );
 
         return tx.post.create({
           ...query,
