@@ -21,4 +21,7 @@ export const APIError = Object.freeze({
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
   UNAUTHORIZED: "Vous n'êtes pas authorisé à accéder à cette information",
+  MESSAGE_SELF: "Vous ne pouvez pas envoyer un message à vous-même",
+  CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
+  BLOCKED: "Cet utilisateur vous a bloqué",
 });
