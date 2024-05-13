@@ -44,7 +44,9 @@ import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component
 export class TopPostComponent implements OnInit {
   @Input({ required: true }) post!: FullTopPostFragment;
 
-  protected actions$!: Observable<(NbClickableMenuItem & { icon: string })[]>;
+  protected actions$!: Observable<
+    (Extract<NbClickableMenuItem, { data: object }> & { icon: string })[]
+  >;
 
   constructor(
     private userService: UserService,

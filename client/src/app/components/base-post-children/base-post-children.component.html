@@ -20,7 +20,7 @@
 
           <div>
             <span class="datetime text-hint">{{
-              comment.createdAt | relativeDate
+              comment.createdAt | relativeDate | async
             }}</span>
 
             @if (comment.actions.length == 1) {

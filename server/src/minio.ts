@@ -28,7 +28,7 @@ export async function minioUploadFile(
 
 export async function minioUploadFileNullableHelper(
   file: File | null | undefined,
-  bucket?: string = undefined,
+  bucket: string | undefined = undefined,
 ) {
   return file != null ? await minioUploadFile(file, bucket) : file;
 }

@@ -14,6 +14,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 
 FROM node:20.11.1-alpine3.18
 
+RUN apk add --no-cache gcompat
+
 WORKDIR /app
 
 RUN mkdir client server

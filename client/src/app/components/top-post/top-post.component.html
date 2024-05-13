@@ -25,7 +25,7 @@
 
     <div>
       <span class="datetime text-hint">{{
-        post.createdAt | relativeDate
+        post.createdAt | relativeDate | async
       }}</span>
 
       @if (actions$ | async; as actions) {

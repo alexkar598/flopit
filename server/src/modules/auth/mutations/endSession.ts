@@ -5,6 +5,8 @@ builder.mutationField("endSession", (t) =>
   t.field({
     type: "Void",
     nullable: true,
-    resolve: async (_args, _root, { res }) => clearCookie(res),
+    resolve: async (_args, _root, { res }) => {
+      if (res) clearCookie(res);
+    },
   }),
 );

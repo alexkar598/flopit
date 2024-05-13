@@ -47,6 +47,7 @@ export enum SlugType {
   Session,
   Sub,
   User,
+  Conversation,
 }
 export function slugify(type: SlugType, uuid: string) {
   //IDs composite
@@ -58,12 +59,23 @@ export function slugify(type: SlugType, uuid: string) {
     buffer.writeUint8(order, 1);
     buffer.write(id.replaceAll("-", ""), 2, "hex");
     return base62.encode(buffer);
-  }
+  } else if (type === SlugType.Conversation) {
+    const [id1, id2] = JSON.parse(uuid);
 
+    const buffer = Buffer.allocUnsafe(33);
+    buffer.writeUint8(type, 0);
+    buffer.write(id1.replaceAll("-", ""), 1, "hex");
+    buffer.write(id2.replaceAll("-", ""), 17, "hex");
+    return base62.encode(buffer);
+  }
   const buffer = Buffer.allocUnsafe(17);
   buffer.writeUint8(type, 0);
   buffer.write(uuid.replaceAll("-", ""), 1, "hex");
   return base62.encode(buffer);
+}
+
+export function format_uuid(hex_string: string): string {
+  return `${hex_string.slice(0, 8)}-${hex_string.slice(8, 12)}-${hex_string.slice(12, 16)}-${hex_string.slice(16, 20)}-${hex_string.slice(20)}`;
 }
 
 export function unslugify(slug: string) {
@@ -86,10 +98,23 @@ export function unslugify(slug: string) {
 
       return {
         typename: typeName,
-        id: JSON.stringify([
-          `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
-          order,
-        ]),
+        id: JSON.stringify([format_uuid(uuid), order]),
+      };
+    } else if (type === SlugType.Conversation) {
+      const id1 = buffer.subarray(1, 17).toString("hex");
+      if (id1.length !== 32) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw getAPIError("INVALID_ID", "id1 de mauvaise grandeur");
+      }
+      const id2 = buffer.subarray(17).toString("hex");
+      if (id2.length !== 32) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw getAPIError("INVALID_ID", "id2 de mauvaise grandeur");
+      }
+
+      return {
+        typename: typeName,
+        id: JSON.stringify([format_uuid(id1), format_uuid(id2)]),
       };
     }
 
@@ -101,7 +126,7 @@ export function unslugify(slug: string) {
 
     return {
       typename: typeName,
-      id: `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
+      id: format_uuid(uuid),
     };
   } catch (e) {
     if (e instanceof GraphQLError) throw e;
