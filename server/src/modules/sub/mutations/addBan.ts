@@ -9,7 +9,10 @@ const input = builder.inputType("AddBanInput", {
   fields: (t) => ({
     sub: t.globalID({ for: subRef }),
     user: t.globalID({ for: userRef }),
-    expiry: t.field({ type: "DateTime" }),
+    expiry: t.field({
+      type: "DateTime",
+      validate: { schema: subValidators.banExpiry },
+    }),
     reason: t.string({ validate: { schema: subValidators.banReason } }),
   }),
 });

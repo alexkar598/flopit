@@ -18,7 +18,6 @@ export const APIError = Object.freeze({
   ALREADY_MODERATOR: "Cet utilisateur est déja un modérateur",
   ALREADY_BANNED: "Cet utilisateur est déja banni",
   MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
-  BAN_NOT_FOUND: "Ce banissement n'a pas été trouvé",
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
   UNAUTHORIZED: "Vous n'êtes pas authorisé à accéder à cette information",

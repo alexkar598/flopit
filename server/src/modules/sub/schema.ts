@@ -82,5 +82,11 @@ export const subValidators = {
   banReason: z
     .string()
     .trim()
-    .min(3, "La raison du ban doit avoir 3 caractères ou plus"),
+    .min(3, "La raison du bannissement doit avoir 3 caractères ou plus"),
+  banExpiry: z
+    .date()
+    .refine(
+      (date) => date >= new Date(),
+      "L'expiration du bannissement doit être dans le future",
+    ),
 };

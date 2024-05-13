@@ -19,6 +19,27 @@ form {
     margin-top: 1rem;
   }
 }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+
+    &.oneline {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}
 
 form {
   display: flex;
