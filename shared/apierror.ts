@@ -16,6 +16,7 @@ export const APIError = Object.freeze({
   INVALID_ID: "Un ID fournit est invalide",
   USER_NOT_FOUND: "Cet utilisateur n'existe pas",
   ALREADY_MODERATOR: "Cet utilisateur est déja un modérateur",
+  ALREADY_BANNED: "Cet utilisateur est déja banni",
   MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
