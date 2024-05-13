@@ -7,6 +7,7 @@ import { AccueilComponent } from "./pages/accueil/accueil.component";
 import { ChatComponent } from "~/app/pages/chat/chat.component";
 import { ParametresComponent } from "~/app/pages/parametres/parametres.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
+import { NotFoundComponent } from "~/app/pages/not-found/not-found.component";
 import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 import { SearchPageComponent } from "~/app/pages/search/search.component";
 
@@ -29,4 +30,5 @@ export const routes: Routes = [
       { path: "chat/:user", component: ChatComponent },
     ],
   },
+  { path: "**", component: NotFoundComponent },
 ];

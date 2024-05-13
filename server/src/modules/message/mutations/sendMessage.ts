@@ -14,15 +14,13 @@ const input = builder.inputType("SendMessageInput", {
 });
 
 builder.mutationField("sendMessage", (t) =>
-  t.field({
+  t.withAuth({ authenticated: true }).field({
     type: messageRef,
     nullable: true,
     args: {
       input: t.arg({ type: input }),
     },
     resolve: async (_root, { input }, { authenticated_user_id }) => {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_MUTATION");
-
       if (authenticated_user_id === input.target.id)
         throw getAPIError("MESSAGE_SELF");
 

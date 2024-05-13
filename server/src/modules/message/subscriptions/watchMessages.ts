@@ -1,12 +1,11 @@
 import { builder } from "../../../builder";
 import { Message, messageRef } from "../schema.ts";
 import { userRef } from "../../user/schema.ts";
-import { getAPIError } from "../../../util.ts";
 import { getConversationId } from "../../conversation/util.ts";
 import { createRedisClient } from "../../../redis.ts";
 
 builder.subscriptionField("watchMessages", (t) =>
-  t.field({
+  t.withAuth({ authenticated: true }).field({
     type: messageRef,
     args: {
       target: t.arg.globalID({ for: userRef }),
@@ -18,14 +17,12 @@ builder.subscriptionField("watchMessages", (t) =>
       { target, max, after },
       { authenticated_user_id },
     ) {
-      if (!authenticated_user_id) throw getAPIError("AUTHENTICATED_FIELD");
-
       const conversationId = getConversationId(
         authenticated_user_id,
         target.id,
       );
 
-      let nextId = after ?? "$";
+      let nextId = after || "$";
 
       const redis = await createRedisClient();
 
