@@ -15,6 +15,7 @@ import {
   capitalizeFirst,
   getAPIError,
   slugify,
+  SlugType,
   throwException,
   unslugify,
 } from "./util.ts";
