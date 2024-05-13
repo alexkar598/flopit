@@ -7,6 +7,7 @@ import { SubComponent } from "./pages/sub/sub.component";
 import { AccueilComponent } from "./pages/accueil/accueil.component";
 import { ParametresComponent } from "~/app/pages/parametres/parametres.component";
 import { CreationSubComponent } from "~/app/pages/creation-sub/creation-sub.component";
+import { NotFoundComponent } from "~/app/pages/not-found/not-found.component";
 import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 
 export const routes: Routes = [
@@ -24,4 +25,5 @@ export const routes: Routes = [
     runGuardsAndResolvers: "always",
     children: [{ path: "parametres", component: ParametresComponent }],
   },
+  { path: "**", component: NotFoundComponent },
 ];
