@@ -1,0 +1,29 @@
+:host {
+  display: grid;
+  gap: 1rem;
+  min-height: 32rem;
+
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 18rem 1fr;
+  }
+  & > * {
+    min-height: 100%;
+  }
+}
+
+nb-user {
+  width: 100%;
+  text-align: left;
+}
+
+nb-chat {
+  max-height: 32rem;
+}
+
+.emoji {
+  --text-paragraph-font-size: 2rem;
+}
+
+.placeholder-message {
+  --chat-message-avatar-background-color: transparent;
+}

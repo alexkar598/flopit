@@ -3,11 +3,11 @@ import { createYoga, maskError } from "graphql-yoga";
 import { GraphQLError } from "graphql/error";
 import { resolveAuthentication } from "./modules/auth/auth.ts";
 import { schema, writeSchemaToFile } from "./schema.ts";
+import { ZodError } from "zod";
+import { ErrorCode } from "~shared/apierror.ts";
 import { App, HttpRequest, HttpResponse } from "uWebSockets.js";
 import { makeBehavior } from "graphql-ws/lib/use/uWebSockets";
 import { execute, ExecutionArgs, subscribe } from "graphql";
-import { ZodError } from "zod";
-import { ErrorCode } from "~shared/apierror.ts";
 
 const yoga = createYoga<{
   req: HttpRequest;
