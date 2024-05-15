@@ -1,7 +1,11 @@
 import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
 import { getAPIError } from "../../../../util.ts";
-import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
+import {
+  deltaValidator,
+  quillDeltaToPlainText,
+  uploadDeltaImagesToS3,
+} from "../../delta.ts";
 import { VoteValue } from "../../basepost/schema.ts";
 import { z } from "zod";
 import { topPostRef } from "../../toppost/schema.ts";
@@ -40,6 +44,9 @@ builder.mutationField("createComment", (t) =>
         });
 
         if (parent == null) throw getAPIError("POST_NOT_FOUND");
+
+        // upload images to S3
+        await uploadDeltaImagesToS3(delta);
 
         return tx.post.create({
           ...query,
