@@ -12,6 +12,10 @@ $nb-themes: nb-register-theme(
   default
 );
 
+.nb-theme-default {
+  color-scheme: light;
+}
+
 $nb-themes: nb-register-theme(
   (
     context-menu-text-align: left,
@@ -20,3 +24,7 @@ $nb-themes: nb-register-theme(
   dark,
   dark
 );
+
+.nb-theme-dark {
+  color-scheme: dark;
+}
