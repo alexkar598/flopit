@@ -3,7 +3,11 @@ import { prisma } from "../../../../db.ts";
 import { subRef } from "../../../sub/schema.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
 import { getAPIError } from "../../../../util.ts";
-import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
+import {
+  deltaValidator,
+  quillDeltaToPlainText,
+  uploadDeltaImagesToS3,
+} from "../../delta.ts";
 import { VoteValue } from "../../basepost/schema.ts";
 import { z } from "zod";
 
@@ -40,6 +44,9 @@ builder.mutationField("createPost", (t) =>
           .then((sub) => sub?.id);
 
         if (!subId) throw getAPIError("SUB_NOT_FOUND");
+
+        // upload images to S3
+        await uploadDeltaImagesToS3(delta);
 
         return tx.post.create({
           ...query,

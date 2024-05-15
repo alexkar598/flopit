@@ -35,7 +35,54 @@
             {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
           </button>
 
-          <p>{{ sub.description }}</p>
+          @if (!sub.isModerator) {
+            <p>{{ sub.description }}</p>
+          } @else {
+            @if (this.editing) {
+              <!--
+              https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
+              i hate this
+              -->
+              <div
+                class="grow-wrap"
+                [attr.data-replicated-value]="newDescription"
+              >
+                <textarea
+                  maxlength="512"
+                  placeholder="Description"
+                  [(ngModel)]="newDescription"
+                ></textarea>
+              </div>
+            } @else {
+              <p>{{ sub.description }}</p>
+            }
+
+            <div class="edit-description">
+              @if (this.editing) {
+                <button
+                  class="edit-button"
+                  nbButton
+                  size="large"
+                  shape="round"
+                  (click)="editDescription()"
+                >
+                  <nb-icon icon="close-outline" />
+                </button>
+              }
+
+              <button
+                class="edit-button"
+                nbButton
+                size="large"
+                shape="round"
+                (click)="this.editing ? saveDescription() : editDescription()"
+              >
+                <nb-icon
+                  [icon]="this.editing ? 'checkmark-outline' : 'edit-outline'"
+                />
+              </button>
+            </div>
+          }
 
           <div class="stats-item">
             <div class="stats">

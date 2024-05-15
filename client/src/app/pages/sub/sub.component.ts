@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   NbActionsModule,
@@ -13,8 +13,11 @@ import {
 } from "@nebular/theme";
 import { ModeratorListWindowComponent } from "~/app/windows/moderator-list/moderator-list.component";
 import {
+  EditSubGQL,
   FollowSubGQL,
   FollowSubMutation,
+  HomeFeedDocument,
+  SubFeedDocument,
   SubInformationGQL,
   SubInformationQuery,
   UnfollowSubGQL,
@@ -30,6 +33,7 @@ import {
   tap,
 } from "rxjs";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
+import { FormsModule } from "@angular/forms";
 
 @Component({
   standalone: true,
@@ -42,6 +46,7 @@ import { TopPostListComponent } from "~/app/components/top-post-list/top-post-li
     NbUserModule,
     TopPostListComponent,
     NbSpinnerModule,
+    FormsModule,
     NbActionsModule,
   ],
   templateUrl: "./sub.component.html",
@@ -52,6 +57,11 @@ export class SubComponent {
     null,
   );
 
+  public editing: boolean = false;
+  private loading = false;
+
+  public newDescription: string = "";
+
   constructor(
     router: Router,
     toastrService: NbToastrService,
@@ -60,6 +70,7 @@ export class SubComponent {
     private subInfoQuery: SubInformationGQL,
     private followSubMut: FollowSubGQL,
     private unfollowSubMut: UnfollowSubGQL,
+    private editSubMut: EditSubGQL,
   ) {
     this.route.paramMap
       .pipe(
@@ -98,9 +109,8 @@ export class SubComponent {
         isFollowing: !sub.isFollowing,
         followers: {
           __typename: "SubFollowersConnection",
-          totalCount: sub.followers.totalCount
-            ? sub.followers.totalCount + (sub.isFollowing ? -1 : 1)
-            : null,
+          totalCount:
+            (sub.followers.totalCount ?? 0) + (sub.isFollowing ? -1 : 1),
         },
       },
     };
@@ -113,6 +123,46 @@ export class SubComponent {
       this.followSubMut
         .mutate({ input: { subId: sub.id } }, { optimisticResponse })
         .subscribe();
+
+    this.editing = false;
+  }
+
+  editDescription() {
+    const sub = this.sub$.getValue();
+    if (!sub) return;
+
+    this.editing = !this.editing;
+    if (this.editing) this.newDescription = sub.description;
+  }
+
+  saveDescription() {
+    const sub = this.sub$.getValue();
+    if (!sub) return;
+
+    this.editDescription();
+
+    this.loading = true;
+    this.editSubMut
+      .mutate(
+        {
+          input: {
+            id: sub.id,
+            description: this.newDescription,
+          },
+        },
+        {
+          optimisticResponse: {
+            editSub: {
+              ...sub,
+              description: this.newDescription,
+            },
+          },
+        },
+      )
+      .subscribe(async (res) => {
+        this.loading = false;
+        if (res.errors) return;
+      });
   }
 
   openModeratorsWindow() {

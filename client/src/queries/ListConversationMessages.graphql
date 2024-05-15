@@ -1,0 +1,24 @@
+query ListConversationMessages($conversation: ID!, $cursor: ID) {
+  node(id: $conversation) {
+    id
+    ... on Conversation {
+      lastInteraction
+      target {
+        id
+      }
+      messages(last: 20, before: $cursor) {
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          node {
+            ...Message
+          }
+        }
+      }
+    }
+  }
+}

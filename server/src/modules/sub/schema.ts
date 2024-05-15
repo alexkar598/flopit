@@ -49,6 +49,23 @@ export const subRef = builder.prismaNode("Sub", {
           },
         })) != null,
     }),
+    isModerator: t.boolean({
+      select: {
+        id: true,
+      },
+      nullable: true,
+      resolve: async ({ id: sub_id }, _args, { authenticated_user_id }) => {
+        if (authenticated_user_id == null)
+          throw getAPIError("AUTHENTICATED_FIELD");
+        return (
+          (await prisma.moderator.findUnique({
+            where: {
+              user_id_sub_id: { sub_id, user_id: authenticated_user_id },
+            },
+          })) != null
+        );
+      },
+    }),
   }),
 });
 
@@ -62,4 +79,14 @@ export const subValidators = {
       "Le nom d'une communauté doit comprendre uniquement des lettres non-accentuées, des nombres, des emojis et les caractères _ et -",
     ),
   description: z.string().trim(),
+  banReason: z
+    .string()
+    .trim()
+    .min(3, "La raison du bannissement doit avoir 3 caractères ou plus"),
+  banExpiry: z
+    .date()
+    .refine(
+      (date) => date >= new Date(),
+      "L'expiration du bannissement doit être dans le future",
+    ),
 };

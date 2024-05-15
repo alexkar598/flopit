@@ -25,3 +25,7 @@ body {
 a:has(nb-user) {
   text-decoration: none !important;
 }
+
+nb-chat .scrollable {
+  overflow-anchor: auto;
+}

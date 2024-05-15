@@ -1,0 +1,8 @@
+fragment Message on Message {
+  id
+  textContent
+  created
+  author {
+    id
+  }
+}

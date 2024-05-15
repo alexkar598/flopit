@@ -12,3 +12,20 @@ mutation DeletePost($id: ID!) {
     }
   }
 }
+
+query DeletePostInfo($post: ID!) {
+  node(id: $post) {
+    ...DeletePostInfo
+  }
+}
+
+fragment DeletePostInfo on BasePost {
+  id
+  author {
+    id
+  }
+  sub {
+    id
+    isModerator
+  }
+}

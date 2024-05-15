@@ -1,6 +1,7 @@
 import { ApplicationConfig, importProvidersFrom } from "@angular/core";
 import { provideRouter, withRouterConfig } from "@angular/router";
 import {
+  NbDatepickerModule,
   NbMenuModule,
   NbThemeModule,
   NbToastrModule,
@@ -14,15 +15,18 @@ import { graphqlProvider } from "./graphql.provider";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { QuillConfig, QuillModule } from "ngx-quill";
 
-const quillConfig: QuillConfig = {
+export const quillConfig: QuillConfig = {
   modules: {
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      ["link"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ header: [1, 2, 3, false] }],
-      ["clean"],
-    ],
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["blockquote", "code-block"],
+        ["link", "image"],
+        ["clean"],
+      ],
+    },
   },
 };
 
@@ -35,12 +39,13 @@ export const appConfig: ApplicationConfig = {
       NbToastrModule.forRoot({
         destroyByClick: true,
         preventDuplicates: true,
-        duration: 1500,
+        duration: 5000,
       }),
       NbMenuModule.forRoot(),
       NbWindowModule.forRoot({
         buttons: { maximize: false, fullScreen: false, minimize: false },
       }),
+      NbDatepickerModule.forRoot(),
       QuillModule.forRoot(quillConfig),
       BrowserAnimationsModule,
     ),

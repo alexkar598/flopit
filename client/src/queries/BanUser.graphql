@@ -1,0 +1,5 @@
+mutation BanUser($input: AddBanInput!) {
+  addBan(input: $input) {
+    id
+  }
+}
