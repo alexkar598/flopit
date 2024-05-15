@@ -1,27 +1,41 @@
-const memcache = new Map<string, string>();
+import { redis } from "./redis.ts";
 
 export const cache = {
-  async get(key: string): Promise<string | undefined> {
-    return memcache.get(key);
+  get(key: string): Promise<string | null> {
+    return redis.get("cache:" + key);
   },
 
-  async set(key: string, value: { toString(): string }): Promise<void> {
-    memcache.set(key, value.toString());
+  async set(key: string, value: { toString(): string } | null): Promise<void> {
+    if (value == null) {
+      await redis.del("cache:" + key);
+      return;
+    }
+
+    await redis.set("cache:" + key, value.toString());
   },
 
   async getOrSet(
     key: string,
-    newValue: string | (() => string | Promise<string>),
+    getNewValue: string | (() => string | Promise<string>),
   ): Promise<string> {
-    let value: string | Promise<string> | undefined = await this.get(key);
-    if (value === undefined) {
-      if (typeof newValue === "function") {
-        value = newValue();
-        if (typeof value !== "string")
-          value.then((stringValue) => this.set(key, stringValue));
-      } else value = newValue;
-    }
+    const oldValue = await this.get(key);
 
-    return value;
+    if (oldValue != null) return oldValue;
+
+    const newValue =
+      typeof getNewValue === "function" ? await getNewValue() : getNewValue;
+
+    void this.set(key, newValue);
+
+    return newValue;
+  },
+
+  ns(ns: string) {
+    return new Proxy(this, {
+      get(proxiedCache, name: keyof typeof cache) {
+        return (key: string, arg: any) =>
+          proxiedCache[name](ns + ":" + key, arg);
+      },
+    });
   },
 } as const;
