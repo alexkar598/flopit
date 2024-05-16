@@ -1,4 +1,5 @@
 import { builder } from "../../../../builder.ts";
+import { cache } from "../../../../cache.ts";
 import { prisma } from "../../../../db.ts";
 import { getAPIError } from "../../../../util.ts";
 import { deltaValidator, uploadDeltaImagesToS3 } from "../../delta.ts";
@@ -37,7 +38,10 @@ builder.mutationField("editComment", (t) => {
       return post.Author?.id === authenticated_user_id;
     },
     resolve: async (query, _root, { input }) => {
-      if (delta != null) await uploadDeltaImagesToS3(delta);
+      if (input.delta_content != null)
+        await uploadDeltaImagesToS3(input.delta_content as any);
+
+      await cache.ns("htmlContent").set(input.id.id, null);
 
       return prisma.post.update({
         ...query,

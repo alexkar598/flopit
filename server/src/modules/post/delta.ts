@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { minioUploadFile } from "../../minio.ts";
-import { getImg, ImageTransformations } from "../../util.ts";
+import { getImg, getImgSize, ImageTransformations } from "../../util.ts";
+// @ts-ignore
+import { deltaToHtml as originalDeltaToHtml } from "deltaconvert";
 
 export const deltaValidator = z
   .object({
     ops: z.array(
       z.object({
-        insert: z.union([z.string(), z.object({ image: z.string() })]),
+        insert: z.union([z.string(), z.object({ image: z.string() }).strict()]),
         attributes: z
           .object({
             header: z.number().int().gte(1).lte(6).optional(),
@@ -15,7 +17,6 @@ export const deltaValidator = z
             italic: z.boolean().optional(),
             bold: z.boolean().optional(),
             blockquote: z.boolean().optional(),
-            "code-block": z.enum(["plain"]).optional(),
             list: z.enum(["ordered", "bullet"]).optional(),
           })
           .optional(),
@@ -62,7 +63,12 @@ export function uploadDeltaImagesToS3(
 
 export async function signDeltaImages(
   delta: z.infer<typeof deltaValidator>,
-  transformations: ImageTransformations,
+  withOid = false,
+  transformations: ImageTransformations = {
+    width: 1280,
+    height: 1280,
+    resizeMode: "fit",
+  },
 ): Promise<z.infer<typeof deltaValidator> | null> {
   if (delta.ops == null) return null;
 
@@ -76,13 +82,33 @@ export async function signDeltaImages(
 
         return {
           insert: {
-            image: getImg(oid, transformations) + "#" + oid,
+            image: getImg(oid, transformations) + (withOid ? "#" + oid : ""),
           },
         };
       })
-      .filter(
-        (op): op is { insert: string | { image: string; imageOid: string } } =>
-          op != null,
-      ),
+      .filter((op): op is { insert: string | { image: string } } => op != null),
   };
+}
+
+export async function deltaToHtml(
+  delta: z.infer<typeof deltaValidator>,
+): Promise<string> {
+  let imageIdx = 0;
+
+  const imageSizes = await Promise.all(
+    delta.ops
+      .filter(
+        (op): op is { insert: { image: string } } =>
+          typeof op.insert === "object",
+      )
+      .map((op) => getImgSize(op.insert.image)),
+  );
+
+  return (originalDeltaToHtml(delta) as string).replaceAll("<img ", () => {
+    const size = imageSizes[imageIdx++];
+    return (
+      '<img loading="lazy" decoding="async" ' +
+      (size != null ? `width="${size.width}" height="${size.height}" ` : "")
+    );
+  });
 }

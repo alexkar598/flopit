@@ -1,7 +1,8 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { topPostRef } from "../toppost/schema.ts";
-import { signDeltaImages } from "../delta.ts";
+import { deltaToHtml, signDeltaImages } from "../delta.ts";
+import { cache } from "../../../cache.ts";
 
 export enum VoteValue {
   Down = -1,
@@ -34,10 +35,32 @@ export const basePostRef = builder.prismaInterface("Post", {
       nullable: true,
       type: "JSON",
       resolve: ({ delta_content }) =>
-        signDeltaImages(delta_content as any, {
-          width: 1280,
-          height: 1280,
-          resizeMode: "fit",
+        signDeltaImages(delta_content as any, true),
+    }),
+    htmlContent: t.field({
+      select: {
+        id: true,
+      },
+      type: "String",
+      resolve: ({ id }) =>
+        cache.ns("htmlContent").getOrSet(id, async () => {
+          const deltaContent = {
+            ops:
+              (
+                (
+                  await prisma.post.findUniqueOrThrow({
+                    select: { delta_content: true },
+                    where: { id },
+                  })
+                ).delta_content as any
+              ).ops ?? [],
+          };
+
+          const deltaWithImages = await signDeltaImages(deltaContent);
+
+          if (deltaWithImages == null) return "";
+
+          return deltaToHtml(deltaWithImages);
         }),
     }),
     cachedVotes: t.expose("cached_votes", {

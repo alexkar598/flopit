@@ -2,6 +2,7 @@ mutation EditComment($input: EditCommentInput!) {
   editComment(input: $input) {
     id
     deltaContent
+    htmlContent
   }
 }
 

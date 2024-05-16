@@ -22,7 +22,7 @@ export const quillConfig: QuillConfig = {
         [{ header: [1, 2, 3, false] }],
         ["bold", "italic", "strike"],
         [{ list: "ordered" }, { list: "bullet" }],
-        ["blockquote", "code-block"],
+        ["blockquote"],
         ["link", "image"],
         ["clean"],
       ],

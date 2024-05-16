@@ -2,6 +2,7 @@ mutation DeletePost($id: ID!) {
   deletePost(input: {id: $id}) {
     id
     deltaContent
+    htmlContent
     textContent
     author {
       id
