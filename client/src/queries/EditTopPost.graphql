@@ -3,6 +3,7 @@ mutation EditTopPost($input: EditTopPostInput!) {
     id
     title
     deltaContent
+    htmlContent
   }
 }
 

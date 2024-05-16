@@ -1,15 +1,21 @@
-import { Component, Input, ViewEncapsulation } from "@angular/core";
-import { QuillViewComponent } from "ngx-quill";
+import { Component, Input } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import { QuillViewComponent, QuillViewHTMLComponent } from "ngx-quill";
 
 @Component({
   selector: "app-rich-text",
   standalone: true,
-  imports: [QuillViewComponent],
+  imports: [QuillViewComponent, QuillViewHTMLComponent],
   templateUrl: "./rich-text.component.html",
   styleUrl: "./rich-text.component.scss",
-  encapsulation: ViewEncapsulation.None,
 })
 export class RichTextComponent {
   @Input({ required: true })
-  public delta: any = null!;
+  public html: string = null!;
+
+  constructor(protected sanitizer: DomSanitizer) {}
+
+  getHtml() {
+    return this.sanitizer.bypassSecurityTrustHtml(this.html);
+  }
 }

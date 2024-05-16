@@ -153,8 +153,18 @@ export interface ImageTransformations {
     | "tiff";
 }
 
+const imgproxy_url = process.env.IMGPROXY_URL!;
 const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
 const imgproxy_salt = Buffer.from(process.env.IMGPROXY_SALT!, "hex");
+
+function signImgproxy(unsigned_url: string): string {
+  return crypto
+    .createHmac("sha256", imgproxy_key)
+    .update(imgproxy_salt)
+    .update(unsigned_url)
+    .digest()
+    .toString("base64url");
+}
 
 export function getImg<OID extends string | null>(
   oid: OID,
@@ -170,11 +180,25 @@ export function getImg<OID extends string | null>(
   );
   let unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
   if (trans.format) unsigned_url += `.${trans.format}`;
-  const hmac = crypto
-    .createHmac("sha256", imgproxy_key)
-    .update(imgproxy_salt)
-    .update(unsigned_url)
-    .digest()
-    .toString("base64url");
-  return "/image/" + hmac + unsigned_url;
+
+  return "/image/" + signImgproxy(unsigned_url) + unsigned_url;
+}
+
+interface ImageSize {
+  width: number;
+  height: number;
+}
+
+export async function getImgSize(imgUrl: string): Promise<ImageSize | null> {
+  const url = new URL(imgUrl, imgproxy_url);
+
+  try {
+    let res = await fetch(url);
+    return {
+      width: parseInt(res.headers.get("X-Result-Width")!),
+      height: parseInt(res.headers.get("X-Result-Height")!),
+    };
+  } catch {
+    return null;
+  }
 }

@@ -3,7 +3,7 @@
     @for (comment of comments; track comment.id) {
       <nb-card>
         <nb-card-body>
-          <app-rich-text [delta]="comment.deltaContent" />
+          <app-rich-text [html]="comment.htmlContent" />
         </nb-card-body>
 
         <nb-card-footer>

@@ -28,7 +28,7 @@
         </nb-card-header>
 
         <nb-card-body>
-          <app-rich-text [delta]="elem.deltaContent" />
+          <app-rich-text [html]="elem.htmlContent" />
         </nb-card-body>
 
         <nb-card-footer>
@@ -77,7 +77,7 @@
         </nb-card-header>
         <nb-card-body>
           <div class="parent">
-            <app-rich-text [delta]="elem.parent.deltaContent"></app-rich-text>
+            <app-rich-text [html]="elem.parent.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.parent.cachedVotes }}</span>
               <nb-user
@@ -91,7 +91,7 @@
             </div>
           </div>
           <div class="child">
-            <app-rich-text [delta]="elem.deltaContent"></app-rich-text>
+            <app-rich-text [html]="elem.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.cachedVotes }}</span>
               <nb-user

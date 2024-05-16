@@ -1,6 +1,6 @@
 fragment CommentListInfo on Comment {
   id
-  deltaContent
+  htmlContent
   author {
     id
     username

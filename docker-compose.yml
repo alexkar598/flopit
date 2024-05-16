@@ -21,6 +21,7 @@ services:
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_REGION: ${S3_REGION}
+      IMGPROXY_URL: http://imgproxy:8080/image/
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
     restart: unless-stopped
@@ -35,6 +36,7 @@ services:
       - mariadb
       - minio
       - redis
+      - imgproxy:nginx
     extra_hosts:
       - "apiserver:127.0.0.1"
     healthcheck:
@@ -190,6 +192,7 @@ services:
       IMGPROXY_MAX_ANIMATION_FRAMES: 24
       IMGPROXY_ALLOW_ORIGIN: "*"
       IMGPROXY_ALLOWED_SOURCES: s3://, https://
+      IMGPROXY_PREFERRED_FORMATS: webp,gif
       IMGPROXY_JPEG_PROGRESSIVE: true
       IMGPROXY_USE_S3: true
       IMGPROXY_S3_ENDPOINT: http://minio:9000/

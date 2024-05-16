@@ -8,6 +8,7 @@ import {
   uploadDeltaImagesToS3,
 } from "../../delta.ts";
 import { topPostRef, topPostValidators } from "../schema.ts";
+import { cache } from "../../../../cache.ts";
 
 const input = builder.inputType("EditTopPostInput", {
   fields: (t) => ({
@@ -51,6 +52,8 @@ builder.mutationField("editTopPost", (t) => {
       const delta = input.delta_content as z.infer<typeof deltaValidator>;
 
       if (delta != null) await uploadDeltaImagesToS3(delta);
+
+      await cache.ns("htmlContent").set(input.id.id, null);
 
       return prisma.post.update({
         ...query,

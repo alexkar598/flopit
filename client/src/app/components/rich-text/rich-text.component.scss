@@ -1,7 +1,8 @@
-/**
-encapsulation: ViewEncapsulation.None
- */
+.quill-view-html {
+  border: none;
+  margin: 1rem;
+}
 
-:host .ql-editor {
+.ql-editor {
   display: contents;
 }
