@@ -3,6 +3,8 @@
 @use "@nebular/theme/styles/themes/default";
 @use "@nebular/theme/styles/themes/dark";
 
+$nb-enable-css-custom-properties: true;
+
 $nb-themes: nb-register-theme(
   (
     context-menu-text-align: left,

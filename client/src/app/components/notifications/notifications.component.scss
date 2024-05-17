@@ -5,4 +5,23 @@
 .popup {
   padding: 1.5rem;
   background-color: nb-theme(header-background-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.notification {
+  &:not(:last-of-type) {
+    border-bottom: solid var(--color-basic-500) 1px;
+  }
+
+  padding: 0.5rem 0;
+
+  &.notification-link {
+    cursor: pointer;
+  }
+
+  .notification-date {
+    display: block;
+    text-align: right;
+  }
 }

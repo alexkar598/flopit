@@ -5,11 +5,27 @@
     [badgeDot]="notificationsAvailable | async"
     badgeStatus="danger"
     [nbPopover]="notifications"
+    (nbPopoverShowStateChange)="open = $event.isShown"
     nbPopoverPlacement="bottom"
   />
 </nb-actions>
 <ng-template #notifications>
   <div class="popup">
+    @for (
+      notification of pushNotifications.notifications$ | async;
+      track notification.id
+    ) {
+      <div
+        class="notification"
+        [routerLink]="notification.url"
+        [class.notification-link]="notification.url != null"
+      >
+        {{ notification.message }}
+        <span class="notification-date text-hint">
+          {{ notification.created | relativeDate | async }}
+        </span>
+      </div>
+    }
     @if (pushNotificationsEnabled | async) {
       <button
         nbButton
