@@ -9,35 +9,7 @@
           [nbContextMenu]="userMenuItems"
           nbContextMenuTag="header-user-menu"
         />
-        <nb-actions>
-          <nb-action
-            nbButton
-            icon="bell-outline"
-            [badgeDot]="notificationsAvailable | async"
-            badgeStatus="danger"
-            [nbPopover]="notifications"
-            nbPopoverPlacement="bottom"
-          />
-        </nb-actions>
-        <ng-template #notifications>
-          @if (pushNotificationsEnabled | async) {
-            <button
-              nbButton
-              status="danger"
-              (click)="pushNotifications.disableNotifications()"
-            >
-              Désactiver notifications
-            </button>
-          } @else {
-            <button
-              nbButton
-              status="primary"
-              (click)="pushNotifications.enableNotifications()"
-            >
-              Activer notifications
-            </button>
-          }
-        </ng-template>
+        <app-notifications />
       </div>
     } @else {
       <div>

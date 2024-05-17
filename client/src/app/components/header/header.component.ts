@@ -1,10 +1,5 @@
-import { CommonModule, isPlatformBrowser } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  PLATFORM_ID,
-} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
@@ -19,14 +14,11 @@ import {
   NbPopoverModule,
   NbUserModule,
 } from "@nebular/theme";
+import { NotificationsComponent } from "~/app/components/notifications/notifications.component";
 import { SearchComponent } from "~/app/components/search/search.component";
 import { ThemeService } from "~/app/services/theme.service";
 import { UserService } from "~/app/services/user.service";
 import { Theme } from "~/graphql";
-import { SwPush } from "@angular/service-worker";
-import { PushNotificationsService } from "~/app/services/push-notifications.service";
-import { map, shareReplay } from "rxjs";
-import { notNull } from "~/app/util";
 
 @Component({
   selector: "app-header",
@@ -45,6 +37,7 @@ import { notNull } from "~/app/util";
     SearchComponent,
     NbActionsModule,
     NbPopoverModule,
+    NotificationsComponent,
   ],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.css",
@@ -55,18 +48,7 @@ export class HeaderComponent {
     public userService: UserService,
     public themeService: ThemeService,
     private router: Router,
-    protected pushNotifications: PushNotificationsService,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
-
-  protected pushNotificationsEnabled = this.pushNotifications.subscription.pipe(
-    map(notNull),
-    shareReplay(1),
-  );
-
-  protected notificationsAvailable = this.pushNotificationsEnabled.pipe(
-    map((x) => isPlatformBrowser(this.platformId) && x == null),
-  );
 
   public userMenuItems: NbClickableMenuItem[] = [
     {
