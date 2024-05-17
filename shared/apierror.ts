@@ -25,4 +25,5 @@ export const APIError = Object.freeze({
   CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
   BLOCKED: "Cet utilisateur vous a bloqué",
   VALIDATION_ERROR: "Erreur de validation",
+  PUSH_NOTIFICATION_NOT_FOUND: "Abonnement pas trouvé!",
 });

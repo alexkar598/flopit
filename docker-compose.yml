@@ -24,6 +24,9 @@ services:
       IMGPROXY_URL: http://imgproxy:8080/image/
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT}
     restart: unless-stopped
     depends_on:
       mariadb:
