@@ -19,8 +19,8 @@ export async function notifyUser(
   });
 
   const notification: Omit<Notification, "id"> = {
-    url: url,
     message: message,
+    ...(url && { url }),
   };
 
   await redis.xAdd(`notif:${userId}`, "*", notification);
