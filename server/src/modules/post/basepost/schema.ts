@@ -70,6 +70,9 @@ export const basePostRef = builder.prismaInterface("Post", {
       select: {
         id: true,
       },
+      authScopes: {
+        authenticated: true,
+      },
       nullable: true,
       type: voteValueRef,
       resolve: async ({ id: post_id }, _args, { authenticated_user_id }) => {
