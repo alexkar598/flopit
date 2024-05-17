@@ -30,7 +30,8 @@ app-search {
   width: 15rem;
 }
 
-nb-user {
+.user-info {
   margin: auto 0 auto 0;
   width: fit-content;
+  display: flex;
 }

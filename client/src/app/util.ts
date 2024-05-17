@@ -24,3 +24,9 @@ export function isFragment<Fragment extends { __typename?: string }>(
     return true;
   };
 }
+
+export function buf2hex(buf: ArrayBuffer) {
+  return [...new Uint8Array(buf)]
+    .map((x) => x.toString(16).padStart(2, "0"))
+    .join("");
+}

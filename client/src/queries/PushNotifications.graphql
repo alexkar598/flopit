@@ -1,0 +1,13 @@
+query PushNotificationsInfo {
+  pushNotificationsPublicKey
+}
+
+mutation SubscribePushNotifications($input: SubscribePushNotifications!) {
+  subscribePushNotifications(input: $input) {
+    id
+  }
+}
+
+mutation UnsubscribePushNotifications($input: UnsubscribePushNotifications!) {
+  unsubscribePushNotifications(input: $input)
+}

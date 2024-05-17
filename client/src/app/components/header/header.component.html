@@ -1,13 +1,44 @@
 <div class="barre">
   <div class="connexion">
     @if (userService.currentUser$ | async; as user) {
-      <nb-user
-        [name]="user.username"
-        [picture]="user.avatarUrl ?? ''"
-        color="#EEE"
-        [nbContextMenu]="userMenuItems"
-        nbContextMenuTag="header-user-menu"
-      />
+      <div class="user-info">
+        <nb-user
+          [name]="user.username"
+          [picture]="user.avatarUrl ?? ''"
+          color="#EEE"
+          [nbContextMenu]="userMenuItems"
+          nbContextMenuTag="header-user-menu"
+        />
+        <nb-actions>
+          <nb-action
+            nbButton
+            icon="bell-outline"
+            [badgeDot]="notificationsAvailable | async"
+            badgeStatus="danger"
+            [nbPopover]="notifications"
+            nbPopoverPlacement="bottom"
+          />
+        </nb-actions>
+        <ng-template #notifications>
+          @if (pushNotificationsEnabled | async) {
+            <button
+              nbButton
+              status="danger"
+              (click)="pushNotifications.disableNotifications()"
+            >
+              Désactiver notifications
+            </button>
+          } @else {
+            <button
+              nbButton
+              status="primary"
+              (click)="pushNotifications.enableNotifications()"
+            >
+              Activer notifications
+            </button>
+          }
+        </ng-template>
+      </div>
     } @else {
       <div>
         <button routerLink="/inscription" nbButton status="primary">
