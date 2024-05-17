@@ -1,4 +1,8 @@
-import { ApplicationConfig, importProvidersFrom } from "@angular/core";
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from "@angular/core";
 import { provideRouter, withRouterConfig } from "@angular/router";
 import {
   NbDatepickerModule,
@@ -14,6 +18,7 @@ import { provideHttpClient, withFetch } from "@angular/common/http";
 import { graphqlProvider } from "./graphql.provider";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { QuillConfig, QuillModule } from "ngx-quill";
+import { provideServiceWorker } from "@angular/service-worker";
 
 export const quillConfig: QuillConfig = {
   modules: {
@@ -51,5 +56,9 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     graphqlProvider,
+    provideServiceWorker("ngsw-worker.js", {
+      enabled: !isDevMode(),
+      registrationStrategy: "registerWhenStable:30000",
+    }),
   ],
 };
