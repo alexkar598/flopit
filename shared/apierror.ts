@@ -26,4 +26,5 @@ export const APIError = Object.freeze({
   BLOCKED: "Cet utilisateur vous a bloqué",
   VALIDATION_ERROR: "Erreur de validation",
   PUSH_NOTIFICATION_NOT_FOUND: "Abonnement pas trouvé!",
+  PUSH_NOTIFICATION_INVALID: "Abonnement invalide",
 });
