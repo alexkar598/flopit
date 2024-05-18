@@ -190,3 +190,13 @@ input[type="file"]::file-selector-button {
   width: fit-content;
   height: fit-content;
 }
+
+.icon-button,
+.banner-button {
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}

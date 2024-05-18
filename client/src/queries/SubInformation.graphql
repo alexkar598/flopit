@@ -1,18 +1,22 @@
 query SubInformation($sub_name: String!) {
   subByName(name: $sub_name) {
-    id
-    name
-    description
-    iconUrl
-    bannerUrl
-    isModerator
-    followers {
-      totalCount
-    }
-    posts {
-      totalCount
-    }
-    isFollowing
-    isModerator
+    ...SubInformation
   }
+}
+
+fragment SubInformation on Sub {
+  id
+  name
+  description
+  iconUrl
+  bannerUrl
+  isModerator
+  followers {
+    totalCount
+  }
+  posts {
+    totalCount
+  }
+  isFollowing
+  isModerator
 }

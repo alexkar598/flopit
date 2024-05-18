@@ -3,11 +3,9 @@
 
   <div class="sidebar">
     @if (sub$ | async; as sub) {
-      <nb-card class="barre-infos">
+      <nb-card class="barre-infos" [formGroup]="form">
         <nb-card-header
-          style="background-image: linear-gradient(darkgrey), url('{{
-            sub.bannerUrl ?? ''
-          }}');"
+          [style.background-image]="'url(' + ((bannerUrl | async) ?? '') + ')'"
         >
           <div>
             <h1 class="nom-sub">f/{{ sub.name }}</h1>
@@ -19,11 +17,14 @@
                 class="input-param"
                 type="file"
                 accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
-                (change)="onIconChange($event.target)"
                 hidden
                 #iconPicker
+                formControlName="icon"
               />
               <button
+                [style.background-image]="
+                  'url(' + ((iconUrl | async) ?? '') + ')'
+                "
                 class="icon-button"
                 nbButton
                 outline
@@ -52,8 +53,8 @@
               class="input-param"
               type="file"
               accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
-              (change)="onBannerChange($event.target)"
               hidden
+              formControlName="banner"
               #bannerPicker
             />
             <button
@@ -74,7 +75,7 @@
             nbButton
             [status]="sub.isFollowing ? 'basic' : 'primary'"
             class="bouton-rejoindre"
-            (click)="toggleFollow()"
+            (click)="actionToggleFollow$.next()"
           >
             {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
           </button>
@@ -89,13 +90,15 @@
               -->
               <div
                 class="grow-wrap"
-                [attr.data-replicated-value]="newDescription"
+                [attr.data-replicated-value]="
+                  this.form.getRawValue().description
+                "
               >
                 <textarea
                   rows="1"
                   maxlength="512"
                   placeholder="Description"
-                  [(ngModel)]="newDescription"
+                  formControlName="description"
                 ></textarea>
               </div>
             } @else {
@@ -109,7 +112,7 @@
                   nbButton
                   size="large"
                   shape="round"
-                  (click)="editDescription()"
+                  (click)="editing$.next(false)"
                 >
                   <nb-icon icon="close-outline" />
                 </button>
@@ -120,7 +123,9 @@
                 nbButton
                 size="large"
                 shape="round"
-                (click)="this.editing ? saveDescription() : editDescription()"
+                (click)="
+                  this.editing ? actionSave$.next() : editing$.next(true)
+                "
               >
                 <nb-icon
                   [icon]="this.editing ? 'checkmark-outline' : 'edit-outline'"
@@ -144,7 +149,7 @@
           @if (sub.isModerator) {
             <hr />
             <nb-actions class="moderator-actions" [fullWidth]="true">
-              <nb-action (click)="openModeratorsWindow()">
+              <nb-action (click)="actionEditModerators$.next()">
                 <nb-icon icon="people-outline" />
                 Gérer modérateurs
               </nb-action>
