@@ -202,3 +202,33 @@ export async function getImgSize(imgUrl: string): Promise<ImageSize | null> {
     return null;
   }
 }
+
+export function isObject(item: unknown): item is Object {
+  return !!item && typeof item === "object" && !Array.isArray(item);
+}
+
+export function deepMerge<T extends {}, U extends {}>(
+  target: T | undefined | null,
+  source: U,
+): T & U {
+  //@ts-ignore
+  target ??= {};
+  target = Object.assign({}, target);
+
+  Object.keys(source).forEach((key) => {
+    //@ts-ignore
+    const sVal = source[key];
+    //@ts-ignore
+    const tVal = target[key];
+
+    if (isObject(sVal) && isObject(tVal)) {
+      // @ts-ignore
+      target[key] = deepMerge(sVal, tVal);
+    } else {
+      // @ts-ignore
+      target[key] = sVal;
+    }
+  });
+  // @ts-ignore
+  return target;
+}
