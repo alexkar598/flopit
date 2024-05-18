@@ -4,6 +4,7 @@ import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
 import { userRef } from "../../user/schema.ts";
 import { subRef } from "../schema.ts";
+import { notifyUser } from "../../notifications/util.ts";
 
 const input = builder.inputType("RemoveModeratorInput", {
   fields: (t) => ({
@@ -34,7 +35,9 @@ builder.mutationField("removeModerator", (t) =>
 
       try {
         const moderator = await prisma.moderator.delete({
-          select: { Sub: { ...query } },
+          select: {
+            Sub: { ...query, select: { ...query.select, name: true } },
+          },
           where: {
             user_id_sub_id: {
               user_id,
@@ -42,6 +45,12 @@ builder.mutationField("removeModerator", (t) =>
             },
           },
         });
+
+        notifyUser(
+          user_id,
+          `Vous n'êtes plus un modérateur de f/${moderator.Sub.name}`,
+          `f/${moderator.Sub.name}`,
+        );
 
         return moderator.Sub;
       } catch (e) {

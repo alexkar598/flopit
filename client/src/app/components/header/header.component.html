@@ -1,13 +1,16 @@
 <div class="barre">
   <div class="connexion">
     @if (userService.currentUser$ | async; as user) {
-      <nb-user
-        [name]="user.username"
-        [picture]="user.avatarUrl ?? ''"
-        color="#EEE"
-        [nbContextMenu]="userMenuItems"
-        nbContextMenuTag="header-user-menu"
-      />
+      <div class="user-info">
+        <nb-user
+          [name]="user.username"
+          [picture]="user.avatarUrl ?? ''"
+          color="#EEE"
+          [nbContextMenu]="userMenuItems"
+          nbContextMenuTag="header-user-menu"
+        />
+        <app-notifications />
+      </div>
     } @else {
       <div>
         <button routerLink="/inscription" nbButton status="primary">

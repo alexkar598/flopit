@@ -12,7 +12,6 @@ import {
 } from "@angular/core";
 import {
   ApolloClientOptions,
-  ApolloLink,
   FieldMergeFunction,
   from,
   InMemoryCache,
@@ -22,7 +21,6 @@ import { Router } from "@angular/router";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { Kind, OperationDefinitionNode } from "graphql/language";
-import { HttpHeaders } from "@angular/common/http";
 import { Maybe, Node, StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
@@ -43,7 +41,8 @@ export function apolloOptionsFactory(
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
 
-  const basePath = isBrowser ? "" : "http://apiserver:3000";
+  const basePath = isBrowser ? window.location.host : "apiserver:3000";
+  const scheme = isBrowser ? window.location.protocol : "http:";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -92,11 +91,16 @@ export function apolloOptionsFactory(
   });
 
   const http = createUploadLink({
-      uri: `${basePath}${uri}`,
-    });
+    uri: `${scheme}//${basePath}${uri}`,
+  });
 
   let ws: GraphQLWsLink | undefined;
-  if (isBrowser) ws = new GraphQLWsLink(createClient({ url: uri }));
+  if (isBrowser)
+    ws = new GraphQLWsLink(
+      createClient({
+        url: `${scheme == "http:" ? "ws:" : "wss:"}//${basePath}${uri}`,
+      }),
+    );
 
   const link = from([
     setContext((_, previous) => ({
@@ -134,7 +138,6 @@ export function apolloOptionsFactory(
   };
 }
 
-type CachedMessageEdge = { node: { __ref: string } };
 const messageFieldPolicyPagination = relayStylePagination(["target"]);
 
 export const graphqlProvider: ApplicationConfig["providers"] = [

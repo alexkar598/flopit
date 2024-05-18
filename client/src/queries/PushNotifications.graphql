@@ -1,0 +1,39 @@
+query PushNotificationsInfo {
+  pushNotificationsPublicKey
+}
+
+mutation SubscribePushNotifications($input: SubscribePushNotifications!) {
+  subscribePushNotifications(input: $input) {
+    id
+  }
+}
+
+mutation UnsubscribePushNotifications($input: UnsubscribePushNotifications!) {
+  unsubscribePushNotifications(input: $input)
+}
+
+fragment Notification on Notification {
+  id
+  created
+  message
+  url
+}
+
+query OldNotifications {
+  currentUser {
+    id
+    notifications(last: 5) {
+      edges {
+        node {
+          ...Notification
+        }
+      }
+    }
+  }
+}
+
+subscription NewNotifications {
+  watchNotifications {
+    ...Notification
+  }
+}

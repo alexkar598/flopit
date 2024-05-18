@@ -1,0 +1,27 @@
+:host {
+  display: contents;
+}
+
+.popup {
+  padding: 1.5rem;
+  background-color: nb-theme(header-background-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.notification {
+  &:not(:last-of-type) {
+    border-bottom: solid var(--color-basic-500) 1px;
+  }
+
+  padding: 0.5rem 0;
+  max-width: 24rem;
+
+  text-decoration: none !important;
+  color: var(--text-basic-color) !important;
+
+  .notification-date {
+    display: block;
+    text-align: right;
+  }
+}

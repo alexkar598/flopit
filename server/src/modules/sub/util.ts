@@ -12,7 +12,7 @@ export async function isBanned(
       where: {
         user_id: userId,
         sub_id: subId,
-        expiry: { lte: new Date() },
+        expiry: { gt: new Date() },
       },
     }))
   );

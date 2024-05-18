@@ -4,6 +4,7 @@ import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
 import { userRef } from "../../user/schema.ts";
 import { subRef, subValidators } from "../schema.ts";
+import { notifyUser } from "../../notifications/util.ts";
 
 const input = builder.inputType("AddBanInput", {
   fields: (t) => ({
@@ -39,7 +40,9 @@ builder.mutationField("addBan", (t) =>
     ) => {
       try {
         const ban = await prisma.ban.create({
-          select: { Sub: { ...query } },
+          select: {
+            Sub: { ...query, select: { ...query.select, name: true } },
+          },
           data: {
             reason,
             expiry,
@@ -47,6 +50,11 @@ builder.mutationField("addBan", (t) =>
             sub_id,
           },
         });
+
+        void notifyUser(
+          user_id,
+          `Vous avez été banni de f/${ban.Sub.name} jusqu'à ${expiry.toISOString()} pour la raison suivante: ${reason}`,
+        );
 
         return ban.Sub;
       } catch (e) {
