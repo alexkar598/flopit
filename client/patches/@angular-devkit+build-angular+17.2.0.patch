@@ -39,7 +39,7 @@ index f36f38b..d3131a7 100755
      // Otherwise an incorrect component ID generation collision detected warning will be displayed in development.
      // See: https://github.com/angular/angular-cli/issues/25924
      ɵresetCompiledComponents?.();
-+    const cookies = request.headers?.['cookie'] || '';
++    const cookies = request?.headers?.['cookie'] || '';
      const platformProviders = [
          {
              provide: ɵSERVER_CONTEXT,

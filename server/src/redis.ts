@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import { PromiseReturnType } from "@prisma/client/extension";
 
 export async function createRedisClient() {
   const client = createClient({ url: process.env.REDIS_URL! });
@@ -7,4 +8,6 @@ export async function createRedisClient() {
   return client;
 }
 
-export const redis = await createRedisClient();
+export const redis = process.env.REDIS_URL
+  ? await createRedisClient()
+  : (null as unknown as PromiseReturnType<typeof createRedisClient>);

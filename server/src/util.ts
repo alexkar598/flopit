@@ -154,13 +154,15 @@ export interface ImageTransformations {
 }
 
 const imgproxy_url = process.env.IMGPROXY_URL!;
-const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
-const imgproxy_salt = Buffer.from(process.env.IMGPROXY_SALT!, "hex");
+const imgproxy_key = memo(() => Buffer.from(process.env.IMGPROXY_KEY!, "hex"));
+const imgproxy_salt = memo(() =>
+  Buffer.from(process.env.IMGPROXY_SALT!, "hex"),
+);
 
 function signImgproxy(unsigned_url: string): string {
   return crypto
-    .createHmac("sha256", imgproxy_key)
-    .update(imgproxy_salt)
+    .createHmac("sha256", imgproxy_key())
+    .update(imgproxy_salt())
     .update(unsigned_url)
     .digest()
     .toString("base64url");
@@ -231,4 +233,9 @@ export function deepMerge<T extends {}, U extends {}>(
   });
   // @ts-ignore
   return target;
+}
+
+export function memo<T>(fn: () => T): () => T {
+  let cached: T | null = null;
+  return () => cached ?? (cached = fn());
 }
