@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Inject, Injectable, PLATFORM_ID } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
 import {
   NewNotificationsGQL,
@@ -23,6 +23,7 @@ import {
 import { buf2hex, notNull } from "~/app/util";
 import { NbToastrService } from "@nebular/theme";
 import { UserService } from "~/app/services/user.service";
+import { isPlatformBrowser } from "@angular/common";
 
 const LOCAL_STORAGE_LAST_READ_NOTIFICATION_KEY = "lastReadNotification";
 
@@ -59,7 +60,9 @@ export class PushNotificationsService {
 
   public resetLastRead$ = new BehaviorSubject(false);
   private lastRead$ = new BehaviorSubject(
-    window.localStorage.getItem(LOCAL_STORAGE_LAST_READ_NOTIFICATION_KEY) ?? "",
+    (isPlatformBrowser(this.platformId) &&
+      window.localStorage.getItem(LOCAL_STORAGE_LAST_READ_NOTIFICATION_KEY)) ??
+      "",
   );
   public newNotifications$ = combineLatest([
     this.notifications$,
@@ -80,6 +83,7 @@ export class PushNotificationsService {
     private swPush: SwPush,
     private toastr: NbToastrService,
     private userService: UserService,
+    @Inject(PLATFORM_ID) private platformId: Object,
     infoGQL: PushNotificationsInfoGQL,
   ) {
     swPush.subscription.subscribe(this.subscription$);
@@ -92,10 +96,11 @@ export class PushNotificationsService {
       .subscribe((notifications) => {
         const lastRead = notifications.at(0)?.id ?? "";
         this.lastRead$.next(lastRead);
-        window.localStorage.setItem(
-          LOCAL_STORAGE_LAST_READ_NOTIFICATION_KEY,
-          lastRead,
-        );
+        if (isPlatformBrowser(this.platformId))
+          window.localStorage.setItem(
+            LOCAL_STORAGE_LAST_READ_NOTIFICATION_KEY,
+            lastRead,
+          );
       });
   }
 
