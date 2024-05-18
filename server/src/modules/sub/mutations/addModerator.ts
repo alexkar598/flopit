@@ -53,6 +53,7 @@ builder.mutationField("addModerator", (t) =>
         notifyUser(
           user_id,
           `Vous êtes maintenant un modérateur de f/${moderator.Sub.name}`,
+          `f/${moderator.Sub.name}`,
         );
 
         return moderator.Sub;
