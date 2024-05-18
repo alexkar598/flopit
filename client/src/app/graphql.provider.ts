@@ -43,7 +43,8 @@ export function apolloOptionsFactory(
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
 
-  const basePath = isBrowser ? "" : "http://apiserver:3000";
+  const basePath = isBrowser ? window.location.host : "apiserver:3000";
+  const scheme = isBrowser ? window.location.protocol : "http:";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -92,11 +93,16 @@ export function apolloOptionsFactory(
   });
 
   const http = createUploadLink({
-      uri: `${basePath}${uri}`,
-    });
+    uri: `${scheme}//${basePath}${uri}`,
+  });
 
   let ws: GraphQLWsLink | undefined;
-  if (isBrowser) ws = new GraphQLWsLink(createClient({ url: uri }));
+  if (isBrowser)
+    ws = new GraphQLWsLink(
+      createClient({
+        url: `${scheme == "http:" ? "ws:" : "wss:"}//${basePath}${uri}`,
+      }),
+    );
 
   const link = from([
     setContext((_, previous) => ({
