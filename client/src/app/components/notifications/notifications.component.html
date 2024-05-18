@@ -15,16 +15,12 @@
       notification of pushNotifications.notifications$ | async;
       track notification.id
     ) {
-      <div
-        class="notification"
-        [routerLink]="notification.url"
-        [class.notification-link]="notification.url != null"
-      >
+      <a class="notification" [routerLink]="notification.url">
         {{ notification.message }}
         <span class="notification-date text-hint">
           {{ notification.created | relativeDate | async }}
         </span>
-      </div>
+      </a>
     }
     @if (pushNotificationsEnabled | async) {
       <button

@@ -17,9 +17,8 @@
   padding: 0.5rem 0;
   max-width: 24rem;
 
-  &.notification-link {
-    cursor: pointer;
-  }
+  text-decoration: none !important;
+  color: var(--text-basic-color) !important;
 
   .notification-date {
     display: block;
