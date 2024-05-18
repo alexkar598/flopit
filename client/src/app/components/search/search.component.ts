@@ -85,7 +85,7 @@ export class SearchComponent {
         const subsByDescription = x.subsByDescription.edges
           .map((x) => x?.node)
           .filter(notNull);
-        return [...new Set(subsByName.concat(subsByDescription))].slice(0, 5);
+        return [...new Set(subsByName.concat(subsByDescription))];
       }),
       map((x) => (x && x.length > 0 ? x : null)),
     );
