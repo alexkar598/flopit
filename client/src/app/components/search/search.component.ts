@@ -117,7 +117,7 @@ export class SearchComponent {
                 lastSearchValue,
                 "communautes",
               ]);
-            void router.navigate(["/f", id]);
+            else void router.navigate(["/f", id]);
             break;
           case "post":
             void router.navigate(["/rechercher", lastSearchValue]);
