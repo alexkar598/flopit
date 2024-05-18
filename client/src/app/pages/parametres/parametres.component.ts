@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, OnInit } from "@angular/core";
 
 import {
   NbButtonGroupModule,
@@ -16,11 +16,30 @@ import {
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { UserService } from "~/app/services/user.service";
-import { FormsModule } from "@angular/forms";
+import {
+  FormControl,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from "@angular/forms";
 import { EditUserGQL } from "~/graphql";
 import { Router } from "@angular/router";
 import { YesNoPopupComponent } from "~/app/components/yes-no-popup/yes-no-popup.component";
-import { filter } from "rxjs";
+import {
+  combineLatest,
+  concat,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  Observable,
+  of,
+  sample,
+  Subject,
+} from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { notNull } from "~/app/util";
+import { FileInputAccessorModule } from "file-input-accessor";
 
 @Component({
   selector: "app-parametres",
@@ -40,15 +59,25 @@ import { filter } from "rxjs";
     NbInputModule,
     FormsModule,
     NbFormFieldModule,
+    ReactiveFormsModule,
+    FileInputAccessorModule,
   ],
   templateUrl: "./parametres.component.html",
   styleUrl: "./parametres.component.scss",
 })
-export class ParametresComponent {
+export class ParametresComponent implements OnInit {
   showPassword = false;
   showConfirmPassword = false;
   deletingAccount = false;
-  avatar: File | null = null;
+  protected avatarUrl!: Observable<string | null>;
+  protected actionSaveChanges$ = new Subject<void>();
+
+  protected form = this.formBuilder.group({
+    username: new FormControl(""),
+    avatar: new FormControl<File[] | null>(null),
+    oldPassword: new FormControl(""),
+    newPassword: new FormControl(""),
+  });
 
   constructor(
     public userService: UserService,
@@ -56,38 +85,65 @@ export class ParametresComponent {
     private windowService: NbWindowService,
     private router: Router,
     private toastr: NbToastrService,
+    private formBuilder: NonNullableFormBuilder,
+    private destroyRef: DestroyRef,
   ) {}
 
-  onAvatarChange(input: any) {
-    const file = (input as HTMLInputElement)?.files?.[0];
-    if (!file) return;
+  ngOnInit(): void {
+    this.userService.currentUser$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(notNull),
+        map(({ username }) => username),
+        distinctUntilChanged(),
+      )
+      .subscribe((username) => this.form.controls.username.reset(username));
+    this.userService.currentUser$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(notNull),
+        map(({ avatarUrl }) => avatarUrl),
+        distinctUntilChanged(),
+      )
+      .subscribe(() => {
+        console.log("Resetting");
+        this.form.controls.avatar.reset({ value: null, disabled: false });
+      });
 
-    this.avatar = file;
-  }
+    let lastAvatarPreviewUrl: string | null = null;
+    this.avatarUrl = combineLatest([
+      concat(of(null), this.form.valueChanges).pipe(
+        map(() => this.form.getRawValue().avatar),
+      ),
+      this.userService.currentUser$.pipe(filter(notNull)),
+    ]).pipe(
+      map(([x, user]) => {
+        console.log("new value", x, user);
+        const file = x?.[0];
+        if (file == null) return user.avatarUrl ?? null;
 
-  async changer(values: { username: string }) {
-    const { username } = values;
+        if (lastAvatarPreviewUrl != null)
+          URL.revokeObjectURL(lastAvatarPreviewUrl);
+        return (lastAvatarPreviewUrl = URL.createObjectURL(file));
+      }),
+      finalize(() => {
+        if (lastAvatarPreviewUrl != null)
+          URL.revokeObjectURL(lastAvatarPreviewUrl);
+      }),
+    );
 
-    if (this.avatar) {
-      // If selected image, update all
-      this.editUserGql
-        .mutate({
-          input: {
-            username,
-            avatar: this.avatar,
-          },
-        })
-        .subscribe();
-    } else {
-      // If no image, update only username
-      this.editUserGql
-        .mutate({
-          input: {
-            username,
-          },
-        })
-        .subscribe();
-    }
+    this.form.valueChanges
+      .pipe(sample(this.actionSaveChanges$))
+      .subscribe((values) => {
+        this.editUserGql
+          .mutate({
+            input: {
+              username: values.username ?? undefined,
+              avatar: values.avatar?.[0] ?? undefined,
+            },
+          })
+          .subscribe();
+      });
   }
 
   toggleDeletingAccount() {
@@ -96,7 +152,7 @@ export class ParametresComponent {
     });
     windowRef.onClose
       .pipe(filter((res: boolean) => res))
-      .subscribe((res) => this.deleteAccount());
+      .subscribe(() => this.deleteAccount());
   }
 
   deleteAccount() {

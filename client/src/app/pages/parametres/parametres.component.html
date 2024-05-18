@@ -5,14 +5,14 @@
       @if (userService.currentUser$ | async; as user) {
         <div class="utilisateur">
           <nb-user
-            [name]="form.value.username"
-            [picture]="user.avatarUrl ?? ''"
+            [name]="form.getRawValue().username ?? ''"
+            [picture]="(avatarUrl | async) ?? ''"
             color="#EEE"
           />
         </div>
 
         <h2>Informations</h2>
-        <form #form="ngForm" (ngSubmit)="changer(form.value)">
+        <form [formGroup]="form" (ngSubmit)="actionSaveChanges$.next()">
           <nb-form-field>
             <div class="parametre">
               <label>Changer le nom d'utilisateur</label>
@@ -20,7 +20,7 @@
                 class="input-param"
                 type="text"
                 nbInput
-                [ngModel]="user.username"
+                formControlName="username"
                 maxlength="64"
                 placeholder="Nom d'utilisateur"
                 name="username"
@@ -93,7 +93,7 @@
             <input
               class="input-param"
               type="file"
-              (change)="onAvatarChange($event.target)"
+              formControlName="avatar"
               accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
             />
           </div>
