@@ -14,6 +14,7 @@ import {
   concat,
   filter,
   map,
+  of,
   sample,
   scan,
   shareReplay,
@@ -36,6 +37,7 @@ export class PushNotificationsService {
   public notifications$ = this.userService.currentUser$.pipe(
     switchMap(() =>
       concat(
+        of(null),
         this.oldNotificationsGQL.fetch().pipe(
           map((x) => x.data?.currentUser?.notifications.edges),
           filter(notNull),
@@ -43,19 +45,22 @@ export class PushNotificationsService {
           filter(notNull),
           map((x) => x.node),
         ),
-        this.newNotificationsGQL.subscribe().pipe(
-          map((x) => x.data?.watchNotifications),
-          filter(notNull),
-        ),
+        this.newNotificationsGQL
+          .subscribe()
+          .pipe(map((x) => x.data?.watchNotifications)),
       ).pipe(
         scan(
           (acc, value) =>
-            value.id == acc.at(0)?.id ? acc : [value, ...acc].slice(0, 5),
+            value == null
+              ? acc
+              : value.id == acc.at(0)?.id
+                ? acc
+                : [value, ...acc].slice(0, 5),
           new Array<NotificationFragment>(),
         ),
-        shareReplay(1),
       ),
     ),
+    shareReplay(1),
   );
 
   public resetLastRead$ = new BehaviorSubject(false);
