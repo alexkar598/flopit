@@ -34,11 +34,11 @@ import {
   Observable,
   Subject,
   sample,
-  withLatestFrom,
   finalize,
   concat,
   of,
   shareReplay,
+  combineLatest,
 } from "rxjs";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 import {
@@ -177,8 +177,8 @@ export class SubComponent implements OnInit {
       });
     });
 
-    this.form.valueChanges
-      .pipe(sample(this.actionSave$), withLatestFrom(this.sub$))
+    combineLatest([this.form.valueChanges, this.sub$])
+      .pipe(sample(this.actionSave$))
       .subscribe(([formValues, sub]) => {
         this.loading = true;
         this.editSubMut
@@ -209,9 +209,12 @@ export class SubComponent implements OnInit {
 
     let lastIconPreviewUrl: string | null = null;
     let lastBannerPreviewUrl: string | null = null;
-    this.iconUrl = concat(of(null), this.form.valueChanges).pipe(
-      map(() => this.form.getRawValue().icon),
-      withLatestFrom(this.sub$),
+    this.iconUrl = combineLatest([
+      concat(of(null), this.form.valueChanges).pipe(
+        map(() => this.form.getRawValue().icon),
+      ),
+      this.sub$,
+    ]).pipe(
       map(([x, sub]) => {
         const file = x?.[0];
         if (file == null) return sub.iconUrl ?? null;
@@ -223,9 +226,12 @@ export class SubComponent implements OnInit {
         if (lastIconPreviewUrl != null) URL.revokeObjectURL(lastIconPreviewUrl);
       }),
     );
-    this.bannerUrl = concat(of(null), this.form.valueChanges).pipe(
-      map(() => this.form.getRawValue().banner),
-      withLatestFrom(this.sub$),
+    this.bannerUrl = combineLatest([
+      concat(of(null), this.form.valueChanges).pipe(
+        map(() => this.form.getRawValue().banner),
+      ),
+      this.sub$,
+    ]).pipe(
       map(([x, sub]) => {
         const file = x?.[0];
         if (file == null) return sub.bannerUrl ?? null;

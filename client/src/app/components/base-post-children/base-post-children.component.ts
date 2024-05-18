@@ -21,13 +21,13 @@ import {
 } from "@nebular/theme";
 import {
   BehaviorSubject,
+  combineLatest,
   filter,
   map,
   Observable,
   of,
   Subject,
   takeUntil,
-  withLatestFrom,
 } from "rxjs";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
@@ -113,10 +113,11 @@ export class BasePostChildrenComponent implements OnChanges {
               map((node) => node.children.edges),
             )
           : of(this.parent);
-      parent$
+      combineLatest([
+        parent$.pipe(map((res) => res.map((comment) => comment!.node!))),
+        this.userService.currentUser$,
+      ])
         .pipe(
-          map((res) => res.map((comment) => comment!.node!)),
-          withLatestFrom(this.userService.currentUser$),
           map(([res, currentUser]) =>
             res.map((comment) => {
               const isAuthor =
