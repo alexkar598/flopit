@@ -186,9 +186,15 @@ export class SubComponent implements OnInit {
             {
               input: {
                 id: sub.id,
-                banner: formValues.banner?.[0] ?? undefined,
-                icon: formValues.icon?.[0] ?? undefined,
-                description: formValues.description ?? undefined,
+                banner: this.form.controls.banner.pristine
+                  ? undefined
+                  : formValues.banner?.[0] ?? undefined,
+                icon: this.form.controls.icon.pristine
+                  ? undefined
+                  : formValues.icon?.[0] ?? undefined,
+                description: this.form.controls.description.pristine
+                  ? undefined
+                  : formValues.description ?? undefined,
               },
             },
             {
@@ -213,11 +219,11 @@ export class SubComponent implements OnInit {
       concat(of(null), this.form.valueChanges).pipe(
         map(() => this.form.getRawValue().icon),
       ),
-      this.sub$,
+      this.sub$.pipe(map((x) => x.iconUrl)),
     ]).pipe(
-      map(([x, sub]) => {
+      map(([x, currentIconUrl]) => {
         const file = x?.[0];
-        if (file == null) return sub.iconUrl ?? null;
+        if (file == null) return currentIconUrl ?? null;
 
         if (lastIconPreviewUrl != null) URL.revokeObjectURL(lastIconPreviewUrl);
         return (lastIconPreviewUrl = URL.createObjectURL(file));
@@ -230,11 +236,11 @@ export class SubComponent implements OnInit {
       concat(of(null), this.form.valueChanges).pipe(
         map(() => this.form.getRawValue().banner),
       ),
-      this.sub$,
+      this.sub$.pipe(map((x) => x.bannerUrl)),
     ]).pipe(
-      map(([x, sub]) => {
+      map(([x, currentBannerUrl]) => {
         const file = x?.[0];
-        if (file == null) return sub.bannerUrl ?? null;
+        if (file == null) return currentBannerUrl ?? null;
 
         if (lastBannerPreviewUrl != null)
           URL.revokeObjectURL(lastBannerPreviewUrl);

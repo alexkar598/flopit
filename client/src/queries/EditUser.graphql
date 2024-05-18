@@ -7,3 +7,10 @@ mutation EditUser($input: EditUserInput!) {
     avatarUrl
   }
 }
+
+mutation ChangePassword($input: ChangePasswordInput!) {
+  changePassword(input: $input) {
+    id
+  }
+}
+

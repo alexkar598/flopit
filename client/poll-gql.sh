@@ -12,7 +12,7 @@ do
 
    if [[ "$ATIME" != "$LTIME" ]]
    then
-       cp ../server/schema.graphql . --preserve=timestamps
+       cp ../server/schema.graphql . -p
        npx graphql-codegen
        LTIME=$ATIME
    fi

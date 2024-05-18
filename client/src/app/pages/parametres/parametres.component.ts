@@ -22,7 +22,7 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from "@angular/forms";
-import { EditUserGQL } from "~/graphql";
+import { ChangePasswordGQL, EditUserGQL } from "~/graphql";
 import { Router } from "@angular/router";
 import { YesNoPopupComponent } from "~/app/components/yes-no-popup/yes-no-popup.component";
 import {
@@ -66,7 +66,8 @@ import { FileInputAccessorModule } from "file-input-accessor";
   styleUrl: "./parametres.component.scss",
 })
 export class ParametresComponent implements OnInit {
-  showPassword = false;
+  showOldPassword = false;
+  showNewPassword = false;
   showConfirmPassword = false;
   deletingAccount = false;
   protected avatarUrl!: Observable<string | null>;
@@ -77,11 +78,13 @@ export class ParametresComponent implements OnInit {
     avatar: new FormControl<File[] | null>(null),
     oldPassword: new FormControl(""),
     newPassword: new FormControl(""),
+    confirmPassword: new FormControl(""),
   });
 
   constructor(
     public userService: UserService,
     private editUserGql: EditUserGQL,
+    private changePasswordGql: ChangePasswordGQL,
     private windowService: NbWindowService,
     private router: Router,
     private toastr: NbToastrService,
@@ -106,7 +109,6 @@ export class ParametresComponent implements OnInit {
         distinctUntilChanged(),
       )
       .subscribe(() => {
-        console.log("Resetting");
         this.form.controls.avatar.reset({ value: null, disabled: false });
       });
 
@@ -114,13 +116,16 @@ export class ParametresComponent implements OnInit {
     this.avatarUrl = combineLatest([
       concat(of(null), this.form.valueChanges).pipe(
         map(() => this.form.getRawValue().avatar),
+        distinctUntilChanged(),
       ),
-      this.userService.currentUser$.pipe(filter(notNull)),
+      this.userService.currentUser$.pipe(
+        filter(notNull),
+        map((x) => x.avatarUrl),
+      ),
     ]).pipe(
-      map(([x, user]) => {
-        console.log("new value", x, user);
+      map(([x, currentAvatarUrl]) => {
         const file = x?.[0];
-        if (file == null) return user.avatarUrl ?? null;
+        if (file == null) return currentAvatarUrl ?? null;
 
         if (lastAvatarPreviewUrl != null)
           URL.revokeObjectURL(lastAvatarPreviewUrl);
@@ -135,14 +140,62 @@ export class ParametresComponent implements OnInit {
     this.form.valueChanges
       .pipe(sample(this.actionSaveChanges$))
       .subscribe((values) => {
-        this.editUserGql
-          .mutate({
-            input: {
-              username: values.username ?? undefined,
-              avatar: values.avatar?.[0] ?? undefined,
-            },
-          })
-          .subscribe();
+        if (
+          this.form.controls.username.dirty ||
+          this.form.controls.avatar.dirty
+        )
+          this.editUserGql
+            .mutate({
+              input: {
+                username: this.form.controls.username.pristine
+                  ? undefined
+                  : values.username ?? undefined,
+                avatar: this.form.controls.avatar.pristine
+                  ? undefined
+                  : values.avatar?.[0] ?? undefined,
+              },
+            })
+            .subscribe((res) => {
+              if (res.errors == null)
+                this.toastr.success(
+                  "Informations enregistrés avec succès",
+                  "Succès!",
+                );
+            });
+
+        if (
+          values.newPassword &&
+          values.confirmPassword &&
+          values.oldPassword
+        ) {
+          if (values.newPassword != values.confirmPassword) {
+            this.toastr.danger(
+              "Les mot de passes ne sont pas identiques",
+              "Erreur",
+            );
+            return;
+          }
+
+          this.changePasswordGql
+            .mutate({
+              input: {
+                old: values.oldPassword,
+                new: values.newPassword,
+              },
+            })
+            .subscribe((result) => {
+              if (result.errors) return;
+
+              this.form.controls.oldPassword.reset("");
+              this.form.controls.newPassword.reset("");
+              this.form.controls.confirmPassword.reset("");
+
+              this.toastr.success(
+                "Mot de passe changé avec succès!",
+                "Succès!",
+              );
+            });
+        }
       });
   }
 
