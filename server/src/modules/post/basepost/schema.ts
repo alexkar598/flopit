@@ -1,7 +1,8 @@
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
-import { getAPIError } from "../../../util.ts";
 import { topPostRef } from "../toppost/schema.ts";
+import { deltaToHtml, signDeltaImages } from "../delta.ts";
+import { cache } from "../../../cache.ts";
 
 export enum VoteValue {
   Down = -1,
@@ -27,8 +28,40 @@ export const basePostRef = builder.prismaInterface("Post", {
       type: "DateTime",
     }),
     textContent: t.exposeString("text_content"),
-    deltaContent: t.expose("delta_content", {
+    deltaContent: t.field({
+      select: {
+        delta_content: true,
+      },
+      nullable: true,
       type: "JSON",
+      resolve: ({ delta_content }) =>
+        signDeltaImages(delta_content as any, true),
+    }),
+    htmlContent: t.field({
+      select: {
+        id: true,
+      },
+      type: "String",
+      resolve: ({ id }) =>
+        cache.ns("htmlContent").getOrSet(id, async () => {
+          const deltaContent = {
+            ops:
+              (
+                (
+                  await prisma.post.findUniqueOrThrow({
+                    select: { delta_content: true },
+                    where: { id },
+                  })
+                ).delta_content as any
+              ).ops ?? [],
+          };
+
+          const deltaWithImages = await signDeltaImages(deltaContent);
+
+          if (deltaWithImages == null) return "";
+
+          return deltaToHtml(deltaWithImages);
+        }),
     }),
     cachedVotes: t.expose("cached_votes", {
       type: "BigInt",
@@ -36,6 +69,9 @@ export const basePostRef = builder.prismaInterface("Post", {
     currentVote: t.field({
       select: {
         id: true,
+      },
+      authScopes: {
+        authenticated: true,
       },
       nullable: true,
       type: voteValueRef,

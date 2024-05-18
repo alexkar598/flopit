@@ -2,6 +2,7 @@ mutation DeletePost($id: ID!) {
   deletePost(input: {id: $id}) {
     id
     deltaContent
+    htmlContent
     textContent
     author {
       id
@@ -10,5 +11,22 @@ mutation DeletePost($id: ID!) {
       id
       title
     }
+  }
+}
+
+query DeletePostInfo($post: ID!) {
+  node(id: $post) {
+    ...DeletePostInfo
+  }
+}
+
+fragment DeletePostInfo on BasePost {
+  id
+  author {
+    id
+  }
+  sub {
+    id
+    isModerator
   }
 }

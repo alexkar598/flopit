@@ -13,6 +13,7 @@ services:
     environment:
       PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
       PRISMA_ROOT_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
+      REDIS_URL: redis://redis
       JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
       S3_ENDPOINT: minio
       S3_PORT: 9000
@@ -20,17 +21,26 @@ services:
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_REGION: ${S3_REGION}
+      IMGPROXY_URL: http://imgproxy:8080/image/
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT}
+      PUBLIC_URL: ${PUBLIC_URL}
     restart: unless-stopped
     depends_on:
       mariadb:
         condition: service_healthy
       db-deploy:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     links:
       - mariadb
       - minio
+      - redis
+      - imgproxy:nginx
     extra_hosts:
       - "apiserver:127.0.0.1"
     healthcheck:
@@ -85,6 +95,22 @@ services:
     volumes:
       - mariadb:/var/lib/mysql
       - mariadb-import:/import
+  redis:
+    image: redis:7.0-alpine3.19
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
+    networks:
+      - backend
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+    environment:
+      REDIS_ARGS: "--timeout 90"
   cloudbeaver:
     image: dbeaver/cloudbeaver:23.3.3
     configs:
@@ -170,6 +196,7 @@ services:
       IMGPROXY_MAX_ANIMATION_FRAMES: 24
       IMGPROXY_ALLOW_ORIGIN: "*"
       IMGPROXY_ALLOWED_SOURCES: s3://, https://
+      IMGPROXY_PREFERRED_FORMATS: webp,gif
       IMGPROXY_JPEG_PROGRESSIVE: true
       IMGPROXY_USE_S3: true
       IMGPROXY_S3_ENDPOINT: http://minio:9000/
@@ -209,6 +236,7 @@ volumes:
   mariadb:
   mariadb-import:
   minio:
+  redis:
 configs:
   nginx:
     file: compose/nginx.conf

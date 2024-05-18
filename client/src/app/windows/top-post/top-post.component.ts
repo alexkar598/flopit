@@ -1,5 +1,6 @@
 import { AsyncPipe, NgForOf } from "@angular/common";
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, DestroyRef, Input, OnInit } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
@@ -14,13 +15,7 @@ import {
 } from "@nebular/theme";
 import { QueryRef } from "apollo-angular";
 import { QuillEditorComponent } from "ngx-quill";
-import {
-  BehaviorSubject,
-  debounceTime,
-  map,
-  Observable,
-  Subscription,
-} from "rxjs";
+import { debounceTime, map, Observable } from "rxjs";
 import { isFragment, notNull } from "~/app/util";
 import {
   CreatePostGQL,
@@ -56,12 +51,10 @@ import { APIError } from "~shared/apierror";
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",
 })
-export class TopPostWindowComponent implements OnInit, OnDestroy {
+export class TopPostWindowComponent implements OnInit {
   public subsQuery$!: QueryRef<FindSubsQuery, FindSubsQueryVariables>;
   public subs$!: Observable<FindSubsSubFragment[]>;
   public loading = false;
-  public subFilterSubject = new BehaviorSubject("");
-  public subFilterSub!: Subscription;
 
   @Input()
   public edit?: string;
@@ -81,6 +74,7 @@ export class TopPostWindowComponent implements OnInit, OnDestroy {
     private windowRef: NbWindowRef,
     private router: Router,
     private formBuilder: FormBuilder,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit() {
@@ -88,8 +82,12 @@ export class TopPostWindowComponent implements OnInit, OnDestroy {
     this.subs$ = this.subsQuery$.valueChanges.pipe(
       map((q) => q.data.subs.edges.map((e) => e?.node).filter(notNull)),
     );
-    this.subFilterSub = this.subFilterSubject
-      .pipe(debounceTime(400))
+    this.form.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        debounceTime(400),
+        map((x) => x.sub_name ?? ""),
+      )
       .subscribe(
         (name) => void this.subsQuery$.setVariables({ filter: { name } }),
       );
@@ -106,10 +104,6 @@ export class TopPostWindowComponent implements OnInit, OnDestroy {
         });
       });
     }
-  }
-
-  ngOnDestroy(): void {
-    this.subFilterSub.unsubscribe();
   }
 
   submit() {

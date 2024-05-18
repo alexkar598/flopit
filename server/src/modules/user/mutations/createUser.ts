@@ -5,6 +5,7 @@ import { getAPIError } from "../../../util.ts";
 import { compute_hash } from "../../auth/auth.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { userValidators } from "../schema.ts";
+import { cache } from "../../../cache.ts";
 
 const input = builder.inputType("CreateUserInput", {
   fields: (t) => ({
@@ -13,8 +14,6 @@ const input = builder.inputType("CreateUserInput", {
     password: t.string(),
   }),
 });
-
-const breached_passwords = new Map<string, number>();
 
 builder.mutationField("createUser", (t) =>
   t.prismaField({
@@ -32,8 +31,13 @@ builder.mutationField("createUser", (t) =>
           "INSECURE_PASSWORD",
           "Il devrait avoir au moins 6 caractères",
         );
+
+      const pwnedCache = cache.ns("pwned");
+
       //Empêche de spam l'API
-      let breach_count = breached_passwords.get(cleartext_password) ?? 0;
+      let breach_count = parseInt(
+        (await pwnedCache.get(cleartext_password)) ?? "0",
+      );
       if (breach_count)
         throw getAPIError(
           "INSECURE_PASSWORD",
@@ -64,11 +68,10 @@ builder.mutationField("createUser", (t) =>
               .split("\n")
               .find((line) => line.startsWith(password_sha1.substring(5))),
           )
-          .then((line) => {
-            const breach_count = 0;
-            Number(line?.split(":")[1]);
+          .then((line): void => {
+            const breach_count = parseInt(line?.split(":")[1] ?? "0");
             if (breach_count) {
-              breached_passwords.set(cleartext_password, breach_count);
+              pwnedCache.set(cleartext_password, breach_count);
               throw getAPIError(
                 "INSECURE_PASSWORD",
                 `Il fait partie de ${breach_count} brèches de données`,

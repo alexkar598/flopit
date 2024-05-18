@@ -1,11 +1,17 @@
 import { builder } from "../../../../builder.ts";
 import { prisma } from "../../../../db.ts";
-import { getAPIError } from "../../../../util.ts";
-import { deltaValidator, quillDeltaToPlainText } from "../../delta.ts";
+import { deepMerge, getAPIError, slugify, SlugType } from "../../../../util.ts";
+import {
+  deltaValidator,
+  quillDeltaToPlainText,
+  uploadDeltaImagesToS3,
+} from "../../delta.ts";
 import { VoteValue } from "../../basepost/schema.ts";
 import { z } from "zod";
 import { topPostRef } from "../../toppost/schema.ts";
 import { commentRef } from "../schema.ts";
+import { notifyUser } from "../../../notifications/util.ts";
+import { Prisma } from "@prisma/client";
 
 const input = builder.inputType("CreateCommentInput", {
   fields: (t) => ({
@@ -34,19 +40,51 @@ builder.mutationField("createComment", (t) =>
       const delta = input.delta_content as z.infer<typeof deltaValidator>;
 
       return prisma.$transaction(async (tx) => {
-        const parent = await tx.post.findUnique({
-          select: { sub_id: true, top_post_id: true },
+        const info = await tx.post.findUnique({
+          select: {
+            sub_id: true,
+            author_id: true,
+            TopPost: {
+              select: {
+                id: true,
+                title: true,
+                Post: {
+                  where: {
+                    parent_id: null,
+                  },
+                  select: {
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
           where: { id: input.parent.id },
         });
 
-        if (parent == null) throw getAPIError("POST_NOT_FOUND");
+        if (info == null) throw getAPIError("POST_NOT_FOUND");
 
-        return tx.post.create({
+        // upload images to S3
+        await uploadDeltaImagesToS3(delta);
+
+        const post = await tx.post.create({
           ...query,
+          select: deepMerge(query.select ?? {}, {
+            Author: {
+              select: {
+                username: true,
+              },
+            },
+            Sub: {
+              select: {
+                name: true,
+              },
+            },
+          } satisfies Prisma.PostSelect),
           data: {
-            top_post_id: parent.top_post_id,
+            top_post_id: info.TopPost.id,
             author_id: authenticated_user_id,
-            sub_id: parent.sub_id,
+            sub_id: info.sub_id,
             delta_content: delta,
             text_content: quillDeltaToPlainText(delta),
             cached_votes: 1,
@@ -59,6 +97,15 @@ builder.mutationField("createComment", (t) =>
             },
           },
         });
+
+        if (info.author_id && info.author_id != authenticated_user_id)
+          notifyUser(
+            info.author_id,
+            `u/${post.Author!.username} a laissé un commentaire sur un de vos messages dans ${info.TopPost.title}`,
+            `f/${post.Sub.name}/${slugify(SlugType.TopPost, info.TopPost.Post[0].id)}`,
+          );
+
+        return post;
       });
     },
   }),

@@ -1,4 +1,7 @@
-import { relayStylePagination } from "@apollo/client/utilities";
+import {
+  getMainDefinition,
+  relayStylePagination,
+} from "@apollo/client/utilities";
 import { Apollo, APOLLO_OPTIONS } from "apollo-angular";
 import {
   ApplicationConfig,
@@ -7,15 +10,23 @@ import {
   makeStateKey,
   TransferState,
 } from "@angular/core";
+import {
+  ApolloClientOptions,
+  FieldMergeFunction,
+  from,
+  InMemoryCache,
+  split,
+} from "@apollo/client/core";
 import { Router } from "@angular/router";
-import { ApolloClientOptions, from, InMemoryCache } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { Kind, OperationDefinitionNode } from "graphql/language";
-import { StrictTypedTypePolicies } from "~/graphql";
+import { Maybe, Node, StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { setContext } from "@apollo/client/link/context";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 const uri = "/graphql";
 
@@ -30,7 +41,8 @@ export function apolloOptionsFactory(
 ): ApolloClientOptions<any> {
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
 
-  const basePath = isBrowser ? "" : "http://apiserver:3000";
+  const basePath = isBrowser ? window.location.host : "apiserver:3000";
+  const scheme = isBrowser ? window.location.protocol : "http:";
   const cookies = inject<string>(<any>"COOKIES", { optional: true });
 
   if (isBrowser) {
@@ -78,15 +90,35 @@ export function apolloOptionsFactory(
     });
   });
 
+  const http = createUploadLink({
+    uri: `${scheme}//${basePath}${uri}`,
+  });
+
+  let ws: GraphQLWsLink | undefined;
+  if (isBrowser)
+    ws = new GraphQLWsLink(
+      createClient({
+        url: `${scheme == "http:" ? "ws:" : "wss:"}//${basePath}${uri}`,
+      }),
+    );
+
   const link = from([
     setContext((_, previous) => ({
       ...previous,
       headers: { cookie: cookies ?? "token=_" },
     })),
     errorLink,
-    createUploadLink({
-      uri: `${basePath}${uri}`,
-    }),
+    split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return !(
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
+      },
+      http,
+      ws,
+    ),
   ]);
 
   return {
@@ -105,6 +137,8 @@ export function apolloOptionsFactory(
     },
   };
 }
+
+const messageFieldPolicyPagination = relayStylePagination(["target"]);
 
 export const graphqlProvider: ApplicationConfig["providers"] = [
   Apollo,
@@ -128,6 +162,7 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
             fields: {
               moderators: relayStylePagination(),
               posts: relayStylePagination(["sortOptions"]),
+              banned: relayStylePagination(["filter"]),
             },
           },
           TopPost: {
@@ -143,6 +178,45 @@ export const graphqlProvider: ApplicationConfig["providers"] = [
           BasePost: {
             fields: {
               children: relayStylePagination(["sortOptions"]),
+            },
+          },
+          Conversation: {
+            fields: {
+              messages: {
+                ...messageFieldPolicyPagination,
+                merge(
+                  existing: { edges: Maybe<{ node: Node }>[] },
+                  incoming: { edges: Maybe<{ node: Node }>[] },
+                  args,
+                ) {
+                  const merged = (
+                    messageFieldPolicyPagination.merge as FieldMergeFunction
+                  )(existing, incoming, args);
+
+                  const firstIncomingId = incoming?.edges[0]?.node.id as
+                    | string
+                    | undefined;
+                  //Aucun incoming, null op
+                  if (firstIncomingId === undefined) return merged;
+
+                  let existingLastIndex = existing?.edges.findIndex(
+                    (x) => x && x.node.id > firstIncomingId,
+                  );
+                  //Aucun incoming, défaut
+                  if (existingLastIndex === undefined) return merged;
+
+                  if (existingLastIndex === -1) existingLastIndex = 0;
+
+                  return {
+                    pageInfo: merged.pageInfo,
+                    edges: [
+                      ...existing.edges.splice(0, existingLastIndex - 1),
+                      ...incoming.edges,
+                      ...existing.edges.splice(existingLastIndex),
+                    ],
+                  };
+                },
+              },
             },
           },
         } satisfies StrictTypedTypePolicies,

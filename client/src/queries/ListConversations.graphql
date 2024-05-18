@@ -1,0 +1,12 @@
+query ListConversations {
+  currentUser {
+    id
+    conversations {
+      edges {
+        node {
+          ...Conversation
+        }
+      }
+    }
+  }
+}

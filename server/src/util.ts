@@ -47,6 +47,7 @@ export enum SlugType {
   Session,
   Sub,
   User,
+  Conversation,
 }
 export function slugify(type: SlugType, uuid: string) {
   //IDs composite
@@ -58,12 +59,23 @@ export function slugify(type: SlugType, uuid: string) {
     buffer.writeUint8(order, 1);
     buffer.write(id.replaceAll("-", ""), 2, "hex");
     return base62.encode(buffer);
-  }
+  } else if (type === SlugType.Conversation) {
+    const [id1, id2] = JSON.parse(uuid);
 
+    const buffer = Buffer.allocUnsafe(33);
+    buffer.writeUint8(type, 0);
+    buffer.write(id1.replaceAll("-", ""), 1, "hex");
+    buffer.write(id2.replaceAll("-", ""), 17, "hex");
+    return base62.encode(buffer);
+  }
   const buffer = Buffer.allocUnsafe(17);
   buffer.writeUint8(type, 0);
   buffer.write(uuid.replaceAll("-", ""), 1, "hex");
   return base62.encode(buffer);
+}
+
+export function format_uuid(hex_string: string): string {
+  return `${hex_string.slice(0, 8)}-${hex_string.slice(8, 12)}-${hex_string.slice(12, 16)}-${hex_string.slice(16, 20)}-${hex_string.slice(20)}`;
 }
 
 export function unslugify(slug: string) {
@@ -86,10 +98,23 @@ export function unslugify(slug: string) {
 
       return {
         typename: typeName,
-        id: JSON.stringify([
-          `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
-          order,
-        ]),
+        id: JSON.stringify([format_uuid(uuid), order]),
+      };
+    } else if (type === SlugType.Conversation) {
+      const id1 = buffer.subarray(1, 17).toString("hex");
+      if (id1.length !== 32) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw getAPIError("INVALID_ID", "id1 de mauvaise grandeur");
+      }
+      const id2 = buffer.subarray(17).toString("hex");
+      if (id2.length !== 32) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw getAPIError("INVALID_ID", "id2 de mauvaise grandeur");
+      }
+
+      return {
+        typename: typeName,
+        id: JSON.stringify([format_uuid(id1), format_uuid(id2)]),
       };
     }
 
@@ -101,7 +126,7 @@ export function unslugify(slug: string) {
 
     return {
       typename: typeName,
-      id: `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`,
+      id: format_uuid(uuid),
     };
   } catch (e) {
     if (e instanceof GraphQLError) throw e;
@@ -128,8 +153,18 @@ export interface ImageTransformations {
     | "tiff";
 }
 
+const imgproxy_url = process.env.IMGPROXY_URL!;
 const imgproxy_key = Buffer.from(process.env.IMGPROXY_KEY!, "hex");
 const imgproxy_salt = Buffer.from(process.env.IMGPROXY_SALT!, "hex");
+
+function signImgproxy(unsigned_url: string): string {
+  return crypto
+    .createHmac("sha256", imgproxy_key)
+    .update(imgproxy_salt)
+    .update(unsigned_url)
+    .digest()
+    .toString("base64url");
+}
 
 export function getImg<OID extends string | null>(
   oid: OID,
@@ -145,11 +180,55 @@ export function getImg<OID extends string | null>(
   );
   let unsigned_url = `/rs:${trans.resizeMode}:${trans.width}:${trans.height}:0/g:${trans.gravity}/${base64url}`;
   if (trans.format) unsigned_url += `.${trans.format}`;
-  const hmac = crypto
-    .createHmac("sha256", imgproxy_key)
-    .update(imgproxy_salt)
-    .update(unsigned_url)
-    .digest()
-    .toString("base64url");
-  return "/image/" + hmac + unsigned_url;
+
+  return "/image/" + signImgproxy(unsigned_url) + unsigned_url;
+}
+
+interface ImageSize {
+  width: number;
+  height: number;
+}
+
+export async function getImgSize(imgUrl: string): Promise<ImageSize | null> {
+  const url = new URL(imgUrl, imgproxy_url);
+
+  try {
+    let res = await fetch(url);
+    return {
+      width: parseInt(res.headers.get("X-Result-Width")!),
+      height: parseInt(res.headers.get("X-Result-Height")!),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function isObject(item: unknown): item is Object {
+  return !!item && typeof item === "object" && !Array.isArray(item);
+}
+
+export function deepMerge<T extends {}, U extends {}>(
+  target: T | undefined | null,
+  source: U,
+): T & U {
+  //@ts-ignore
+  target ??= {};
+  target = Object.assign({}, target);
+
+  Object.keys(source).forEach((key) => {
+    //@ts-ignore
+    const sVal = source[key];
+    //@ts-ignore
+    const tVal = target[key];
+
+    if (isObject(sVal) && isObject(tVal)) {
+      // @ts-ignore
+      target[key] = deepMerge(sVal, tVal);
+    } else {
+      // @ts-ignore
+      target[key] = sVal;
+    }
+  });
+  // @ts-ignore
+  return target;
 }

@@ -14,11 +14,17 @@ export const APIError = Object.freeze({
     "Vous devez être modérateur de ce sub pour effectuer cette action",
   FILE_UPLOAD_FAIL: "Le téléversement du fichier a échoué",
   INVALID_ID: "Un ID fournit est invalide",
-  VALIDATION_ERROR: "Erreur de validation",
   USER_NOT_FOUND: "Cet utilisateur n'existe pas",
   ALREADY_MODERATOR: "Cet utilisateur est déja un modérateur",
+  ALREADY_BANNED: "Cet utilisateur est déja banni",
   MODERATOR_NOT_FOUND: "Cet utilisateur n'est pas un modérateur",
   CANNOT_REMOVE_SELF:
     "Vous ne pouvez pas retirer votre propre statut de modérateur",
   UNAUTHORIZED: "Vous n'êtes pas authorisé à accéder à cette information",
+  MESSAGE_SELF: "Vous ne pouvez pas envoyer un message à vous-même",
+  CONVERSATION_NOT_FOUND: "Cette conversation n'existe pas",
+  BLOCKED: "Cet utilisateur vous a bloqué",
+  VALIDATION_ERROR: "Erreur de validation",
+  PUSH_NOTIFICATION_NOT_FOUND: "Abonnement pas trouvé!",
+  PUSH_NOTIFICATION_INVALID: "Abonnement invalide",
 });

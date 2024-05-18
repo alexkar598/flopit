@@ -11,7 +11,7 @@ fragment FullTopPost on TopPost {
     username
     avatarUrl
   }
-  deltaContent
+  htmlContent
   createdAt
   currentVote
   cachedVotes

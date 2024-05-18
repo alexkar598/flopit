@@ -8,23 +8,23 @@ import {
   JSONObjectResolver,
   VoidResolver,
 } from "graphql-scalars";
-import { IncomingMessage, ServerResponse } from "node:http";
 import { prisma } from "./db.ts";
+import { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { isBanned } from "./modules/sub/util.ts";
 import {
   capitalizeFirst,
   getAPIError,
   slugify,
+  SlugType,
   throwException,
   unslugify,
-  SlugType,
 } from "./util.ts";
 import ValidationPlugin from "@pothos/plugin-validation";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 
 interface Context {
-  req: IncomingMessage;
-  res: ServerResponse;
+  req: HttpRequest;
+  res?: HttpResponse;
   authenticated_user_id: string | null;
   authenticated_session_id: string | null;
 }
@@ -37,7 +37,7 @@ interface AuthenticatedContext extends Context {
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
   Connection: {
-    totalCount: number | (() => number | Promise<number>);
+    totalCount?: number | (() => number | Promise<number>);
   };
   Scalars: {
     DateTime: {
@@ -167,6 +167,7 @@ builder.globalConnectionField("totalCount", (t) =>
 
 builder.queryType();
 builder.mutationType();
+builder.subscriptionType();
 
 export function frozenWithTotalCount<T extends object>(
   obj: T,

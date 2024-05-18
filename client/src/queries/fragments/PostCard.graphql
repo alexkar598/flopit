@@ -6,7 +6,7 @@ fragment TopPostCard on TopPost {
     name
     iconUrl
   }
-  deltaContent
+  htmlContent
   createdAt
   currentVote
   cachedVotes

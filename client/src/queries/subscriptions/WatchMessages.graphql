@@ -1,0 +1,11 @@
+subscription WatchMessages ($target: ID!, $after: String) {
+  watchMessages(target: $target, after: $after) {
+    id
+    textContent
+    created
+    author {
+      id
+    }
+  }
+}
+

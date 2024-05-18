@@ -8,7 +8,7 @@
   </nb-card-header>
 
   <nb-card-body>
-    <app-rich-text [delta]="post.deltaContent" />
+    <app-rich-text [html]="post.htmlContent" />
   </nb-card-body>
 
   <nb-card-footer>
@@ -21,6 +21,8 @@
       />
     </a>
 
-    <span class="datetime text-hint">{{ post.createdAt | relativeDate }}</span>
+    <span class="datetime text-hint">
+      {{ post.createdAt | relativeDate | async }}
+    </span>
   </nb-card-footer>
 </nb-card>

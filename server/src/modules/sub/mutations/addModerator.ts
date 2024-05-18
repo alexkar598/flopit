@@ -4,6 +4,7 @@ import { prisma } from "../../../db.ts";
 import { getAPIError } from "../../../util.ts";
 import { userRef } from "../../user/schema.ts";
 import { subRef } from "../schema.ts";
+import { notifyUser } from "../../notifications/util.ts";
 
 const input = builder.inputType("AddModeratorInput", {
   fields: (t) => ({
@@ -32,7 +33,9 @@ builder.mutationField("addModerator", (t) =>
     ) => {
       try {
         const moderator = await prisma.moderator.create({
-          select: { Sub: { ...query } },
+          select: {
+            Sub: { ...query, select: { ...query.select, name: true } },
+          },
           data: {
             User: {
               connect: {
@@ -46,6 +49,12 @@ builder.mutationField("addModerator", (t) =>
             },
           },
         });
+
+        notifyUser(
+          user_id,
+          `Vous êtes maintenant un modérateur de f/${moderator.Sub.name}`,
+          `f/${moderator.Sub.name}`,
+        );
 
         return moderator.Sub;
       } catch (e) {

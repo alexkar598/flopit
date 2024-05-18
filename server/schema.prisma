@@ -40,6 +40,8 @@ model User {
   BlockedBy         Block[]            @relation(name: "Blockee")
   Blocked           Block[]            @relation(name: "Blocker")
   PushNotifications PushNotification[]
+  Conversations         Conversation[] @relation(name: "Owner")
+  ConversationsReceived Conversation[] @relation(name: "Target")
 }
 
 model Session {
@@ -208,4 +210,16 @@ model Vote {
 
   @@unique([user_id, post_id])
   @@index([user_id, post_id, value])
+}
+
+model Conversation {
+  Owner    User   @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Owner")
+  owner_id String @mariadb.Char(36)
+
+  Target    User   @relation(fields: [target_id], references: [id], onDelete: Cascade, onUpdate: Restrict, name: "Target")
+  target_id String @mariadb.Char(36)
+
+  last_interact DateTime @default(now())
+
+  @@id([owner_id, target_id])
 }
