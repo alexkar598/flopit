@@ -107,6 +107,15 @@ export class DeletePostWindowComponent implements OnInit {
                     this.windowRef.close();
                   });
               });
+          } else {
+            this.deletePostGQL
+              .mutate({
+                id: this.post,
+              })
+              .subscribe(({ data }) => {
+                if (!data?.deletePost) return;
+                this.windowRef.close();
+              });
           }
         });
       });
