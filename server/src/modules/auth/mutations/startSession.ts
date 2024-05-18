@@ -1,14 +1,7 @@
-import crypto from "crypto";
 import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
-import { getAPIError, slugify, SlugType } from "../../../util.ts";
-import { compute_hash, get_token } from "../auth.ts";
-
-// Garanti d'être 100% aléatoire, généré avec un lancer de dés
-const NULL_SALT = Buffer.from(
-  "c01b9823613ee86cbc67a605d9efd59d82963d334c7e1a44e341514cbc042b17",
-  "hex",
-);
+import { slugify, SlugType } from "../../../util.ts";
+import { get_token, validate_user_credentials } from "../auth.ts";
 
 builder.mutationField("startSession", (t) =>
   t.prismaField({
@@ -20,24 +13,7 @@ builder.mutationField("startSession", (t) =>
     },
     grantScopes: ["self"],
     resolve: async (query, _root, { email, password }, { res }) => {
-      const user = await prisma.user.findUnique({
-        where: {
-          email,
-        },
-        select: {
-          salt: true,
-          password: true,
-          id: true,
-        },
-      });
-
-      const hash = await compute_hash(user?.salt ?? NULL_SALT, password);
-      if (
-        user?.salt === undefined ||
-        user.password === undefined ||
-        !crypto.timingSafeEqual(hash, user.password)
-      )
-        throw getAPIError("BAD_CREDENTIALS");
+      const user = await validate_user_credentials(email, password);
 
       const user_gid = slugify(SlugType.User, user.id);
 

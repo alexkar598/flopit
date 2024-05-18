@@ -7,7 +7,8 @@ import {
 } from "~shared/headers.ts";
 import { prisma } from "../../db.ts";
 import { HttpResponse } from "uWebSockets.js";
-import { memo, unslugify } from "../../util.ts";
+import { getAPIError, memo, unslugify } from "../../util.ts";
+import { cache } from "../../cache.ts";
 
 export const JWT_SETTINGS = memo(() => ({
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
@@ -59,6 +60,92 @@ export function clearCookie(res: HttpResponse) {
       AuthenticationStatusHeader.DEAUTHENTICATED.toString(),
     );
   });
+}
+
+// Garanti d'être 100% aléatoire, généré avec un lancer de dés
+const NULL_SALT = Buffer.from(
+  "c01b9823613ee86cbc67a605d9efd59d82963d334c7e1a44e341514cbc042b17",
+  "hex",
+);
+export async function validate_user_credentials(
+  email: string,
+  password: string,
+) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      salt: true,
+      password: true,
+      id: true,
+    },
+  });
+
+  const hash = await compute_hash(user?.salt ?? NULL_SALT, password);
+  if (
+    user?.salt === undefined ||
+    user.password === undefined ||
+    !crypto.timingSafeEqual(hash, user.password)
+  )
+    throw getAPIError("BAD_CREDENTIALS");
+  return user;
+}
+
+export async function validate_new_password(cleartext_password: string) {
+  if (cleartext_password.length < 6)
+    throw getAPIError(
+      "INSECURE_PASSWORD",
+      "Il devrait avoir au moins 6 caractères",
+    );
+
+  const pwnedCache = cache.ns("pwned");
+
+  //Empêche de spam l'API
+  let breach_count = parseInt(
+    (await pwnedCache.get(cleartext_password)) ?? "0",
+  );
+  if (breach_count)
+    throw getAPIError(
+      "INSECURE_PASSWORD",
+      `Il fait partie de ${breach_count} brèches de données`,
+    );
+
+  const password_sha1 = crypto
+    .createHash("sha1")
+    .update(cleartext_password)
+    .digest()
+    .toString("hex")
+    .toUpperCase();
+
+  const salt = crypto.randomBytes(32);
+  const [password] = await Promise.all([
+    compute_hash(salt, cleartext_password),
+    //Vérification en même temps
+    fetch(
+      "https://api.pwnedpasswords.com/range/" + password_sha1.substring(0, 5),
+      {
+        headers: { "User-Agent": "FlopIt/1.0" },
+      },
+    )
+      .then((res) => res.text())
+      .then((res) =>
+        res
+          .split("\n")
+          .find((line) => line.startsWith(password_sha1.substring(5))),
+      )
+      .then((line): void => {
+        const breach_count = parseInt(line?.split(":")[1] ?? "0");
+        if (breach_count) {
+          pwnedCache.set(cleartext_password, breach_count);
+          throw getAPIError(
+            "INSECURE_PASSWORD",
+            `Il fait partie de ${breach_count} brèches de données`,
+          );
+        }
+      }),
+  ]);
+  return { salt, password };
 }
 
 export async function resolveAuthentication(
