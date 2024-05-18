@@ -9,6 +9,7 @@ import { prisma } from "../../db.ts";
 import { HttpResponse } from "uWebSockets.js";
 import { getAPIError, memo, unslugify } from "../../util.ts";
 import { cache } from "../../cache.ts";
+import { Prisma } from ".prisma/client";
 
 export const JWT_SETTINGS = memo(() => ({
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
@@ -68,13 +69,11 @@ const NULL_SALT = Buffer.from(
   "hex",
 );
 export async function validate_user_credentials(
-  email: string,
+  selector: Prisma.UserWhereUniqueInput,
   password: string,
 ) {
   const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
+    where: selector,
     select: {
       salt: true,
       password: true,

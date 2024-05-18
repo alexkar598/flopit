@@ -13,7 +13,7 @@ builder.mutationField("startSession", (t) =>
     },
     grantScopes: ["self"],
     resolve: async (query, _root, { email, password }, { res }) => {
-      const user = await validate_user_credentials(email, password);
+      const user = await validate_user_credentials({ email }, password);
 
       const user_gid = slugify(SlugType.User, user.id);
 
