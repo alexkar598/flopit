@@ -68,7 +68,11 @@ export class SearchPageComponent {
     const resultsPosts$ = route.paramMap.pipe(
       tap(() => this.loadingPosts$.next(true)),
       map((x) => x.get("query")!),
-      switchMap((query) => searchPostsGQL.watch({ query }).valueChanges),
+      switchMap(
+        (query) =>
+          searchPostsGQL.watch({ query }, { fetchPolicy: "cache-and-network" })
+            .valueChanges,
+      ),
       map((x) => x.data),
       tap(() => this.loadingPosts$.next(false)),
     );
@@ -85,7 +89,13 @@ export class SearchPageComponent {
     const results$ = route.paramMap.pipe(
       tap(() => this.loading$.next(true)),
       map((x) => x.get("query")!),
-      switchMap((query) => searchGQL.watch({ query, count: 100 }).valueChanges),
+      switchMap(
+        (query) =>
+          searchGQL.watch(
+            { query, count: 100 },
+            { fetchPolicy: "cache-and-network" },
+          ).valueChanges,
+      ),
       map((x) => x.data),
       tap(() => this.loading$.next(false)),
     );
