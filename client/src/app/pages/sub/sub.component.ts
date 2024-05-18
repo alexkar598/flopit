@@ -149,8 +149,8 @@ export class SubComponent {
         {
           input: {
             id: sub.id,
-            banner : this.banner,
-            icon: this.icon,
+            banner: this.banner ?? undefined,
+            icon: this.icon ?? undefined,
             description: this.newDescription,
           },
         },

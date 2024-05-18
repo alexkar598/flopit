@@ -129,7 +129,6 @@ p {
   nb-action {
     cursor: pointer;
   }
-
 }
 
 input[type="file"] {
@@ -173,5 +172,19 @@ input[type="file"]::file-selector-button {
   height: 2.5rem;
   margin-top: auto;
   margin-bottom: 1rem;
+  display: none;
+}
 
+.icon-button {
+  position: absolute;
+  top: 1rem;
+  right: 2.5rem;
+}
+
+.banner-button {
+  position: absolute;
+  top: 6rem;
+  right: 2.5rem;
+  width: fit-content;
+  height: fit-content;
 }

@@ -22,7 +22,46 @@
             } @else {
               <nb-icon class="icone" icon="globe-2-outline" />
             }
+            @if (this.editing) {
+              <input
+                class="input-param"
+                type="file"
+                accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+                (change)="onIconChange($event.target)"
+                hidden
+                #iconPicker
+              />
+              <button
+                class="icon-button"
+                nbButton
+                size="large"
+                shape="round"
+                (click)="iconPicker.click()"
+              >
+                <nb-icon icon="image-outline" />
+              </button>
+            }
           </div>
+
+          @if (this.editing) {
+            <input
+              class="input-param"
+              type="file"
+              accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+              (change)="onBannerChange($event.target)"
+              hidden
+              #bannerPicker
+            />
+            <button
+              class="banner-button"
+              nbButton
+              size="large"
+              shape="round"
+              (click)="bannerPicker.click()"
+            >
+              <nb-icon icon="image-outline" />
+            </button>
+          }
         </nb-card-header>
 
         <nb-card-body>
