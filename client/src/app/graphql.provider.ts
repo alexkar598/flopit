@@ -12,7 +12,6 @@ import {
 } from "@angular/core";
 import {
   ApolloClientOptions,
-  ApolloLink,
   FieldMergeFunction,
   from,
   InMemoryCache,
@@ -22,7 +21,6 @@ import { Router } from "@angular/router";
 import { onError } from "@apollo/client/link/error";
 import { NbToastrService } from "@nebular/theme";
 import { Kind, OperationDefinitionNode } from "graphql/language";
-import { HttpHeaders } from "@angular/common/http";
 import { Maybe, Node, StrictTypedTypePolicies } from "~/graphql";
 import { ErrorCode } from "~shared/apierror";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
@@ -140,7 +138,6 @@ export function apolloOptionsFactory(
   };
 }
 
-type CachedMessageEdge = { node: { __ref: string } };
 const messageFieldPolicyPagination = relayStylePagination(["target"]);
 
 export const graphqlProvider: ApplicationConfig["providers"] = [
