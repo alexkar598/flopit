@@ -1,0 +1,73 @@
+services:
+  apiserver:
+    build:
+      dockerfile: flopit.Dockerfile
+      target: server
+    networks:
+      - backend
+    volumes:
+      - mariadb-import:/db-import
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      db-deploy:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      PRISMA_MARIADB_URL: ${PRISMA_MARIADB_URL}
+      PRISMA_ROOT_MARIADB_URL: ${PRISMA_ROOT_MARIADB_URL}
+      REDIS_URL: redis://redis
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      S3_ENDPOINT: minio
+      S3_PORT: 9000
+      S3_SSL: false
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_REGION: ${S3_REGION}
+      IMGPROXY_URL: http://imgproxy:8080/image/
+      IMGPROXY_KEY: ${IMGPROXY_KEY}
+      IMGPROXY_SALT: ${IMGPROXY_SALT}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT}
+      PUBLIC_URL: ${PUBLIC_URL}
+    links:
+      - mariadb
+      - minio
+      - redis
+      - imgproxy:nginx
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "wget 127.0.0.1:3000/health -O -" ]
+      timeout: "10s"
+      interval: "1m30s"
+      retries: 3
+      start_period: 40s
+      start_interval: 1s
+    restart: unless-stopped
+  client:
+    build:
+      dockerfile: flopit.Dockerfile
+      target: client
+    networks:
+      - backend
+    restart: unless-stopped
+  #    healthcheck:
+  #      test: [ "CMD", "sh", "-c", "wget 127.0.0.1:4200/health -O -"]
+  #      timeout: "10s"
+  #      interval: "1m30s"
+  #      retries: 3
+  #      start_period: 40s
+  #      start_interval: 1s
+  nginx:
+    links:
+      - apiserver
+      - client
+    extra_hosts:
+      - cloudbeaver:192.0.2.0
+  seed:
+    depends_on:
+      apiserver:
+        condition: service_healthy
+    links:
+      - apiserver

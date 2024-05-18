@@ -1,6 +1,7 @@
 #!/bin/sh
 
 npx graphql-codegen
+cp ../server/schema.graphql .
 
 # Date de dernière modification
 LTIME=$(find /app -type f -name "*.graphql" -print0 | xargs -0 stat | sort -nr | head -1)
@@ -11,6 +12,7 @@ do
 
    if [[ "$ATIME" != "$LTIME" ]]
    then
+       cp ../server/schema.graphql . --preserve=timestamps
        npx graphql-codegen
        LTIME=$ATIME
    fi
