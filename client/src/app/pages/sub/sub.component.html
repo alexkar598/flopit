@@ -168,12 +168,8 @@
         </nb-card-body>
       </nb-card>
     } @else {
-      <nb-card
-        class="barre-infos-loading"
-        [nbSpinner]="true"
-        nbSpinnerStatus="primary"
-      >
-        <nb-card-body />
+      <nb-card class="barre-infos-loading">
+        <nb-spinner message="" />
       </nb-card>
     }
   </div>
