@@ -5,23 +5,15 @@
     @if (sub$ | async; as sub) {
       <nb-card class="barre-infos">
         <nb-card-header
-          style="background-image: url('{{ sub.bannerUrl ?? '' }}');"
+          style="background-image: linear-gradient(darkgrey), url('{{
+            sub.bannerUrl ?? ''
+          }}');"
         >
           <div>
             <h1 class="nom-sub">f/{{ sub.name }}</h1>
           </div>
 
           <div>
-            @if (sub.iconUrl) {
-              <nb-user
-                onlyPicture
-                [picture]="sub.iconUrl"
-                color="#fff"
-                size="large"
-              />
-            } @else {
-              <nb-icon class="icone" icon="globe-2-outline" />
-            }
             @if (this.editing) {
               <input
                 class="input-param"
@@ -34,12 +26,24 @@
               <button
                 class="icon-button"
                 nbButton
+                outline
                 size="large"
                 shape="round"
                 (click)="iconPicker.click()"
               >
                 <nb-icon icon="image-outline" />
               </button>
+            } @else {
+              @if (sub.iconUrl) {
+                <nb-user
+                  onlyPicture
+                  [picture]="sub.iconUrl"
+                  color="#fff"
+                  size="large"
+                />
+              } @else {
+                <nb-icon class="icone" icon="globe-2-outline" />
+              }
             }
           </div>
 
@@ -55,6 +59,7 @@
             <button
               class="banner-button"
               nbButton
+              outline
               size="large"
               shape="round"
               (click)="bannerPicker.click()"
@@ -87,31 +92,11 @@
                 [attr.data-replicated-value]="newDescription"
               >
                 <textarea
+                  rows="1"
                   maxlength="512"
                   placeholder="Description"
                   [(ngModel)]="newDescription"
                 ></textarea>
-              </div>
-              <div class="stats-item">
-                <div class="stats">
-                  <p class="stats-data">Bannière</p>
-                  <input
-                    class="input-param"
-                    type="file"
-                    accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
-                    (change)="onBannerChange($event.target)"
-                  />
-                </div>
-
-                <div class="stats">
-                  <p class="stats-data">Icône</p>
-                  <input
-                    class="input-param"
-                    type="file"
-                    accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
-                    (change)="onIconChange($event.target)"
-                  />
-                </div>
               </div>
             } @else {
               <p>{{ sub.description }}</p>
