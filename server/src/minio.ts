@@ -1,14 +1,18 @@
 import { Client } from "minio";
 import { createHash } from "node:crypto";
+import { memo } from "./util.ts";
 
-export const minioClient = new Client({
-  endPoint: process.env.S3_ENDPOINT!,
-  port: parseInt(process.env.S3_PORT ?? "9000"),
-  useSSL: process.env.S3_SSL === "true",
-  accessKey: process.env.S3_ACCESS_KEY!,
-  secretKey: process.env.S3_SECRET_KEY!,
-  region: process.env.S3_REGION!,
-});
+export const minioClient = memo(
+  () =>
+    new Client({
+      endPoint: process.env.S3_ENDPOINT!,
+      port: parseInt(process.env.S3_PORT ?? "9000"),
+      useSSL: process.env.S3_SSL === "true",
+      accessKey: process.env.S3_ACCESS_KEY!,
+      secretKey: process.env.S3_SECRET_KEY!,
+      region: process.env.S3_REGION!,
+    }),
+);
 
 export async function minioUploadFile(
   file: Blob,
@@ -21,7 +25,7 @@ export async function minioUploadFile(
 
   const objectName = hash.digest("hex");
 
-  await minioClient.putObject(bucket, objectName, buffer);
+  await minioClient().putObject(bucket, objectName, buffer);
 
   return objectName;
 }

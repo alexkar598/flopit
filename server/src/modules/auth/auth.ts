@@ -7,13 +7,13 @@ import {
 } from "~shared/headers.ts";
 import { prisma } from "../../db.ts";
 import { HttpResponse } from "uWebSockets.js";
-import { unslugify } from "../../util.ts";
+import { memo, unslugify } from "../../util.ts";
 
-export const JWT_SETTINGS = {
+export const JWT_SETTINGS = memo(() => ({
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
   ALG: "HS256",
   AUTHORITY: "flopit",
-};
+}));
 
 export function compute_hash(salt: Buffer, password: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -27,17 +27,17 @@ export function compute_hash(salt: Buffer, password: string): Promise<Buffer> {
 export async function get_token(user_gid: string, session_id: string) {
   const token = await new SignJWT()
     .setProtectedHeader({
-      alg: JWT_SETTINGS.ALG,
+      alg: JWT_SETTINGS().ALG,
       typ: "auth",
     })
-    .setAudience(JWT_SETTINGS.AUTHORITY)
-    .setIssuer(JWT_SETTINGS.AUTHORITY)
+    .setAudience(JWT_SETTINGS().AUTHORITY)
+    .setIssuer(JWT_SETTINGS().AUTHORITY)
     .setJti(session_id)
     .setSubject(user_gid)
     .setIssuedAt()
     .setNotBefore("0s")
     .setExpirationTime("1d")
-    .sign(JWT_SETTINGS.SIGNING_KEY);
+    .sign(JWT_SETTINGS().SIGNING_KEY);
 
   return cookie.serialize("token", token, {
     expires: undefined,
@@ -77,11 +77,11 @@ export async function resolveAuthentication(
     return;
   }
 
-  const result = await jwtVerify(jwt, JWT_SETTINGS.SIGNING_KEY, {
+  const result = await jwtVerify(jwt, JWT_SETTINGS().SIGNING_KEY, {
     typ: "auth",
-    algorithms: [JWT_SETTINGS.ALG],
-    audience: JWT_SETTINGS.AUTHORITY,
-    issuer: JWT_SETTINGS.AUTHORITY,
+    algorithms: [JWT_SETTINGS().ALG],
+    audience: JWT_SETTINGS().AUTHORITY,
+    issuer: JWT_SETTINGS().AUTHORITY,
   }).catch(() => null);
 
   if (result == null) {
