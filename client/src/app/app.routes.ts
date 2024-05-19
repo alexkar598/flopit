@@ -15,7 +15,6 @@ export const routes: Routes = [
   { path: "", component: AccueilComponent },
   { path: "connexion", component: ConnexionComponent },
   { path: "inscription", component: CreationCompteComponent },
-  { path: "f", component: CreationSubComponent },
   { path: "f/:subName", component: SubComponent },
   { path: "f/:subName/:topPostId", component: TopPostPageComponent },
   { path: "rechercher/:query/:tab", component: SearchPageComponent },
@@ -25,6 +24,7 @@ export const routes: Routes = [
     canActivate: [authenticatedPageGuard],
     runGuardsAndResolvers: "always",
     children: [
+      { path: "f", component: CreationSubComponent },
       { path: "parametres", component: ParametresComponent },
       { path: "chat", component: ChatComponent },
       { path: "chat/:user", component: ChatComponent },
