@@ -33,6 +33,7 @@ import {
   ResolveUserIdGQL,
 } from "~/graphql";
 import { APIError } from "~shared/apierror";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-moderator-list",
@@ -47,6 +48,7 @@ import { APIError } from "~shared/apierror";
     NbAutocompleteModule,
     NbUserModule,
     NbInputModule,
+    RouterLink,
   ],
   templateUrl: "./moderator-list.component.html",
   styleUrl: "./moderator-list.component.scss",

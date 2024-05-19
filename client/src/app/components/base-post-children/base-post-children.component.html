@@ -10,10 +10,12 @@
           <app-vote [post]="comment" />
 
           @if (comment.author) {
-            <nb-user
-              name="u/{{ comment.author.username }}"
-              [picture]="comment.author.avatarUrl ?? ''"
-            />
+            <a [routerLink]="['/chat', comment.author.id]">
+              <nb-user
+                name="u/{{ comment.author.username }}"
+                [picture]="comment.author.avatarUrl ?? ''"
+              />
+            </a>
           } @else {
             <nb-user name="fantôme" />
           }

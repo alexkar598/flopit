@@ -80,11 +80,17 @@
             <app-rich-text [html]="elem.parent.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.parent.cachedVotes }}</span>
-              <nb-user
-                name="u/{{ elem.parent.author?.username ?? 'Fantôme' }}"
-                [picture]="elem.parent.author?.avatarUrl ?? ''"
-                size="small"
-              />
+              @if (elem.parent.author; as author) {
+                <a [routerLink]="['/chat', author.id]">
+                  <nb-user
+                    name="u/{{ author.username }}"
+                    [picture]="author.avatarUrl ?? ''"
+                    size="small"
+                  />
+                </a>
+              } @else {
+                <nb-user name="u/Fantôme" size="small" />
+              }
               <span class="text-hint">{{
                 elem.parent.createdAt | relativeDate | async
               }}</span>
@@ -94,11 +100,17 @@
             <app-rich-text [html]="elem.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.cachedVotes }}</span>
-              <nb-user
-                name="u/{{ elem.author?.username ?? 'Fantôme' }}"
-                [picture]="elem.author?.avatarUrl ?? ''"
-                size="small"
-              />
+              @if (elem.author; as author) {
+                <a [routerLink]="['/chat', author.id]">
+                  <nb-user
+                    name="u/{{ author.username }}"
+                    [picture]="author.avatarUrl ?? ''"
+                    size="small"
+                  />
+                </a>
+              } @else {
+                <nb-user name="u/Fantôme" size="small" />
+              }
               <span class="text-hint">{{
                 elem.createdAt | relativeDate | async
               }}</span>
