@@ -80,17 +80,7 @@
             <app-rich-text [html]="elem.parent.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.parent.cachedVotes }}</span>
-              @if (elem.parent.author; as author) {
-                <a [routerLink]="['/chat', author.id]">
-                  <nb-user
-                    name="u/{{ author.username }}"
-                    [picture]="author.avatarUrl ?? ''"
-                    size="small"
-                  />
-                </a>
-              } @else {
-                <nb-user name="u/Fantôme" size="small" />
-              }
+              <app-user [user]="elem.parent.author" size="small" />
               <span class="text-hint">{{
                 elem.parent.createdAt | relativeDate | async
               }}</span>
@@ -100,17 +90,7 @@
             <app-rich-text [html]="elem.htmlContent" />
             <div class="info caption">
               <span class="text-hint">{{ elem.cachedVotes }}</span>
-              @if (elem.author; as author) {
-                <a [routerLink]="['/chat', author.id]">
-                  <nb-user
-                    name="u/{{ author.username }}"
-                    [picture]="author.avatarUrl ?? ''"
-                    size="small"
-                  />
-                </a>
-              } @else {
-                <nb-user name="u/Fantôme" size="small" />
-              }
+              <app-user [user]="elem.author" size="small" />
               <span class="text-hint">{{
                 elem.createdAt | relativeDate | async
               }}</span>
@@ -122,27 +102,26 @@
       Aucun résultat à afficher
     }
   </nb-tab>
-  <nb-tab
-    tabTitle="Utilisateurs"
-    route="utilisateurs"
-    [active]="(currentTab$ | async) === 'utilisateurs'"
-  >
-    @if (loading$ | async) {
-      <nb-spinner message="" />
-    }
-    @for (elem of resultsUsers$ | async; track elem.id) {
-      <nb-card class="user" [routerLink]="['/chat', elem.id]">
-        <nb-card-body>
-          <nb-user
-            [picture]="elem.avatarUrl ?? ''"
-            [name]="'u/' + elem.username"
-          />
-        </nb-card-body>
-      </nb-card>
-    } @empty {
-      Aucun résultat à afficher
-    }
-  </nb-tab>
+  @if (isLoggedIn$ | async) {
+    <nb-tab
+      tabTitle="Utilisateurs"
+      route="utilisateurs"
+      [active]="(currentTab$ | async) === 'utilisateurs'"
+    >
+      @if (loading$ | async) {
+        <nb-spinner message="" />
+      }
+      @for (elem of resultsUsers$ | async; track elem.id) {
+        <nb-card class="user">
+          <nb-card-body>
+            <app-user [user]="elem" />
+          </nb-card-body>
+        </nb-card>
+      } @empty {
+        Aucun résultat à afficher
+      }
+    </nb-tab>
+  }
   <nb-tab
     tabTitle="Communautés"
     route="communautes"

@@ -42,6 +42,7 @@ import {
 } from "~/graphql";
 import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component";
 import { RouterLink } from "@angular/router";
+import { UserComponent } from "~/app/components/user/user.component";
 
 type ChildrenQueryResult = ({
   node:
@@ -68,6 +69,7 @@ type ChildrenQueryResult = ({
     VoteComponent,
     NbContextMenuModule,
     RouterLink,
+    UserComponent,
   ],
   templateUrl: "./base-post-children.component.html",
   styleUrl: "./base-post-children.component.scss",

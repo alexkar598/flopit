@@ -45,10 +45,7 @@
   <nb-autocomplete #autoSub>
     @for (user of moderatorSuggestions$ | async; track user.id) {
       <nb-option [value]="user.username">
-        <nb-user
-          [picture]="user.avatarUrl ?? ''"
-          [name]="'u/' + user.username"
-        />
+        <app-user [user]="user" noLink />
       </nb-option>
     }
   </nb-autocomplete>

@@ -1,5 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, DestroyRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@nebular/theme";
 import {
   BehaviorSubject,
+  combineLatest,
   debounceTime,
   filter,
   map,
@@ -31,6 +32,9 @@ import {
   GlobalSearchSubFragment,
   GlobalSearchUserFragment,
 } from "~/graphql";
+import { UserComponent } from "~/app/components/user/user.component";
+import { UserService } from "~/app/services/user.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-search",
@@ -46,6 +50,7 @@ import {
     NbUserModule,
     NbSpinnerModule,
     NbActionsModule,
+    UserComponent,
   ],
   templateUrl: "./search.component.html",
   styleUrl: "./search.component.scss",
@@ -60,7 +65,17 @@ export class SearchComponent {
   protected resultsUsers$: Observable<GlobalSearchUserFragment[] | null>;
   protected resultsSubs$: Observable<GlobalSearchSubFragment[] | null>;
 
-  constructor(searchGQL: GlobalSearchGQL, router: Router) {
+  protected isLoggedIn$ = this.userService.currentUser$.pipe(
+    takeUntilDestroyed(this.destroyRef),
+    map(notNull),
+  );
+
+  constructor(
+    searchGQL: GlobalSearchGQL,
+    router: Router,
+    private userService: UserService,
+    private destroyRef: DestroyRef,
+  ) {
     const results$ = this.searchValue$.pipe(
       debounceTime(100),
       tap(() => this.resultsLoading$.next(true)),
@@ -72,8 +87,9 @@ export class SearchComponent {
       map((x) => x?.data),
       tap(() => this.resultsLoading$.next(false)),
     );
-    this.resultsUsers$ = results$.pipe(
-      map((x) => x?.users.edges.map((x) => x?.node).filter(notNull)),
+    this.resultsUsers$ = combineLatest([results$, this.isLoggedIn$]).pipe(
+      map(([results, isLoggedIn]) => (!isLoggedIn ? [] : results?.users.edges)),
+      map((x) => x?.map((x) => x?.node).filter(notNull)),
       map((x) => (x && x.length > 0 ? x : null)),
     );
     this.resultsSubs$ = results$.pipe(

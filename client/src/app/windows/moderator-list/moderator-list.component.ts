@@ -34,6 +34,7 @@ import {
 } from "~/graphql";
 import { APIError } from "~shared/apierror";
 import { RouterLink } from "@angular/router";
+import { UserComponent } from "~/app/components/user/user.component";
 
 @Component({
   selector: "app-moderator-list",
@@ -49,6 +50,7 @@ import { RouterLink } from "@angular/router";
     NbUserModule,
     NbInputModule,
     RouterLink,
+    UserComponent,
   ],
   templateUrl: "./moderator-list.component.html",
   styleUrl: "./moderator-list.component.scss",

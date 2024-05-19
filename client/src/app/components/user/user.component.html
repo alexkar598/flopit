@@ -1,0 +1,19 @@
+@if (user) {
+  @if ((isLoggedIn | async) && !noLink) {
+    <a [routerLink]="['/chat', user.id]">
+      <nb-user
+        name="u/{{ user.username }}"
+        [picture]="user.avatarUrl ?? ''"
+        [size]="size"
+      />
+    </a>
+  } @else {
+    <nb-user
+      name="u/{{ user.username }}"
+      [picture]="user.avatarUrl ?? ''"
+      [size]="size"
+    />
+  }
+} @else {
+  <nb-user name="fantôme" [size]="size" />
+}

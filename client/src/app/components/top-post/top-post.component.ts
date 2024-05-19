@@ -21,6 +21,7 @@ import { FullTopPostFragment } from "~/graphql";
 import { RouterLink } from "@angular/router";
 import { VoteComponent } from "~/app/components/vote/vote.component";
 import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component";
+import { UserComponent } from "~/app/components/user/user.component";
 
 @Component({
   selector: "app-top-post",
@@ -37,6 +38,7 @@ import { DeletePostWindowComponent } from "~/app/windows/delete/delete.component
     RichTextComponent,
     AsyncPipe,
     NbContextMenuModule,
+    UserComponent,
   ],
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",

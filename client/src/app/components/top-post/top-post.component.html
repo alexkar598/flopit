@@ -14,16 +14,7 @@
   <nb-card-footer>
     <app-vote [post]="post" />
 
-    @if (post.author) {
-      <a [routerLink]="['/chat', post.author.id]">
-        <nb-user
-          name="u/{{ post.author.username }}"
-          [picture]="post.author.avatarUrl ?? ''"
-        />
-      </a>
-    } @else {
-      <nb-user name="fantôme" />
-    }
+    <app-user [user]="post.author" />
 
     <div>
       <span class="datetime text-hint">{{

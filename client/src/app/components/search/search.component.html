@@ -32,10 +32,7 @@
       <nb-option-group title="Utilisateurs">
         @for (user of users.slice(0, 5); track user.id) {
           <nb-option [value]="['user', user.id]">
-            <nb-user
-              [name]="'u/' + user.username"
-              [picture]="user.avatarUrl ?? ''"
-            ></nb-user>
+            <app-user [user]="user" noLink />
           </nb-option>
         }
         @if (users.length > 5) {

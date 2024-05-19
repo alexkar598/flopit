@@ -1,5 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, DestroyRef } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
   BehaviorSubject,
@@ -30,6 +30,9 @@ import { TopPostListItemComponent } from "~/app/components/top-post-list-item/to
 import { RelativeDatePipe } from "~/app/pipes/relative-date.pipe";
 import { RichTextComponent } from "~/app/components/rich-text/rich-text.component";
 import { VoteComponent } from "~/app/components/vote/vote.component";
+import { UserComponent } from "~/app/components/user/user.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { UserService } from "~/app/services/user.service";
 
 @Component({
   standalone: true,
@@ -46,6 +49,7 @@ import { VoteComponent } from "~/app/components/vote/vote.component";
     NbIconModule,
     VoteComponent,
     NbSpinnerModule,
+    UserComponent,
   ],
   templateUrl: "./search.component.html",
   styleUrl: "./search.component.scss",
@@ -59,11 +63,18 @@ export class SearchPageComponent {
   protected loading$ = new BehaviorSubject(true);
   protected currentTab$: Observable<string>;
 
+  protected isLoggedIn$ = this.userService.currentUser$.pipe(
+    takeUntilDestroyed(this.destroyRef),
+    map(notNull),
+  );
+
   constructor(
     searchPostsGQL: SearchPostsGQL,
     searchGQL: GlobalSearchGQL,
     protected route: ActivatedRoute,
     protected router: Router,
+    private userService: UserService,
+    private destroyRef: DestroyRef,
   ) {
     const resultsPosts$ = route.paramMap.pipe(
       tap(() => this.loadingPosts$.next(true)),
