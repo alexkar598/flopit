@@ -3,11 +3,12 @@ import webpush from "web-push";
 import { redis } from "../../redis.ts";
 import { Notification } from "./schema.ts";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-);
+if (process.env.VAPID_SUBJECT)
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT!,
+    process.env.VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!,
+  );
 
 export function notifyUser(userId: string, message: string, url?: string) {
   void (async function () {
