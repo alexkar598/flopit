@@ -17,6 +17,7 @@ import { BasePostChildrenComponent } from "~/app/components/base-post-children/b
 import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { isFragment } from "~/app/util";
 import { FullTopPostFragment, PostByIdGQL } from "~/graphql";
+import { AppCustomTitleStrategy } from "~/app/services/title-strategy.service";
 
 @Component({
   standalone: true,
@@ -38,6 +39,7 @@ export class TopPostPageComponent {
     toastrService: NbToastrService,
     private route: ActivatedRoute,
     private router: Router,
+    private title: AppCustomTitleStrategy,
   ) {
     route.paramMap
       .pipe(
@@ -62,6 +64,7 @@ export class TopPostPageComponent {
         }),
         filter(isFragment<FullTopPostFragment>("TopPost")),
         takeUntilDestroyed(),
+        tap((post) => this.title.setTitleFromString(post.title)),
       )
       .subscribe(this.post$);
 

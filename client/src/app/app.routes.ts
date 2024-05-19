@@ -12,23 +12,46 @@ import { authenticatedPageGuard } from "~/app/authenticated-page.guard";
 import { SearchPageComponent } from "~/app/pages/search/search.component";
 
 export const routes: Routes = [
-  { path: "", component: AccueilComponent },
-  { path: "connexion", component: ConnexionComponent },
-  { path: "inscription", component: CreationCompteComponent },
-  { path: "f/:subName", component: SubComponent },
-  { path: "f/:subName/:topPostId", component: TopPostPageComponent },
-  { path: "rechercher/:query/:tab", component: SearchPageComponent },
-  { path: "rechercher/:query", component: SearchPageComponent },
+  { path: "", component: AccueilComponent, title: "Accueil" },
+  { path: "connexion", component: ConnexionComponent, title: "Connexion" },
+  {
+    path: "inscription",
+    component: CreationCompteComponent,
+    title: "Inscription",
+  },
+  { path: "f/:subName", component: SubComponent, title: "f/{2}" },
+  {
+    path: "f/:subName/:topPostId",
+    component: TopPostPageComponent,
+  },
+  {
+    path: "rechercher/:query/:tab",
+    component: SearchPageComponent,
+    title: "« {2} »",
+  },
+  {
+    path: "rechercher/:query",
+    component: SearchPageComponent,
+    title: "« {2} »",
+  },
   {
     path: "",
     canActivate: [authenticatedPageGuard],
     runGuardsAndResolvers: "always",
     children: [
-      { path: "f", component: CreationSubComponent },
-      { path: "parametres", component: ParametresComponent },
-      { path: "chat", component: ChatComponent },
-      { path: "chat/:user", component: ChatComponent },
+      {
+        path: "f",
+        component: CreationSubComponent,
+        title: "Créer une communauté",
+      },
+      {
+        path: "parametres",
+        component: ParametresComponent,
+        title: "Paramètres",
+      },
+      { path: "chat", component: ChatComponent, title: "Chat" },
+      { path: "chat/:user", component: ChatComponent, title: "Chat" },
     ],
   },
-  { path: "**", component: NotFoundComponent },
+  { path: "**", component: NotFoundComponent, title: "Page introuvable" },
 ];

@@ -3,7 +3,11 @@ import {
   importProvidersFrom,
   isDevMode,
 } from "@angular/core";
-import { provideRouter, withRouterConfig } from "@angular/router";
+import {
+  provideRouter,
+  TitleStrategy,
+  withRouterConfig,
+} from "@angular/router";
 import {
   NbDatepickerModule,
   NbMenuModule,
@@ -19,6 +23,7 @@ import { graphqlProvider } from "./graphql.provider";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { QuillConfig, QuillModule } from "ngx-quill";
 import { provideServiceWorker } from "@angular/service-worker";
+import { AppCustomTitleStrategy } from "./services/title-strategy.service";
 
 export const quillConfig: QuillConfig = {
   modules: {
@@ -60,5 +65,13 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: "registerWhenStable:30000",
     }),
+    {
+      provide: TitleStrategy,
+      useClass: AppCustomTitleStrategy,
+    },
+    {
+      provide: AppCustomTitleStrategy,
+      useClass: AppCustomTitleStrategy,
+    },
   ],
 };
