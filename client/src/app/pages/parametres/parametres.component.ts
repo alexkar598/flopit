@@ -158,7 +158,7 @@ export class ParametresComponent implements OnInit {
             .subscribe((res) => {
               if (res.errors == null)
                 this.toastr.success(
-                  "Informations enregistrés avec succès",
+                  "Informations enregistrées avec succès",
                   "Succès!",
                 );
             });
