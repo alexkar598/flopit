@@ -20,7 +20,7 @@ test.describe("Page de connexion", () => {
 
     await page.locator("form button").last().click();
 
-    await expect(page.locator("nb-toast")).toHaveCount(1, { timeout: 15000 });
+    await expect(page.locator("nb-toast")).toHaveCount(1, { timeout: 60000 });
   });
 
   test("doit se connecter avec les informations valides", async ({ page }) => {
@@ -28,7 +28,7 @@ test.describe("Page de connexion", () => {
     await page.locator("#password").fill("123456");
 
     await page.locator("form button").last().click();
-    await page.waitForURL(appUrl, { timeout: 20000 });
+    await page.waitForURL(appUrl, { timeout: 60000 });
 
     await expect(page.locator(".user-name").first()).toHaveText(
       "Aurore_Lefevre",

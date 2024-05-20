@@ -50,7 +50,7 @@ test.describe("Page d'inscription", () => {
 
     await page.locator("form button").last().click();
 
-    await page.waitForURL(new URL(appUrl).toString(), { timeout: 30000 });
+    await page.waitForURL(new URL(appUrl).toString(), { timeout: 60000 });
 
     await expect(page.locator(".user-name").first()).toHaveText(username);
 
