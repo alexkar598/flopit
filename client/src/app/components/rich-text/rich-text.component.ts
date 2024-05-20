@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { QuillViewComponent, QuillViewHTMLComponent } from "ngx-quill";
 
@@ -8,6 +8,7 @@ import { QuillViewComponent, QuillViewHTMLComponent } from "ngx-quill";
   imports: [QuillViewComponent, QuillViewHTMLComponent],
   templateUrl: "./rich-text.component.html",
   styleUrl: "./rich-text.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RichTextComponent {
   @Input({ required: true })
