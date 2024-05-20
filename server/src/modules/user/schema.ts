@@ -21,7 +21,8 @@ export const userRef = builder.prismaNode("User", {
         avatar_oid: true,
       },
       nullable: true,
-      resolve: ({ avatar_oid }) => getImg(avatar_oid),
+      resolve: ({ avatar_oid }) =>
+        getImg(avatar_oid, { width: 64, height: 64, resizeMode: "fill" }),
     }),
     theme: t.expose("theme", {
       type: ThemeRef,
