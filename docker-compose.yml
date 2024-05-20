@@ -140,12 +140,24 @@ services:
     links:
       - mariadb
   seed:
-    profiles: ["seed"]
+    profiles: ["seed", "test"]
     build:
       dockerfile: server/seed.Dockerfile
     networks:
       - backend
     restart: on-failure
+  test:
+    profiles: ["test"]
+    build:
+      context: client
+      dockerfile: test.Dockerfile
+    environment:
+      APP_URL: http://nginx
+    networks:
+      - backend
+    depends_on:
+      seed:
+        condition: service_completed_successfully
 networks:
   backend:
 volumes:

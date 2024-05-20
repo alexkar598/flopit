@@ -44,7 +44,6 @@ export async function get_token(user_gid: string, session_id: string) {
   return cookie.serialize("token", token, {
     expires: undefined,
     httpOnly: true,
-    secure: true,
     maxAge: 86400,
     sameSite: "strict",
   });
