@@ -57,7 +57,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build --det
 > [!NOTE]
 > Cette commande prend plusieurs minutes à exécuter. Il faut être patient. 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up seed --build
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up seed --build && docker compose -f docker-compose.yml -f docker-compose.prod.yml rm -f seed 
 ```
 
 ### Arrêt
