@@ -18,6 +18,7 @@ import {
   sample,
   scan,
   shareReplay,
+  skip,
   switchMap,
   take,
 } from "rxjs";
@@ -97,7 +98,7 @@ export class PushNotificationsService {
     });
 
     this.notifications$
-      .pipe(sample(this.resetLastRead$.pipe(filter((x) => !x))))
+      .pipe(sample(this.resetLastRead$.pipe(skip(1))))
       .subscribe((notifications) => {
         const lastRead = notifications.at(0)?.id ?? "";
         this.lastRead$.next(lastRead);
