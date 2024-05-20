@@ -60,6 +60,17 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build --det
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up seed --build
 ```
 
+### Tests End-to-End
+> [!WARNING]
+> Cette commande efface toutes les données dans la base de données
+
+> [!NOTE]
+> Cette commande prend plusieurs minutes à exécuter. Il faut être patient.
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up test --build
+```
+
+
 ### Arrêt
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml stop

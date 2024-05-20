@@ -43,3 +43,6 @@ Thumbs.db
 
 #codegen
 src/graphql.ts
+
+#tests
+test-results/
