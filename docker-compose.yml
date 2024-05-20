@@ -155,9 +155,9 @@ services:
       APP_URL: http://nginx
     networks:
       - backend
-#    depends_on:
-#      seed:
-#        condition: service_completed_successfully
+    depends_on:
+      seed:
+        condition: service_completed_successfully
 networks:
   backend:
 volumes:
