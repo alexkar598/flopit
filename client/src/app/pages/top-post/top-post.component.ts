@@ -18,6 +18,7 @@ import { TopPostComponent } from "~/app/components/top-post/top-post.component";
 import { isFragment } from "~/app/util";
 import { FullTopPostFragment, PostByIdGQL } from "~/graphql";
 import { AppCustomTitleStrategy } from "~/app/services/title-strategy.service";
+import { SubInfoComponent } from "~/app/components/sub-info/sub-info.component";
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ import { AppCustomTitleStrategy } from "~/app/services/title-strategy.service";
     NbSpinnerModule,
     RouterLink,
     BasePostChildrenComponent,
+    SubInfoComponent,
   ],
   templateUrl: "./top-post.component.html",
   styleUrl: "./top-post.component.scss",

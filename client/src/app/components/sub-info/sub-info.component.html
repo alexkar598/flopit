@@ -1,0 +1,156 @@
+@if (sub$ | async; as sub) {
+  <nb-card class="barre-infos" [formGroup]="form">
+    <nb-card-header
+      [style.background-image]="'url(' + ((bannerUrl | async) ?? '') + ')'"
+    >
+      <div>
+        <h1 class="nom-sub">
+          <a [routerLink]="['/f', sub.name]">f/{{ sub.name }}</a>
+        </h1>
+      </div>
+
+      <div>
+        @if (this.editing) {
+          <input
+            class="input-param"
+            type="file"
+            accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+            hidden
+            #iconPicker
+            formControlName="icon"
+          />
+          <button
+            [style.background-image]="'url(' + ((iconUrl | async) ?? '') + ')'"
+            class="icon-button"
+            nbButton
+            outline
+            size="large"
+            shape="round"
+            (click)="iconPicker.click()"
+          >
+            <nb-icon icon="image-outline" />
+          </button>
+        } @else {
+          @if (sub.iconUrl) {
+            <nb-user
+              onlyPicture
+              [picture]="sub.iconUrl"
+              color="#fff"
+              size="large"
+            />
+          } @else {
+            <nb-icon class="icone" icon="globe-2-outline" />
+          }
+        }
+      </div>
+
+      @if (this.editing) {
+        <input
+          class="input-param"
+          type="file"
+          accept="image/png, image/jpeg, image/gif, image/ico, image/webp, image/heic, image/avif"
+          hidden
+          formControlName="banner"
+          #bannerPicker
+        />
+        <button
+          class="banner-button"
+          nbButton
+          outline
+          size="large"
+          shape="round"
+          (click)="bannerPicker.click()"
+        >
+          <nb-icon icon="image-outline" />
+        </button>
+      }
+    </nb-card-header>
+
+    <nb-card-body>
+      <button
+        nbButton
+        [status]="sub.isFollowing ? 'basic' : 'primary'"
+        class="bouton-rejoindre"
+        (click)="actionToggleFollow$.next()"
+      >
+        {{ sub.isFollowing ? "Quitter" : "Rejoindre" }}
+      </button>
+
+      @if (!sub.isModerator) {
+        <p>{{ sub.description }}</p>
+      } @else {
+        @if (this.editing) {
+          <!--
+          https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
+          i hate this
+          -->
+          <div
+            class="grow-wrap"
+            [attr.data-replicated-value]="this.form.getRawValue().description"
+          >
+            <textarea
+              rows="1"
+              maxlength="512"
+              placeholder="Description"
+              formControlName="description"
+            ></textarea>
+          </div>
+        } @else {
+          <p>{{ sub.description }}</p>
+        }
+
+        <div class="edit-description">
+          @if (this.editing) {
+            <button
+              class="edit-button"
+              nbButton
+              size="large"
+              shape="round"
+              (click)="editing$.next(false)"
+            >
+              <nb-icon icon="close-outline" />
+            </button>
+          }
+
+          <button
+            class="edit-button"
+            nbButton
+            size="large"
+            shape="round"
+            (click)="this.editing ? actionSave$.next() : editing$.next(true)"
+          >
+            <nb-icon
+              [icon]="this.editing ? 'checkmark-outline' : 'edit-outline'"
+            />
+          </button>
+        </div>
+      }
+
+      <div class="stats-item">
+        <div class="stats">
+          <span class="stats-data">{{ sub.followers.totalCount }}</span>
+          <p>Membre{{ sub.followers.totalCount !== 1 ? "s" : "" }}</p>
+        </div>
+
+        <div class="stats">
+          <span class="stats-data">{{ sub.posts.totalCount }}</span>
+          <p>Publication{{ sub.posts.totalCount !== 1 ? "s" : "" }}</p>
+        </div>
+      </div>
+
+      @if (sub.isModerator) {
+        <hr />
+        <nb-actions class="moderator-actions" [fullWidth]="true">
+          <nb-action (click)="actionEditModerators$.next()">
+            <nb-icon icon="people-outline" />
+            Gérer modérateurs
+          </nb-action>
+        </nb-actions>
+      }
+    </nb-card-body>
+  </nb-card>
+} @else {
+  <nb-card class="barre-infos-loading">
+    <nb-spinner message="" />
+  </nb-card>
+}
