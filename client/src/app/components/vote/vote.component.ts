@@ -1,6 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { PostVoteFragment, VoteGQL, VoteValue } from "~/graphql";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
+import { UserService } from "~/app/services/user.service";
+import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: "app-vote",
@@ -14,9 +16,12 @@ export class VoteComponent {
 
   protected readonly VoteValue = VoteValue;
 
-  constructor(private voteMut: VoteGQL) {}
+  constructor(
+    private voteMut: VoteGQL,
+    private userService: UserService,
+  ) {}
 
-  public vote(value: VoteValue) {
+  public async vote(value: VoteValue) {
     if (value === this.post.currentVote) value = VoteValue.Neutral;
 
     const voteValueObj = {
@@ -28,18 +33,23 @@ export class VoteComponent {
       voteValueObj[value] -
       voteValueObj[this.post.currentVote ?? VoteValue.Neutral];
 
+    const loggedIn =
+      (await firstValueFrom(this.userService.currentUser$)) != null;
+
     this.voteMut
       .mutate(
         { input: { postId: this.post.id, value } },
         {
           optimisticResponse: {
             __typename: "Mutation",
-            votePost: {
-              __typename: this.post.__typename,
-              id: this.post.id,
-              currentVote: value,
-              cachedVotes: this.post.cachedVotes + voteDelta,
-            },
+            votePost: loggedIn
+              ? {
+                  __typename: this.post.__typename,
+                  id: this.post.id,
+                  currentVote: value,
+                  cachedVotes: this.post.cachedVotes + voteDelta,
+                }
+              : null,
           },
         },
       )

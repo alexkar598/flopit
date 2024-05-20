@@ -24,21 +24,22 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
 import {
-  map,
-  distinctUntilChanged,
-  switchMap,
   BehaviorSubject,
-  tap,
-  filter,
-  combineLatestWith,
-  Observable,
-  Subject,
-  sample,
-  finalize,
-  concat,
-  of,
-  shareReplay,
   combineLatest,
+  combineLatestWith,
+  concat,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  sample,
+  shareReplay,
+  Subject,
+  switchMap,
+  tap,
 } from "rxjs";
 import { TopPostListComponent } from "~/app/components/top-post-list/top-post-list.component";
 import {
@@ -48,6 +49,7 @@ import {
 } from "@angular/forms";
 import { FileInputAccessorModule } from "file-input-accessor";
 import { notNull } from "~/app/util";
+import { UserService } from "~/app/services/user.service";
 
 @Component({
   standalone: true,
@@ -102,6 +104,7 @@ export class SubComponent implements OnInit {
     private editSubMut: EditSubGQL,
     private formBuilder: NonNullableFormBuilder,
     private destroyRef: DestroyRef,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -143,19 +146,23 @@ export class SubComponent implements OnInit {
         });
       });
 
-    this.sub$.pipe(sample(this.actionToggleFollow$)).subscribe((sub) => {
+    this.sub$.pipe(sample(this.actionToggleFollow$)).subscribe(async (sub) => {
       const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
         __typename: "Mutation",
-        [sub.isFollowing ? "unfollowSub" : "followSub"]: {
-          __typename: "Sub",
-          id: sub.id,
-          isFollowing: !sub.isFollowing,
-          followers: {
-            __typename: "SubFollowersConnection",
-            totalCount:
-              (sub.followers.totalCount ?? 0) + (sub.isFollowing ? -1 : 1),
-          },
-        },
+        [sub.isFollowing ? "unfollowSub" : "followSub"]:
+          (await firstValueFrom(this.userService.currentUser$)) == null
+            ? null
+            : {
+                __typename: "Sub",
+                id: sub.id,
+                isFollowing: !sub.isFollowing,
+                followers: {
+                  __typename: "SubFollowersConnection",
+                  totalCount:
+                    (sub.followers.totalCount ?? 0) +
+                    (sub.isFollowing ? -1 : 1),
+                },
+              },
       };
 
       if (sub.isFollowing)
