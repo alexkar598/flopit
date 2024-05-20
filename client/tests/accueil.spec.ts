@@ -12,19 +12,13 @@ test.describe("Page d'accueil", () => {
   });
 
   test("doit avoir un bouton « S'inscrire » fonctionnel", async ({ page }) => {
-    await page
-      .locator('.connexion > div > a[href="/inscription"]')
-      .first()
-      .click();
+    await page.locator('.connexion > a[href="/inscription"]').first().click();
 
     await expect(page).toHaveURL(/\/inscription$/);
   });
 
   test("doit avoir un bouton « Connexion » fonctionnel", async ({ page }) => {
-    await page
-      .locator('.connexion > div > a[href="/connexion"]')
-      .first()
-      .click();
+    await page.locator('.connexion > a[href="/connexion"]').first().click();
 
     await expect(page).toHaveURL(/\/connexion$/);
   });
