@@ -16,14 +16,20 @@ export const subRef = builder.prismaNode("Sub", {
         icon_oid: true,
       },
       nullable: true,
-      resolve: ({ icon_oid }) => getImg(icon_oid),
+      resolve: ({ icon_oid }) =>
+        getImg(icon_oid, { width: 64, height: 64, resizeMode: "fill" }),
     }),
     bannerUrl: t.string({
       select: {
         banner_oid: true,
       },
       nullable: true,
-      resolve: ({ banner_oid }) => getImg(banner_oid),
+      resolve: ({ banner_oid }) =>
+        getImg(banner_oid, {
+          width: 540,
+          height: 160,
+          resizeMode: "fill",
+        }),
     }),
     isFollowing: t.withAuth({ authenticated: true }).boolean({
       select: {
