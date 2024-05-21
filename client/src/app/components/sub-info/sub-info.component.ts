@@ -14,6 +14,7 @@ import {
   sample,
   shareReplay,
   Subject,
+  switchMap,
   tap,
 } from "rxjs";
 import {
@@ -63,21 +64,22 @@ import { FileInputAccessorModule } from "file-input-accessor";
 })
 export class SubInfoComponent implements OnInit {
   @Input({ required: true })
-  public subName!: string;
+  public set subName(value: string) {
+    this.subName$.next(value);
+  }
+  private subName$ = new BehaviorSubject<string | null>(null);
 
   protected actionToggleFollow$ = new Subject<void>();
   protected actionEditModerators$ = new Subject<void>();
   protected actionSave$ = new Subject<void>();
 
-  public sub$!: Observable<SubInformationFragment>;
+  public sub$!: Observable<SubInformationFragment | null>;
 
   protected editing$ = new BehaviorSubject(false);
 
   protected get editing() {
     return this.editing$.getValue();
   }
-
-  private loading = false;
 
   protected form = this.formBuilder.group({
     icon: new FormControl<File[] | null>(null),
@@ -102,31 +104,40 @@ export class SubInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.sub$ = this.subInfoQuery
-      .watch({
-        sub_name: this.subName,
-      })
-      .valueChanges.pipe(
-        map((res) => res.data.subByName),
-        tap((sub) => {
-          if (sub == null) {
-            this.toastrService.danger(
-              "Cette communauté n'a pas pu être trouvée",
-              "Communauté introuvée!",
-            );
-            void this.router.navigate(["/"]);
-          }
-        }),
-        filter(notNull),
-        takeUntilDestroyed(this.destroyRef),
-        shareReplay(1),
-      );
+    this.sub$ = this.subName$.pipe(
+      switchMap((subName) =>
+        subName == null
+          ? of(null)
+          : concat(
+              of(null),
+              this.subInfoQuery
+                .watch({
+                  sub_name: subName,
+                })
+                .valueChanges.pipe(
+                  map((res) => res.data.subByName ?? null),
+                  tap((sub) => {
+                    if (sub == null) {
+                      this.toastrService.danger(
+                        "Cette communauté n'a pas pu être trouvée",
+                        "Communauté introuvée!",
+                      );
+                      void this.router.navigate(["/"]);
+                    }
+                  }),
+                ),
+            ),
+      ),
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay(1),
+    );
 
     this.editing$
       .pipe(
         distinctUntilChanged(),
         combineLatestWith(this.sub$),
         map(([, sub]) => sub),
+        filter(notNull),
       )
       .subscribe((sub) => {
         this.form.reset({
@@ -136,48 +147,52 @@ export class SubInfoComponent implements OnInit {
         });
       });
 
-    this.sub$.pipe(sample(this.actionToggleFollow$)).subscribe(async (sub) => {
-      const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
-        __typename: "Mutation",
-        [sub.isFollowing ? "unfollowSub" : "followSub"]:
-          (await firstValueFrom(this.userService.currentUser$)) == null
-            ? null
-            : {
-                __typename: "Sub",
-                id: sub.id,
-                isFollowing: !sub.isFollowing,
-                followers: {
-                  __typename: "SubFollowersConnection",
-                  totalCount:
-                    (sub.followers.totalCount ?? 0) +
-                    (sub.isFollowing ? -1 : 1),
+    this.sub$
+      .pipe(sample(this.actionToggleFollow$), filter(notNull))
+      .subscribe(async (sub) => {
+        const optimisticResponse: UnfollowSubMutation | FollowSubMutation = {
+          __typename: "Mutation",
+          [sub.isFollowing ? "unfollowSub" : "followSub"]:
+            (await firstValueFrom(this.userService.currentUser$)) == null
+              ? null
+              : {
+                  __typename: "Sub",
+                  id: sub.id,
+                  isFollowing: !sub.isFollowing,
+                  followers: {
+                    __typename: "SubFollowersConnection",
+                    totalCount:
+                      (sub.followers.totalCount ?? 0) +
+                      (sub.isFollowing ? -1 : 1),
+                  },
                 },
-              },
-      };
+        };
 
-      if (sub.isFollowing)
-        this.unfollowSubMut
-          .mutate({ input: { subId: sub.id } }, { optimisticResponse })
-          .subscribe();
-      else
-        this.followSubMut
-          .mutate({ input: { subId: sub.id } }, { optimisticResponse })
-          .subscribe();
-    });
-
-    this.sub$.pipe(sample(this.actionEditModerators$)).subscribe(({ id }) => {
-      this.windowService.open(ModeratorListWindowComponent, {
-        title: "Gérer modérateurs",
-        windowClass: "moderators-window",
-        closeOnEsc: false,
-        context: { sub: id },
+        if (sub.isFollowing)
+          this.unfollowSubMut
+            .mutate({ input: { subId: sub.id } }, { optimisticResponse })
+            .subscribe();
+        else
+          this.followSubMut
+            .mutate({ input: { subId: sub.id } }, { optimisticResponse })
+            .subscribe();
       });
-    });
+
+    this.sub$
+      .pipe(sample(this.actionEditModerators$), filter(notNull))
+      .subscribe(({ id }) => {
+        this.windowService.open(ModeratorListWindowComponent, {
+          title: "Gérer modérateurs",
+          windowClass: "moderators-window",
+          closeOnEsc: false,
+          context: { sub: id },
+        });
+      });
 
     combineLatest([this.form.valueChanges, this.sub$])
       .pipe(sample(this.actionSave$))
       .subscribe(([formValues, sub]) => {
-        this.loading = true;
+        if (sub == null) return;
         this.editSubMut
           .mutate(
             {
@@ -204,7 +219,6 @@ export class SubInfoComponent implements OnInit {
             },
           )
           .subscribe(async (res) => {
-            this.loading = false;
             this.editing$.next(false);
             if (res.errors) return;
           });
@@ -216,7 +230,7 @@ export class SubInfoComponent implements OnInit {
       concat(of(null), this.form.valueChanges).pipe(
         map(() => this.form.getRawValue().icon),
       ),
-      this.sub$.pipe(map((x) => x.iconUrl)),
+      this.sub$.pipe(map((x) => x?.iconUrl)),
     ]).pipe(
       map(([x, currentIconUrl]) => {
         const file = x?.[0];
@@ -233,7 +247,7 @@ export class SubInfoComponent implements OnInit {
       concat(of(null), this.form.valueChanges).pipe(
         map(() => this.form.getRawValue().banner),
       ),
-      this.sub$.pipe(map((x) => x.bannerUrl)),
+      this.sub$.pipe(map((x) => x?.bannerUrl)),
     ]).pipe(
       map(([x, currentBannerUrl]) => {
         const file = x?.[0];
