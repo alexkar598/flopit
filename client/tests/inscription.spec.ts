@@ -9,7 +9,7 @@ test.describe("Page d'inscription", () => {
   });
 
   test("doit avoir le bon titre", async ({ page }) => {
-    await expect(page).toHaveTitle("Inscription - FlopIt");
+    await expect(page).toHaveTitle("FlopIt — Inscription");
   });
 
   test("ne doit pas permettre de soumettre un formulaire vide", async ({

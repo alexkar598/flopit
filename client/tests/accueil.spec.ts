@@ -8,7 +8,7 @@ test.describe("Page d'accueil", () => {
   });
 
   test("doit avoir le bon titre", async ({ page }) => {
-    await expect(page).toHaveTitle("Accueil - FlopIt");
+    await expect(page).toHaveTitle("FlopIt — Accueil");
   });
 
   test("doit avoir un bouton « S'inscrire » fonctionnel", async ({ page }) => {

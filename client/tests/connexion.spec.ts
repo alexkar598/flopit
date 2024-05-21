@@ -9,7 +9,7 @@ test.describe("Page de connexion", () => {
   });
 
   test("doit avoir le bon titre", async ({ page }) => {
-    await expect(page).toHaveTitle("Connexion - FlopIt");
+    await expect(page).toHaveTitle("FlopIt — Connexion");
   });
 
   test("ne doit pas se connecter avec un mot de passe invalide", async ({
