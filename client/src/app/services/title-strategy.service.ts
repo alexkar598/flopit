@@ -19,6 +19,6 @@ export class AppCustomTitleStrategy extends TitleStrategy {
   }
 
   setTitleFromString(title: string) {
-    this.title.setTitle(title + " - FlopIt");
+    this.title.setTitle(`FlopIt — ${title}`);
   }
 }
