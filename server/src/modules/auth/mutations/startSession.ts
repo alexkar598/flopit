@@ -29,7 +29,7 @@ builder.mutationField("startSession", (t) =>
       });
 
       const token = await get_token(user_gid, session.id);
-      if (res) res.cork(() => res.writeHeader("Set-Cookie", token));
+      res?.setHeader("Set-Cookie", token);
 
       return session;
     },

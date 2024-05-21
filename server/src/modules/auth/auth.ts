@@ -6,10 +6,10 @@ import {
   HEADER_NAME_AUTHENTICATION_STATUS,
 } from "~shared/headers.ts";
 import { prisma } from "../../db.ts";
-import { HttpResponse } from "uWebSockets.js";
 import { getAPIError, memo, unslugify } from "../../util.ts";
 import { cache } from "../../cache.ts";
 import { Prisma } from ".prisma/client";
+import { ServerResponse } from "node:http";
 
 export const JWT_SETTINGS = memo(() => ({
   SIGNING_KEY: crypto.createSecretKey(process.env.JWT_SIGNING_KEY!, "hex"),
@@ -49,17 +49,12 @@ export async function get_token(user_gid: string, session_id: string) {
   });
 }
 
-export function clearCookie(res: HttpResponse) {
-  res.cork(() => {
-    res.writeHeader(
-      "Set-Cookie",
-      cookie.serialize("token", "_", { maxAge: 1 }),
-    );
-    res.writeHeader(
-      HEADER_NAME_AUTHENTICATION_STATUS,
-      AuthenticationStatusHeader.DEAUTHENTICATED.toString(),
-    );
-  });
+export function clearCookie(res: ServerResponse) {
+  res.setHeader("Set-Cookie", cookie.serialize("token", "_", { maxAge: 1 }));
+  res.setHeader(
+    HEADER_NAME_AUTHENTICATION_STATUS,
+    AuthenticationStatusHeader.DEAUTHENTICATED.toString(),
+  );
 }
 
 // Garanti d'être 100% aléatoire, généré avec un lancer de dés
@@ -148,16 +143,14 @@ export async function validate_new_password(cleartext_password: string) {
 
 export async function resolveAuthentication(
   cookieHeader: string,
-  res?: HttpResponse,
+  res?: ServerResponse,
 ) {
   const jwt = cookie.parse(cookieHeader).token;
   if (jwt == null) {
     if (res)
-      res.cork(() =>
-        res.writeHeader(
-          HEADER_NAME_AUTHENTICATION_STATUS,
-          AuthenticationStatusHeader.UNAUTHENTICATED.toString(),
-        ),
+      res.setHeader(
+        HEADER_NAME_AUTHENTICATION_STATUS,
+        AuthenticationStatusHeader.UNAUTHENTICATED.toString(),
       );
     return;
   }
@@ -194,13 +187,11 @@ export async function resolveAuthentication(
 
   if (res) {
     const token = await get_token(user_gid, session_id);
-    res.cork(() => {
-      res.writeHeader("Set-Cookie", token);
-      res.writeHeader(
-        HEADER_NAME_AUTHENTICATION_STATUS,
-        AuthenticationStatusHeader.AUTHENTICATED.toString(),
-      );
-    });
+    res.setHeader("Set-Cookie", token);
+    res.setHeader(
+      HEADER_NAME_AUTHENTICATION_STATUS,
+      AuthenticationStatusHeader.AUTHENTICATED.toString(),
+    );
   }
 
   return [user_id, session_id];

@@ -9,7 +9,6 @@ import {
   VoidResolver,
 } from "graphql-scalars";
 import { prisma } from "./db.ts";
-import { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { isBanned } from "./modules/sub/util.ts";
 import {
   capitalizeFirst,
@@ -21,10 +20,11 @@ import {
 } from "./util.ts";
 import ValidationPlugin from "@pothos/plugin-validation";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
+import { IncomingMessage, ServerResponse } from "node:http";
 
 interface Context {
-  req: HttpRequest;
-  res?: HttpResponse;
+  req: IncomingMessage;
+  res?: ServerResponse;
   authenticated_user_id: string | null;
   authenticated_session_id: string | null;
 }
