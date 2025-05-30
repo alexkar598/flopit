@@ -1,4 +1,11 @@
-FROM prismagraphql/build:alpine-libssl3.0.x as prisma_build
+FROM rust:1.79.0-alpine AS prisma_build
+
+ENV RUSTFLAGS="-C target-feature=-crt-static" \
+  PROTOC_INCLUDE="/usr/include" \
+  PROTOC="/usr/bin/protoc"
+
+RUN apk update && \
+  apk add perl musl-dev build-base bash clang git protoc protobuf protobuf-dev wget linux-headers libssl3 openssl-dev
 
 WORKDIR /root
 
