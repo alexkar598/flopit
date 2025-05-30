@@ -2,6 +2,7 @@ import { builder } from "../../../builder.ts";
 import { prisma } from "../../../db.ts";
 import { subRef } from "../../sub/schema.ts";
 
+/*
 builder.mutationField("forceModerator", (t) => {
   return t.withAuth({ authenticated: true }).prismaField({
     type: subRef,
@@ -32,3 +33,4 @@ builder.mutationField("forceModerator", (t) => {
     },
   });
 });
+*/
